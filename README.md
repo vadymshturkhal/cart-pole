@@ -26,6 +26,7 @@ Clone the repository and install dependencies:
 git clone https://github.com/yourusername/nstep-qlearning-cartpole.git
 cd cart-pole
 pip install -r requirements.txt
+```
 
 ### GPU Acceleration (Optional)
 By default, `requirements.txt` installs the **CPU version** of PyTorch for maximum portability.  
@@ -35,7 +36,10 @@ If you have a CUDA-enabled GPU, install a matching CUDA build of PyTorch from th
 ```bash
 pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 torchaudio==2.0.2+cu118 \
   --index-url https://download.pytorch.org/whl/cu118
+```
 
 ### CUDA 12.1 example (latest builds):
+```bash
 pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 \
   --index-url https://download.pytorch.org/whl/cu121
+```
