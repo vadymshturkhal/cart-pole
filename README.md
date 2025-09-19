@@ -43,3 +43,24 @@ pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 torchaudio==2.0.2+cu118
 pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 \
   --index-url https://download.pytorch.org/whl/cu121
 ```
+
+---
+
+## Training
+Run training with:
+```bash
+python3 main.py
+```
+
+This will:
+    Train the agent
+    Save rewards to rewards.csv
+    Save the model to trained_qnet.pth
+    Plot the learning curve
+
+---
+
+## Testing & Rendering
+```bash
+python3 test_trained_agent.py
+```
