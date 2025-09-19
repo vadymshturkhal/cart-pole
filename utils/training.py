@@ -29,7 +29,7 @@ def train(env, agent, episodes=config.EPISODES, target_update=config.TARGET_UPDA
         rewards_history.append(total_reward)
         writer.add_scalar("Reward", total_reward, ep)
         
-        if ep % 20 == 0:
+        if ep % config.LOG_AFTER_EPISODES == 0:
             print(f"Episode {ep}, Reward: {total_reward}")
     
     writer.close()
@@ -40,5 +40,3 @@ def train(env, agent, episodes=config.EPISODES, target_update=config.TARGET_UPDA
     print(f"✅ Rewards saved to {config.REWARDS_FILE}")
     
     return rewards_history
-
-
