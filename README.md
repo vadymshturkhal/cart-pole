@@ -53,10 +53,10 @@ python3 main.py
 ```
 
 This will:
-    Train the agent
-    Save rewards to rewards.csv
-    Save the model to trained_qnet.pth
-    Plot the learning curve
+- Train the agent
+- Save rewards to rewards.csv
+- Save the model to trained_qnet.pth
+- Plot the learning curve
 
 ---
 
