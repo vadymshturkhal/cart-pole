@@ -69,7 +69,7 @@ python3 test_trained_agent.py
 
 ## 📊 Results
 
-The following assets are generated automatically with [`generate_assets.py`](generate_assets.py).  
+The following assets are generated automatically with [`generate_assets.py`](generate_assets.py).
 Run the script after training to refresh plots and demos:
 
 ```bash
