@@ -46,7 +46,7 @@ pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 \
 
 ---
 
-## Training
+## 🏋️ Training
 Run training with:
 ```bash
 python3 main.py
@@ -60,7 +60,21 @@ This will:
 
 ---
 
-## Testing & Rendering
+## 🎬 Testing & Rendering
 ```bash
 python3 test_trained_agent.py
 ```
+
+---
+
+## ⚙️ Config
+All hyperparameters are centralized in config.py, including:
+- Neural network architecture (hidden layers, activation, dropout)
+- Training parameters (learning rate, gamma, batch size)
+- Exploration (epsilon start, end, decay rate)
+- File paths for saving rewards & model
+
+---
+
+## 📚 References
+- Sutton & Barto — *Reinforcement Learning: An Introduction*
