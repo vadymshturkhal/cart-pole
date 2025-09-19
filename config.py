@@ -32,3 +32,4 @@ EPSILON_DECAY = 10000
 
 # Logs
 LOG_AFTER_EPISODES = 20
+LOG_DIR = "runs/cartpole_nstep"

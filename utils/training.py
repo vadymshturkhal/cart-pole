@@ -3,8 +3,8 @@ import pandas as pd
 from torch.utils.tensorboard import SummaryWriter
 
 
-def train(env, agent, episodes=config.EPISODES, target_update=config.TARGET_UPDATE_FREQ, log_dir="runs/cartpole_nstep"):
-    writer = SummaryWriter(log_dir=log_dir)
+def train(env, agent, episodes=config.EPISODES, target_update=config.TARGET_UPDATE_FREQ):
+    writer = SummaryWriter(log_dir=config.LOG_DIR)
     rewards_history = []
     
     for ep in range(episodes):
