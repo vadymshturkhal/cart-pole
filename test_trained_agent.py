@@ -1,6 +1,6 @@
 import gymnasium as gym
 import config
-from agents.nstep_agent import NStepQLearningAgent
+from agents.nstep_ddqn_agent import NStepDoubleDeepQLearningAgent
 import torch
 from utils.plotting import plot_rewards
 import os
@@ -14,7 +14,7 @@ def render_trained_agent(episodes=3):
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.n
     
-    agent = NStepQLearningAgent(state_dim, action_dim)
+    agent = NStepDoubleDeepQLearningAgent(state_dim, action_dim)
     agent.q_net.load_state_dict(torch.load(config.MODEL_FILE, map_location=config.DEVICE))
     agent.q_net.eval()
     
