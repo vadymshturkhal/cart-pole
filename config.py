@@ -8,6 +8,7 @@ SEED = 42
 # File management
 REWARDS_FILE = "rewards.csv"
 MODEL_FILE = "trained_qnet.pth"
+TRAINED_MODELS_FOLDER = "trained_models"
 
 # Neural network architecture
 HIDDEN_LAYERS = [256, 128]     # list of hidden layer sizes
@@ -33,3 +34,5 @@ EPSILON_DECAY = 10000
 # Logs
 LOG_AFTER_EPISODES = 20
 LOG_DIR = "runs/cartpole_nstep"
+
+TARGET_UPDATE = 10   # update target net every 10 episodes
