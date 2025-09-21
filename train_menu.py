@@ -267,6 +267,20 @@ def main():
         pygame.time.wait(3000)
 
     env.close()
+
+    # === Post-training loop ===
+    running = True
+    clock = pygame.time.Clock()
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            else:
+                # Keep sidebar interactive even after training
+                progress_callback(len(rewards)-1, config.EPISODES, rewards[-1], rewards)
+
+        clock.tick(30)  # refresh ~30 FPS
+
     pygame.quit()
 
 
