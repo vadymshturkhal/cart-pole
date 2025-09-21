@@ -12,29 +12,54 @@ from utils.training import train_episode, train
 from utils.plotting import plot_rewards
 
 
+SCROLL_OFFSET = 0
+
+
 def progress_callback(ep, episodes, ep_reward, rewards):
     screen.fill(WHITE)
 
+    # === Main progress ===
     title = font.render(f"Training {ep+1}/{episodes}", True, BLACK)
-    screen.blit(title, (WIDTH // 2 - title.get_width() // 2, 120))
-
-    reward_txt = small_font.render(f"Episode reward: {ep_reward:.1f}", True, BLACK)
-    screen.blit(reward_txt, (WIDTH // 2 - reward_txt.get_width() // 2, 170))
+    screen.blit(title, (WIDTH // 2 - title.get_width() // 2 - 100, 30))
 
     avg = sum(rewards[-20:]) / min(len(rewards), 20)
-    avg_txt = small_font.render(f"Avg reward (last 20): {avg:.1f}", True, BLACK)
-    screen.blit(avg_txt, (WIDTH // 2 - avg_txt.get_width() // 2, 200))
+    avg_txt = small_font.render(f"Avg (last 20): {avg:.1f}", True, BLACK)
+    screen.blit(avg_txt, (WIDTH // 2 - avg_txt.get_width() // 2 - 100, 70))
 
     bar_w = int((ep+1) / episodes * 400)
-    pygame.draw.rect(screen, BLUE, (100, 260, bar_w, 40))
-    pygame.draw.rect(screen, BLACK, (100, 260, 400, 40), 2)
+    pygame.draw.rect(screen, BLUE, (50, 120, bar_w, 30))
+    pygame.draw.rect(screen, BLACK, (50, 120, 400, 30), 2)
+
+    # === Sidebar with episode list ===
+    sidebar_x = 480
+    sidebar_y = 30
+    sidebar_width = 100
+    visible_rows = 15
+
+    # Handle scrolling
+    global SCROLL_OFFSET
+    start_idx = max(0, len(rewards) - visible_rows - SCROLL_OFFSET)
+    end_idx = min(len(rewards), start_idx + visible_rows)
+
+    pygame.draw.rect(screen, GRAY, (sidebar_x, sidebar_y, sidebar_width, 340))
+
+    for i, idx in enumerate(range(start_idx, end_idx)):
+        reward_val = rewards[idx]
+        txt = small_font.render(f"{idx+1}: {reward_val:.0f}", True, BLACK)
+        screen.blit(txt, (sidebar_x + 5, sidebar_y + 5 + i*20))
 
     pygame.display.flip()
 
+    # Input handling (scrolling)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                SCROLL_OFFSET = min(SCROLL_OFFSET+1, len(rewards)-visible_rows)
+            elif event.key == pygame.K_DOWN:
+                SCROLL_OFFSET = max(SCROLL_OFFSET-1, 0)
 
 
 # ============== AGENT FACTORY ==============
@@ -122,6 +147,13 @@ def menu_loop():
                 # Start button
                 if WIDTH // 2 - 100 <= x <= WIDTH // 2 + 100 and 250 <= y <= 310:
                     return agents[selected_agent], render_modes[selected_render]
+                
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                if up_rect.collidepoint(x, y) and scroll_offset > 0:
+                    scroll_offset = min(scroll_offset + 1, max_offset)
+                elif down_rect.collidepoint(x, y) and scroll_offset < max_offset:
+                    scroll_offset = max(scroll_offset - 1, 0)
 
 
 # ============== RENDER AGENT ==============
