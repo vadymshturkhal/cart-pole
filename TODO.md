@@ -9,3 +9,4 @@
 - [x] Add starting menu;
 - [x] Separate console and menu variants;
 - [x] Add sidebar to menu variant;
+- [x] Add scrolling to sidebar;
