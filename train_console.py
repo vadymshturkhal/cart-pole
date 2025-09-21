@@ -16,8 +16,9 @@ def main():
     train(env, agent, episodes=config.EPISODES)
     
     # ✅ Save the trained model to config path
-    torch.save(agent.q_net.state_dict(), config.MODEL_FILE)
-    print(f"✅ Training complete. Model saved to {config.MODEL_FILE}")
+    model_path = f"{config.TRAINED_MODELS_FOLDER}/{config.TRAINED_CONSOLE_MODEL_FILENAME}"
+    torch.save(agent.q_net.state_dict(), model_path)
+    print(f"✅ Training complete. Model saved to {model_path}")
     
     # ✅ Plot from CSV
     plot_rewards(from_file=True)

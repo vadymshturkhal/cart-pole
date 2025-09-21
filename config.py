@@ -7,7 +7,7 @@ SEED = 42
 
 # File management
 REWARDS_FILE = "rewards.csv"
-MODEL_FILE = "trained_qnet.pth"
+TRAINED_CONSOLE_MODEL_FILENAME = "trained_console_qnet.pth"
 TRAINED_MODELS_FOLDER = "trained_models"
 
 # Neural network architecture
