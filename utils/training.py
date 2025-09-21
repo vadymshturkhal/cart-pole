@@ -39,3 +39,20 @@ def train(env, agent, episodes=config.EPISODES, rewards_file=config.REWARDS_FILE
     print(f"✅ Rewards saved to {config.REWARDS_FILE}")
 
     return rewards
+
+def train_episode(env, agent):
+    """Run one training episode and return the total reward."""
+    state, _ = env.reset(seed=config.SEED)
+    done = False
+    total_reward = 0
+
+    while not done:
+        action = agent.select_action(state)
+        next_state, reward, terminated, truncated, _ = env.step(action)
+        done = terminated or truncated
+        agent.memory.push(state, action, reward, next_state, done)
+        agent.update()
+        state = next_state
+        total_reward += reward
+
+    return total_reward
