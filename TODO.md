@@ -2,3 +2,5 @@
 
 - [ ] Add starting menu;
 - [ ] Compare NStepDQN with NStepDDQN;
+- [ ] Separate console and menu variants;
+- [ ] Add sidebar to menu variant;
