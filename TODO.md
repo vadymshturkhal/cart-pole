@@ -2,6 +2,9 @@
 
 - [ ] Compare NStepDQN with NStepDDQN;
 - [ ] Add sidebar to menu variant;
+- [ ] Add global average;
+- [ ] Test menu choosing models for correctness;
+
 
 ## Done
 - [x] Add starting menu;
