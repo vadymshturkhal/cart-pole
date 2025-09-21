@@ -3,6 +3,10 @@
 - [ ] Compare NStepDQN with NStepDDQN;
 - [ ] Add global average;
 - [ ] Test menu choosing models for correctness;
+- [ ] Draggable indicator;
+- [ ] Plotting training curve in training window;
+- [ ] Global average in training window;
+- [ ] Adjusting parameters in starting menu;
 
 
 ## Done
