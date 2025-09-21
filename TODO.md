@@ -3,6 +3,6 @@
 - [ ] Compare NStepDQN with NStepDDQN;
 - [ ] Add sidebar to menu variant;
 
-# Done
+## Done
 - [x] Add starting menu;
 - [x] Separate console and menu variants;
