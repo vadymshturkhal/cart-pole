@@ -7,6 +7,7 @@
 - [ ] Adjusting parameters in starting menu;
 - [ ] Do it optional to print to console using menu training variant;
 - [ ] Add feature to test model after training in menu mode;
+- [ ] Add feature to train or test trained agent to starting menu;
 
 
 
