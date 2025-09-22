@@ -45,6 +45,15 @@ def progress_callback(ep, episodes, ep_reward, rewards):
         pygame.draw.rect(screen, WHITE, (curve_x, curve_y, curve_w, curve_h))
         pygame.draw.rect(screen, BLACK, (curve_x, curve_y, curve_w, curve_h), 1)
 
+        # Axis labels
+        x_label = small_font.render("Episodes", True, BLACK)
+        screen.blit(x_label, (curve_x + curve_w // 2 - x_label.get_width() // 2, curve_y + curve_h + 5))
+
+        y_label = small_font.render("Reward (norm.)", True, BLACK)
+        # Rotate text for vertical axis
+        y_surf = pygame.transform.rotate(y_label, 90)
+        screen.blit(y_surf, (curve_x - 40, curve_y + curve_h // 2 - y_surf.get_height() // 2))
+
         max_r = max(rewards)
         min_r = min(rewards)
         span = max(1, max_r - min_r)
