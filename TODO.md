@@ -7,7 +7,6 @@
 - [ ] Plotting training curve in training window;
 - [ ] Global average in training window;
 - [ ] Adjusting parameters in starting menu;
-- [ ] Update README to use menu or console training variants;
 - [ ] Do it optional to print to console using menu training variant;
 
 
@@ -17,3 +16,4 @@
 - [x] Add sidebar to menu variant;
 - [x] Add scrolling to sidebar;
 - [x] Training menu doesn't close immediately after training;
+- [x] Update README to use menu or console training variants;
