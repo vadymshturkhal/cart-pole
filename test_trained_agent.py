@@ -1,21 +1,22 @@
 import gymnasium as gym
 import config
 from agents.nstep_ddqn_agent import NStepDoubleDeepQLearningAgent
+from agents.nstep_dqn_agent import NStepDeepQLearningAgent
 import torch
-from utils.plotting import plot_rewards
 import os
 
 
 def render_trained_agent(episodes=3):
-    if not os.path.exists(config.MODEL_FILE):
-        raise FileNotFoundError(f"❌ Trained model not found: {config.MODEL_FILE}. Run main.py first.")
+    model_path = f"{config.TRAINED_MODELS_FOLDER}/{config.TRAINED_CONSOLE_MODEL_FILENAME}"
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"❌ Trained model not found: {model_path}. Run main.py first.")
     
     env = gym.make(config.ENV_NAME, render_mode="human")
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.n
     
-    agent = NStepDoubleDeepQLearningAgent(state_dim, action_dim)
-    agent.q_net.load_state_dict(torch.load(config.MODEL_FILE, map_location=config.DEVICE))
+    agent = NStepDeepQLearningAgent(state_dim, action_dim)
+    agent.q_net.load_state_dict(torch.load(model_path, map_location=config.DEVICE))
     agent.q_net.eval()
     
     all_rewards = []
