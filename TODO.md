@@ -7,7 +7,7 @@
 - [ ] Adjusting parameters in starting menu;
 - [ ] Do it optional to print to console using menu training variant;
 - [ ] Add feature to test model after training in menu mode;
-- [ ] Decompose train_menu.py
+
 
 
 ## Done
@@ -19,3 +19,4 @@
 - [x] Update README to use menu or console training variants;
 - [x] Plotting training curve in training window;
 - [x] Global average in training window;
+- [x] Decompose train_menu.py
