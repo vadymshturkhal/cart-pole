@@ -4,8 +4,6 @@
 - [ ] Add global average;
 - [ ] Test menu choosing models for correctness;
 - [ ] Draggable indicator;
-- [ ] Plotting training curve in training window;
-- [ ] Global average in training window;
 - [ ] Adjusting parameters in starting menu;
 - [ ] Do it optional to print to console using menu training variant;
 
@@ -17,3 +15,5 @@
 - [x] Add scrolling to sidebar;
 - [x] Training menu doesn't close immediately after training;
 - [x] Update README to use menu or console training variants;
+- [x] Plotting training curve in training window;
+- [x] Global average in training window;

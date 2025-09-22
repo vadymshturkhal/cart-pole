@@ -24,13 +24,40 @@ def progress_callback(ep, episodes, ep_reward, rewards):
     title = font.render(f"Training {ep+1}/{episodes}", True, BLACK)
     screen.blit(title, (WIDTH // 2 - title.get_width() // 2 - 100, 30))
 
-    avg = sum(rewards[-20:]) / min(len(rewards), 20)
-    avg_txt = small_font.render(f"Avg (last 20): {avg:.1f}", True, BLACK)
-    screen.blit(avg_txt, (WIDTH // 2 - avg_txt.get_width() // 2 - 100, 70))
+     # === Averages ===
+    avg20 = sum(rewards[-20:]) / min(len(rewards), 20)
+    avg20_txt = small_font.render(f"Avg (last 20): {avg20:.1f}", True, BLACK)
+    screen.blit(avg20_txt, (WIDTH // 2 - avg20_txt.get_width() // 2 - 100, 70))
 
+    global_avg = sum(rewards) / len(rewards) if rewards else 0
+    global_avg_txt = small_font.render(f"Global avg: {global_avg:.1f}", True, BLACK)
+    screen.blit(global_avg_txt, (WIDTH // 2 - global_avg_txt.get_width() // 2 - 100, 95))
+
+    # === Progress bar ===
     bar_w = int((ep+1) / episodes * 400)
     pygame.draw.rect(screen, BLUE, (50, 120, bar_w, 30))
     pygame.draw.rect(screen, BLACK, (50, 120, 400, 30), 2)
+
+    # === Training curve under progress bar ===
+    if len(rewards) > 1:
+        curve_x, curve_y = 50, 170
+        curve_w, curve_h = 400, 100
+        pygame.draw.rect(screen, WHITE, (curve_x, curve_y, curve_w, curve_h))
+        pygame.draw.rect(screen, BLACK, (curve_x, curve_y, curve_w, curve_h), 1)
+
+        max_r = max(rewards)
+        min_r = min(rewards)
+        span = max(1, max_r - min_r)
+
+        # Normalize rewards to [0,1] for plotting
+        points = []
+        for i, r in enumerate(rewards):
+            x = curve_x + int(i / max(1, episodes-1) * curve_w)
+            y = curve_y + curve_h - int((r - min_r) / span * curve_h)
+            points.append((x, y))
+
+        if len(points) > 1:
+            pygame.draw.lines(screen, BLUE, False, points, 2)
 
     # === Sidebar with episode list ===
     sidebar_x = 480
