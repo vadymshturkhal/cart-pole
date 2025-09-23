@@ -9,12 +9,14 @@ from ui.progress import progress_callback
 from ui.test_menu import test_menu_loop
 from utils.rendering import render_agent
 
+
 def make_agent(agent_name, state_dim, action_dim):
     if agent_name == "nstep_dqn":
         return NStepDeepQLearningAgent(state_dim, action_dim)
     if agent_name == "nstep_ddqn":
         return NStepDoubleDeepQLearningAgent(state_dim, action_dim)
     raise ValueError(f"Unknown agent: {agent_name}")
+
 
 def main():
     agent_name, render_mode = menu_loop()

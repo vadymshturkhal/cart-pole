@@ -8,8 +8,6 @@
 - [ ] Do it optional to print to console using menu training variant;
 - [ ] Add feature to train or test trained agent to starting menu;
 - [ ] Resolution to config;
-- [ ] More professional GUI;
-
 
 
 ## Done
@@ -23,3 +21,4 @@
 - [x] Global average in training window;
 - [x] Decompose train_menu.py
 - [x] Add feature to test model after training in menu mode;
+- [x] More professional GUI;
