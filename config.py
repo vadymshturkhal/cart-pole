@@ -5,6 +5,10 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 ENV_NAME = "CartPole-v1"
 SEED = 42
 
+# Rendering
+WIDTH = 800
+HEIGHT = 600
+
 # File management
 REWARDS_FILE = "rewards.csv"
 TRAINED_CONSOLE_MODEL_FILENAME = "trained_console_qnet.pth"
@@ -18,7 +22,6 @@ DROPOUT = 0.2             # dropout probability (0.0 = disable)
 # Training
 EPISODES = 500
 TARGET_UPDATE_FREQ = 20
-SUTTON_BARTO_REWARD = False
 
 # Agent
 GAMMA = 0.99
@@ -26,6 +29,7 @@ LR = 1e-3
 BUFFER_SIZE = 10000
 BATCH_SIZE = 64
 N_STEP = 3
+SUTTON_BARTO_REWARD = False
 
 # Exploration
 EPSILON_START = 1.0

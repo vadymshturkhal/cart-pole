@@ -45,7 +45,7 @@ class CartPoleLauncher(QWidget):
         self.plot = RewardPlot()
 
         self.setWindowTitle("CartPole RL Launcher")
-        self.resize(800, 600)
+        self.resize(config.WIDTH, config.HEIGHT)
 
         layout = QVBoxLayout()
 
