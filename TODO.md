@@ -7,6 +7,8 @@
 - [ ] Adjusting parameters in starting menu;
 - [ ] Do it optional to print to console using menu training variant;
 - [ ] Add feature to train or test trained agent to starting menu;
+- [ ] Change config from menu;
+- [ ] Parameters button in menu;
 
 
 ## Done
