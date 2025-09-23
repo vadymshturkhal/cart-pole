@@ -113,7 +113,13 @@ class CartPoleLauncher(QWidget):
 
         def progress_cb(ep, eps, ep_reward, all_rewards):
             rewards[:] = all_rewards
-            self.status_label.setText(f"Episode {ep+1}/{eps} — Reward {ep_reward:.1f}, Avg(20) {sum(all_rewards[-20:])/min(len(all_rewards),20):.1f}")
+            avg20 = sum(all_rewards[-20:]) / min(len(all_rewards), 20)
+            global_avg = sum(all_rewards) / len(all_rewards)
+
+            self.status_label.setText(
+                f"Episode {ep+1}/{eps} — Reward {ep_reward:.1f}, Avg(20): {avg20:.1f}, Global Avg: {global_avg:.1f}"
+            )
+
             self.plot.update_plot(all_rewards, eps)
             QApplication.processEvents()  # refresh GUI
 
