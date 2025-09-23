@@ -1,11 +1,17 @@
 import os, imageio, torch, time
 import config
+import pygame
+
 
 def render_agent(env, agent, mode="human", episodes=3, out_path="docs/cartpole.gif"):
     rewards = []
     frames = []
+    quit_flag = False
 
     for ep in range(episodes):
+        if quit_flag:
+            break
+
         state, _ = env.reset(seed=config.SEED)
         done = False
         total_reward = 0
@@ -23,6 +29,14 @@ def render_agent(env, agent, mode="human", episodes=3, out_path="docs/cartpole.g
 
             if mode == "human":
                 time.sleep(1/60)  # slow down for visibility (~60 FPS)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    done = True
+                    quit_flag = True
+
+            if quit_flag:
+                break
 
         print(f"🎬 Episode {ep+1}, Reward: {total_reward}")
         rewards.append(total_reward)

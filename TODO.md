@@ -22,3 +22,4 @@
 - [x] Add feature to test model after training in menu mode;
 - [x] More professional GUI;
 - [x] Resolution to config;
+- [x] Fixed closing Cart Pole human mode window;
