@@ -18,6 +18,7 @@ DROPOUT = 0.2             # dropout probability (0.0 = disable)
 # Training
 EPISODES = 500
 TARGET_UPDATE_FREQ = 20
+SUTTON_BARTO_REWARD = False
 
 # Agent
 GAMMA = 0.99
