@@ -26,3 +26,4 @@
 - [x] Fixed closing Cart Pole human mode window;
 - [x] Parameters button in menu;
 - [x] Update agent's api for using hyperparameters from menu;
+- [x] Decomposed train_qt_menu.py
