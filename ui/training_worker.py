@@ -4,6 +4,7 @@ import config
 from utils.training import train
 from utils.plotting import plot_rewards
 
+
 class TrainingWorker(QObject):
     progress = Signal(int, int, float, list)  # ep, episodes, ep_reward, rewards
     finished = Signal(list)                   # rewards when done
@@ -25,7 +26,7 @@ class TrainingWorker(QObject):
         # Save model & plot after training
         os.makedirs(config.TRAINED_MODELS_FOLDER, exist_ok=True)
         torch.save(self.agent.q_net.state_dict(), self.model_path)
-        plot_rewards(from_file=False, rewards=rewards)
+        # plot_rewards(from_file=False, rewards=rewards)
         self.finished.emit(rewards)
 
     def _progress_cb(self, ep, episodes, ep_reward, rewards):

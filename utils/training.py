@@ -10,6 +10,9 @@ def train(env, agent, episodes=config.EPISODES, rewards_file=config.REWARDS_FILE
         done = False
         total_reward = 0
 
+        if stop_flag():
+            break
+
         while not done:
             action = agent.select_action(state)
             next_state, reward, terminated, truncated, _ = env.step(action)
@@ -40,13 +43,17 @@ def train(env, agent, episodes=config.EPISODES, rewards_file=config.REWARDS_FILE
 
     return rewards
 
-def train_episode(env, agent):
+
+def train_episode(env, agent, stop_flag=lambda: False):
     """Run one training episode and return the total reward."""
     state, _ = env.reset(seed=config.SEED)
     done = False
     total_reward = 0
 
     while not done:
+        if stop_flag():   # 👈 early stop inside episode
+            break
+
         action = agent.select_action(state)
         next_state, reward, terminated, truncated, _ = env.step(action)
         done = terminated or truncated

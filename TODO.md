@@ -9,7 +9,6 @@
 - [ ] Add feature to train or test trained agent to starting menu;
 - [ ] Change config from menu;
 - [ ] Render mode human doesn't work in Qt menu;
-- [ ] Add stop button;
 - [ ] Add box with plot rewards after training choice;
 
 
@@ -31,3 +30,4 @@
 - [x] Update agent's api for using hyperparameters from menu;
 - [x] Decomposed train_qt_menu.py
 - [x] Start button bug when pushing couple of times;
+- [x] Add stop button;

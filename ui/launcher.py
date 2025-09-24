@@ -65,13 +65,18 @@ class CartPoleLauncher(QWidget):
         # Buttons
         btn_row = QHBoxLayout()
         self.train_btn = QPushButton("Start Training")
+        self.stop_btn = QPushButton("Stop Training")
         self.test_btn = QPushButton("Test Pre-trained Model")
-        btn_row.addWidget(self.train_btn); btn_row.addWidget(self.test_btn)
+        btn_row.addWidget(self.train_btn)
+        btn_row.addWidget(self.stop_btn)
+        btn_row.addWidget(self.test_btn)
+
         layout.addLayout(btn_row)
 
         self.setLayout(layout)
 
         self.train_btn.clicked.connect(self.start_training)
+        self.stop_btn.clicked.connect(self.stop_training)
         self.test_btn.clicked.connect(self.test_model)
 
     def open_hyperparams(self):
@@ -114,6 +119,7 @@ class CartPoleLauncher(QWidget):
         self.training_worker.finished.connect(self.training_thread.quit)
         self.training_worker.finished.connect(self.training_worker.deleteLater)
         self.training_thread.finished.connect(self.training_thread.deleteLater)
+        self.training_thread.finished.connect(self._reset_training_refs)
 
         # Start training
         self.training_thread.start()
@@ -148,3 +154,14 @@ class CartPoleLauncher(QWidget):
         if self.training_worker:
             self.training_worker.stop()
         event.accept()
+
+    def stop_training(self):
+        if self.training_worker:
+            self.training_worker.stop()
+            self.status_label.setText("⏹ Training stopped by user")
+        else:
+            self.status_label.setText("⚠ No training is running")
+
+    def _reset_training_refs(self):
+        self.training_thread = None
+        self.training_worker = None
