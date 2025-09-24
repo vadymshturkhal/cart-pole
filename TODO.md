@@ -8,7 +8,6 @@
 - [ ] Do it optional to print to console using menu training variant;
 - [ ] Add feature to train or test trained agent to starting menu;
 - [ ] Change config from menu;
-- [ ] Start button bug when pushing couple of times;
 - [ ] Render mode human doesn't work in Qt menu;
 
 
@@ -29,3 +28,4 @@
 - [x] Parameters button in menu;
 - [x] Update agent's api for using hyperparameters from menu;
 - [x] Decomposed train_qt_menu.py
+- [x] Start button bug when pushing couple of times;

@@ -8,6 +8,9 @@ from agents.nstep_ddqn_agent import NStepDoubleDeepQLearningAgent
 from utils.training import train
 from utils.plotting import plot_rewards
 from utils.rendering import render_agent
+from PySide6.QtCore import QThread
+from ui.training_worker import TrainingWorker
+
 
 class CartPoleLauncher(QWidget):
     def __init__(self):
@@ -16,6 +19,9 @@ class CartPoleLauncher(QWidget):
 
         self.setWindowTitle("CartPole RL Launcher")
         self.resize(config.WIDTH, config.HEIGHT)
+
+        self.training_thread = None
+        self.training_worker = None 
 
         layout = QVBoxLayout()
         layout.addWidget(self.plot)
@@ -74,6 +80,10 @@ class CartPoleLauncher(QWidget):
             self.hyperparams = dlg.get_params()
 
     def start_training(self):
+        if self.training_thread and self.training_thread.isRunning():
+            self.status_label.setText("⚠ Training already running!")
+            return
+
         agent_name = self.agent_box.currentText()
         render = self.render_box.currentText()
         episodes = self.episodes_box.value()
@@ -88,20 +98,38 @@ class CartPoleLauncher(QWidget):
         else:
             ag = NStepDoubleDeepQLearningAgent(state_dim, action_dim, **params)
 
-        def progress_cb(ep, eps, ep_reward, all_rewards):
-            avg20 = sum(all_rewards[-20:]) / min(len(all_rewards), 20)
-            global_avg = sum(all_rewards) / len(all_rewards)
-            self.status_label.setText(f"Ep {ep+1}/{eps} — R {ep_reward:.1f}, Avg20 {avg20:.1f}, Global {global_avg:.1f}")
-            self.plot.update_plot(all_rewards, eps)
-            QApplication.processEvents()
+        model_path = f"{config.TRAINED_MODELS_FOLDER}/{agent_name}_qnet.pth"
 
-        rewards = train(env, ag, episodes=episodes, progress_cb=progress_cb)
-        os.makedirs(config.TRAINED_MODELS_FOLDER, exist_ok=True)
-        torch.save(ag.q_net.state_dict(), f"{config.TRAINED_MODELS_FOLDER}/{agent_name}_qnet.pth")
-        plot_rewards(from_file=False, rewards=rewards)
-        env.close()
+        # === Create Worker & Thread ===
+        self.training_thread = QThread()
+        self.training_worker = TrainingWorker(env, ag, episodes, model_path)
+        self.training_worker.moveToThread(self.training_thread)
+
+        # Connect signals
+        self.training_thread.started.connect(self.training_worker.run)
+        self.training_worker.progress.connect(self._on_progress)
+        self.training_worker.finished.connect(self._on_finished)
+
+        # Cleanup
+        self.training_worker.finished.connect(self.training_thread.quit)
+        self.training_worker.finished.connect(self.training_worker.deleteLater)
+        self.training_thread.finished.connect(self.training_thread.deleteLater)
+
+        # Start training
+        self.training_thread.start()
+        self.status_label.setText("🚀 Training started...")
+
+    def _on_progress(self, ep, episodes, ep_reward, rewards):
+        avg20 = sum(rewards[-20:]) / min(len(rewards), 20)
+        global_avg = sum(rewards) / len(rewards)
+        self.status_label.setText(
+            f"Ep {ep+1}/{episodes} — R {ep_reward:.1f}, Avg20 {avg20:.1f}, Global {global_avg:.1f}"
+        )
+        self.plot.update_plot(rewards, episodes)
+
+    def _on_finished(self, rewards):
         self.status_label.setText("✅ Training finished!")
-
+        
     def test_model(self):
         model_file, _ = QFileDialog.getOpenFileName(self, "Select Pre-trained Model", "trained_models", "Model Files (*.pth)")
         if not model_file: return
@@ -115,3 +143,8 @@ class CartPoleLauncher(QWidget):
         ag.q_net.eval()
         render_agent(env, ag, mode=render, episodes=5)
         env.close()
+
+    def closeEvent(self, event):
+        if self.training_worker:
+            self.training_worker.stop()
+        event.accept()

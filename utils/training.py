@@ -2,7 +2,7 @@ import config
 import pandas as pd
 
 
-def train(env, agent, episodes=config.EPISODES, rewards_file=config.REWARDS_FILE, progress_cb=None):
+def train(env, agent, episodes=config.EPISODES, rewards_file=config.REWARDS_FILE, progress_cb=None, stop_flag=lambda: False):
     rewards = []
 
     for ep in range(episodes):
