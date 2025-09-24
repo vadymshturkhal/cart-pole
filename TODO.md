@@ -8,6 +8,7 @@
 - [ ] Change config from menu;
 - [ ] Add box with plot rewards after training choice;
 - [ ] Add save button;
+- [ ] Save info about agent's hyperparamaters with model;
 
 
 ## Done
