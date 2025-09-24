@@ -9,19 +9,23 @@ class TrainingWorker(QObject):
     progress = Signal(int, int, float, list)  # ep, episodes, ep_reward, rewards
     finished = Signal(list)                   # rewards when done
 
-    def __init__(self, env, agent, episodes, model_path):
+    def __init__(self, env, agent, episodes, model_path, render=False):
         super().__init__()
         self.env = env
         self.agent = agent
         self.episodes = episodes
         self.model_path = model_path
         self._stop_flag = False
+        self.render = render
 
     @Slot()
     def run(self):
         rewards = train(
-            self.env, self.agent, episodes=self.episodes,
-            progress_cb=self._progress_cb, stop_flag=lambda: self._stop_flag
+            self.env, self.agent, 
+            episodes=self.episodes,
+            progress_cb=self._progress_cb, 
+            stop_flag=lambda: self._stop_flag,
+            render=self.render
         )
         # Save model & plot after training
         os.makedirs(config.TRAINED_MODELS_FOLDER, exist_ok=True)

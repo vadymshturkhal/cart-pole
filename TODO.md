@@ -6,7 +6,6 @@
 - [ ] Do it optional to print to console using menu training variant;
 - [ ] Add feature to train or test trained agent to starting menu;
 - [ ] Change config from menu;
-- [ ] Render mode human doesn't work in Qt menu;
 - [ ] Add box with plot rewards after training choice;
 - [ ] Add save button;
 
@@ -32,3 +31,4 @@
 - [x] Add stop button;
 - [x] Add global average;
 - [x] Adjusting parameters in starting menu;
+- [x] Render mode human works in Qt menu;

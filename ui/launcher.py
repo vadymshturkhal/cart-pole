@@ -92,9 +92,16 @@ class CartPoleLauncher(QWidget):
         agent_name = self.agent_box.currentText()
         render = self.render_box.currentText()
         episodes = self.episodes_box.value()
-        sutton = self.sutton_cb.isChecked()
+        sutton_basrto = self.sutton_cb.isChecked()
 
-        env = gym.make(config.ENV_NAME, sutton_barto_reward=sutton)
+        # set correct render mode
+        if render == "human":
+            env = gym.make(config.ENV_NAME, render_mode="human", sutton_barto_reward=sutton_basrto)
+        elif render in ["gif", "mp4"]:
+            env = gym.make(config.ENV_NAME, render_mode="rgb_array", sutton_barto_reward=sutton_basrto)
+        else:  # off
+            env = gym.make(config.ENV_NAME, sutton_barto_reward=sutton_basrto)
+
         state_dim, action_dim = env.observation_space.shape[0], env.action_space.n
 
         params = self.hyperparams
@@ -107,7 +114,7 @@ class CartPoleLauncher(QWidget):
 
         # === Create Worker & Thread ===
         self.training_thread = QThread()
-        self.training_worker = TrainingWorker(env, ag, episodes, model_path)
+        self.training_worker = TrainingWorker(env, ag, episodes, model_path, render=(render == "human"))
         self.training_worker.moveToThread(self.training_thread)
 
         # Connect signals
@@ -158,6 +165,10 @@ class CartPoleLauncher(QWidget):
     def stop_training(self):
         if self.training_worker:
             self.training_worker.stop()
+            try:
+                self.training_worker.env.close()  # kill the CartPole window in human mode
+            except Exception:
+                pass
             self.status_label.setText("⏹ Training stopped by user")
         else:
             self.status_label.setText("⚠ No training is running")
