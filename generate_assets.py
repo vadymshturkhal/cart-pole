@@ -6,7 +6,7 @@ import gymnasium as gym
 import torch
 
 import config
-from agents.nstep_agent import NStepQLearningAgent
+from agents.nstep_dqn_agent import NStepDeepQLearningAgent
 
 
 def generate_rewards_plot():
@@ -34,16 +34,17 @@ def generate_rewards_plot():
 
 def generate_cartpole_gif(episodes=1, max_frames=500):
     """Render trained agent and save a GIF."""
-    if not os.path.exists(config.MODEL_FILE):
-        print(f"❌ Model file not found: {config.MODEL_FILE}. Run training first.")
+    model_path = f"{config.TRAINED_MODELS_FOLDER}/{config.N_STEP_DQN}"
+    if not os.path.exists(model_path):
+        print(f"❌ Model file not found: {model_path}. Run training first.")
         return
 
     env = gym.make(config.ENV_NAME, render_mode="rgb_array")
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.n
 
-    agent = NStepQLearningAgent(state_dim, action_dim)
-    agent.q_net.load_state_dict(torch.load(config.MODEL_FILE, map_location=config.DEVICE))
+    agent = NStepDeepQLearningAgent(state_dim, action_dim)
+    agent.q_net.load_state_dict(torch.load(model_path, map_location=config.DEVICE))
     agent.q_net.eval()
 
     frames = []

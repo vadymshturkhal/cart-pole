@@ -13,6 +13,7 @@ HEIGHT = 600
 REWARDS_FILE = "rewards.csv"
 TRAINED_CONSOLE_MODEL_FILENAME = "trained_console_qnet.pth"
 TRAINED_MODELS_FOLDER = "trained_models"
+N_STEP_DQN = "nstep_dqn_qnet.pth"
 
 # Neural network architecture
 HIDDEN_LAYERS = [256, 128]     # list of hidden layer sizes
