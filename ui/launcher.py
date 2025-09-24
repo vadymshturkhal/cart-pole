@@ -165,10 +165,6 @@ class CartPoleLauncher(QWidget):
     def stop_training(self):
         if self.training_worker:
             self.training_worker.stop()
-            try:
-                self.training_worker.env.close()  # kill the CartPole window in human mode
-            except Exception:
-                pass
             self.status_label.setText("⏹ Training stopped by user")
         else:
             self.status_label.setText("⚠ No training is running")

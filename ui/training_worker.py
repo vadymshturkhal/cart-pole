@@ -32,6 +32,7 @@ class TrainingWorker(QObject):
         torch.save(self.agent.q_net.state_dict(), self.model_path)
         # plot_rewards(from_file=False, rewards=rewards)
         self.finished.emit(rewards)
+        self.env.close()
 
     def _progress_cb(self, ep, episodes, ep_reward, rewards):
         self.progress.emit(ep, episodes, ep_reward, rewards)
