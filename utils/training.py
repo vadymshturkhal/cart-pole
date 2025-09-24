@@ -2,7 +2,10 @@ import config
 import pandas as pd
 
 
-def train(env, agent, episodes=config.EPISODES, rewards_file=config.REWARDS_FILE, progress_cb=None, stop_flag=lambda: False):
+def train(env, agent, episodes=config.EPISODES,
+          rewards_file=config.REWARDS_FILE,
+          progress_cb=None, stop_flag=lambda: False,
+          render=False):
     rewards = []
 
     for ep in range(episodes):
@@ -23,43 +26,50 @@ def train(env, agent, episodes=config.EPISODES, rewards_file=config.REWARDS_FILE
             state = next_state
             total_reward += reward
 
+            if render:
+                env.render()
+
         rewards.append(total_reward)
 
         # ✅ periodically update target net
         if (ep + 1) % config.TARGET_UPDATE == 0:
             agent.update_target()
 
-        # ✅ callback for pygame
+        # ✅ callback for Qt / pygame menus
         if progress_cb:
             progress_cb(ep, episodes, total_reward, rewards)
 
         if ep % config.LOG_AFTER_EPISODES == 0:
             print(f"Episode {ep}, Reward: {total_reward}")
 
-    # ✅ Save rewards to CSV (path in config)
+    # ✅ Save rewards to CSV
     df = pd.DataFrame({"episode": range(len(rewards)), "reward": rewards})
-    df.to_csv(config.REWARDS_FILE, index=False)
-    print(f"✅ Rewards saved to {config.REWARDS_FILE}")
+    df.to_csv(rewards_file, index=False)
+    print(f"✅ Rewards saved to {rewards_file}")
 
     return rewards
 
 
-def train_episode(env, agent, stop_flag=lambda: False):
+def train_episode(env, agent, stop_flag=lambda: False, render=False):
     """Run one training episode and return the total reward."""
     state, _ = env.reset(seed=config.SEED)
     done = False
     total_reward = 0
 
     while not done:
-        if stop_flag():   # 👈 early stop inside episode
+        if stop_flag():
             break
 
         action = agent.select_action(state)
         next_state, reward, terminated, truncated, _ = env.step(action)
         done = terminated or truncated
+
         agent.memory.push(state, action, reward, next_state, done)
         agent.update()
         state = next_state
         total_reward += reward
+
+    if render and not stop_flag():
+        env.render()
 
     return total_reward
