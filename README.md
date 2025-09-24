@@ -48,7 +48,7 @@ pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 \
 
 ## 🏋️ Training
 
-You can train the agent in **three ways** but second is the most useful:
+You can train the agent in **three ways** but **second one** is the most useful:
 
 ### 1. Console Mode (minimal & script-friendly)
 Run plain console training with::
