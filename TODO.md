@@ -10,6 +10,7 @@
 - [ ] Change config from menu;
 - [ ] Render mode human doesn't work in Qt menu;
 - [ ] Add stop button;
+- [ ] Add box with plot rewards after training choice;
 
 
 ## Done
