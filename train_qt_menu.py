@@ -209,14 +209,15 @@ class CartPoleLauncher(QWidget):
         env = gym.make(config.ENV_NAME, sutton_barto_reward=sutton)
         state_dim, action_dim = env.observation_space.shape[0], env.action_space.n
 
-        gamma = self.gamma_box.value()
-        lr = self.lr_box.value()
-        buffer_size = self.buffer_box.value()
-        batch_size = self.batch_box.value()
-        n_step = self.nstep_box.value()
-        eps_start = self.eps_start_box.value()
-        eps_end = self.eps_end_box.value()
-        eps_decay = self.eps_decay_box.value()
+        params = self.hyperparams
+        gamma = params["gamma"]
+        lr = params["lr"]
+        buffer_size = params["buffer_size"]
+        batch_size = params["batch_size"]
+        n_step = params["n_step"]
+        eps_start = params["eps_start"]
+        eps_end = params["eps_end"]
+        eps_decay = params["eps_decay"]
 
         if agent == "nstep_dqn":
             from agents.nstep_dqn_agent import NStepDeepQLearningAgent

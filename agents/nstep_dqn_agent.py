@@ -9,38 +9,72 @@ import config
 
 
 class NStepDeepQLearningAgent:
-    def __init__(self, state_dim, action_dim):
+    def __init__(self, state_dim, action_dim,
+                 gamma: float = config.GAMMA,
+                 lr: float = config.LR,
+                 buffer_size: int = config.BUFFER_SIZE,
+                 batch_size: int = config.BATCH_SIZE,
+                 n_step: int = config.N_STEP,
+                 eps_start: float = config.EPSILON_START,
+                 eps_end: float = config.EPSILON_END,
+                 eps_decay: int = config.EPSILON_DECAY):
+        """
+        N-step DQN agent.
+
+        Args:
+            state_dim (int): dimension of state space
+            action_dim (int): dimension of action space
+            gamma (float): discount factor
+            lr (float): learning rate
+            buffer_size (int): replay buffer capacity
+            batch_size (int): minibatch size
+            n_step (int): N-step horizon
+            eps_start (float): starting epsilon for exploration
+            eps_end (float): final epsilon
+            eps_decay (int): decay factor for epsilon
+        """
+
+        # Networks
         self.q_net = QNetwork(state_dim, action_dim).to(config.DEVICE)
         self.target_net = QNetwork(state_dim, action_dim).to(config.DEVICE)
         self.target_net.load_state_dict(self.q_net.state_dict())
-        self.optimizer = optim.Adam(self.q_net.parameters(), lr=config.LR)
+        self.optimizer = optim.Adam(self.q_net.parameters(), lr=lr)
+
+        # Replay buffer (use n-step > 1)
+        self.memory = NStepReplayBuffer(buffer_size, n_step, gamma)
         
-        self.memory = NStepReplayBuffer(config.BUFFER_SIZE, config.N_STEP, config.GAMMA)
-        self.gamma = config.GAMMA
-        self.batch_size = config.BATCH_SIZE
+        # Hyperparameters
+        self.gamma = gamma
+        self.batch_size = batch_size
         self.action_dim = action_dim
         self.steps_done = 0
-    
+
+        # Exploration
+        self.eps_start = eps_start
+        self.eps_end = eps_end
+        self.eps_decay = eps_decay
+
     def select_action(self, state, greedy: bool = False):
         """
-        Selects an action given the current state.
-        
+        Select an action from the state.
+
         Args:
-            state: environment state
+            state (ndarray): environment state
             greedy (bool): 
-                - True  → always choose best action (for evaluation/rendering)
-                - False → epsilon-greedy exploration (for training)
+                - True  → always choose best action (evaluation/testing)
+                - False → epsilon-greedy (training)
         """
         if greedy:
             with torch.no_grad():
                 state = torch.FloatTensor(state).unsqueeze(0).to(config.DEVICE)
                 q_values = self.q_net(state)
                 return q_values.argmax().item()
-        
+
         # epsilon-greedy (training mode)
-        eps = config.EPSILON_END + (config.EPSILON_START - config.EPSILON_END) * \
-            np.exp(-1. * self.steps_done / config.EPSILON_DECAY)
+        eps = self.eps_end + (self.eps_start - self.eps_end) * \
+            np.exp(-1.0 * self.steps_done / self.eps_decay)
         self.steps_done += 1
+
         if random.random() < eps:
             return random.randrange(self.action_dim)
         else:
@@ -48,28 +82,28 @@ class NStepDeepQLearningAgent:
                 state = torch.FloatTensor(state).unsqueeze(0).to(config.DEVICE)
                 q_values = self.q_net(state)
                 return q_values.argmax().item()
-    
+
     def update(self):
         if len(self.memory) < self.batch_size:
             return
-        
+
         batch = self.memory.sample(self.batch_size)
-        
+
         states = torch.FloatTensor(batch.state).to(config.DEVICE)
         actions = torch.LongTensor(batch.action).unsqueeze(1).to(config.DEVICE)
         rewards = torch.FloatTensor(batch.reward).to(config.DEVICE)
         next_states = torch.FloatTensor(batch.next_state).to(config.DEVICE)
         dones = torch.FloatTensor(batch.done).to(config.DEVICE)
-        
+
         q_values = self.q_net(states).gather(1, actions).squeeze(1)
         next_q_values = self.target_net(next_states).max(1)[0]
         expected_q = rewards + (1 - dones) * self.gamma * next_q_values
-        
+
         loss = nn.MSELoss()(q_values, expected_q.detach())
-        
+
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-    
+
     def update_target(self):
         self.target_net.load_state_dict(self.q_net.state_dict())

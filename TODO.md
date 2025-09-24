@@ -8,7 +8,6 @@
 - [ ] Do it optional to print to console using menu training variant;
 - [ ] Add feature to train or test trained agent to starting menu;
 - [ ] Change config from menu;
-- [ ] Update agent's api for using hyperparameters from menu;
 
 
 ## Done
@@ -26,3 +25,4 @@
 - [x] Resolution to config;
 - [x] Fixed closing Cart Pole human mode window;
 - [x] Parameters button in menu;
+- [x] Update agent's api for using hyperparameters from menu;
