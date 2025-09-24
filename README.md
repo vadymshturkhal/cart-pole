@@ -74,6 +74,12 @@ This will:
 - Let you scroll through all episode rewards after training
 - Save rewards, model, and plots like the console mode
 
+### 3. Qt Menu Mode (interactive, game-like UI)
+Run the pygame menu with:
+```bash
+python3 train_qt_menu.py
+```
+
 ---
 
 ## 🎬 Testing & Rendering
