@@ -9,6 +9,7 @@
 - [ ] Add feature to train or test trained agent to starting menu;
 - [ ] Change config from menu;
 - [ ] Render mode human doesn't work in Qt menu;
+- [ ] Add stop button;
 
 
 ## Done
