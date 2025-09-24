@@ -1,10 +1,8 @@
 # 📝 TODOs for CartPole N-step Q-learning Repo
 
 - [ ] Compare NStepDQN with NStepDDQN;
-- [ ] Add global average;
 - [ ] Test menu choosing models for correctness;
 - [ ] Draggable indicator;
-- [ ] Adjusting parameters in starting menu;
 - [ ] Do it optional to print to console using menu training variant;
 - [ ] Add feature to train or test trained agent to starting menu;
 - [ ] Change config from menu;
@@ -31,3 +29,5 @@
 - [x] Decomposed train_qt_menu.py
 - [x] Start button bug when pushing couple of times;
 - [x] Add stop button;
+- [x] Add global average;
+- [x] Adjusting parameters in starting menu;
