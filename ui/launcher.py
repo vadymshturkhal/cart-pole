@@ -89,7 +89,7 @@ class CartPoleLauncher(QWidget):
 
     def start_training(self):
         if self.training_thread and self.training_thread.isRunning():
-            self.status_label.setText("⚠ Training already running!")
+            self.status_label.setText("⚠ Training is already running!")
             return
 
         if self.agent_name is None:
