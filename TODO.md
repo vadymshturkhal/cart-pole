@@ -14,7 +14,7 @@
 - [ ] Reorganize GUI test/train buttons and showing model's info;
 - [ ] Remain only off and human rendering modes;
 - [ ] Add button for choosing training environment;
-- [ ] Add quantity for Testing models;
+- [ ] Add quantity of episodes for Testing models;
 
 
 ## Done
