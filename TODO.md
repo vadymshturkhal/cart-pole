@@ -9,6 +9,9 @@
 - [ ] Add box with plot rewards after training choice;
 - [ ] Add save button;
 - [ ] Save info about agent's hyperparamaters with model;
+- [ ] Autosave and save button for trained models;
+- [ ] Save trained models with particular name, descriptions and info about hyperparameters;
+- [ ] Load trained models in additional window with the description of a model;
 
 
 ## Done
