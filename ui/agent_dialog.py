@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QListWidget, QFormLayout, QDoubleSpinBox, QSpinBox, QPushButton
 
+
 class AgentDialog(QDialog):
     def __init__(self, parent=None, defaults=None):
         super().__init__(parent)

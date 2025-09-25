@@ -29,11 +29,19 @@ class CartPoleLauncher(QWidget):
         self.status_label = QLabel("Idle")
         layout.addWidget(self.status_label)
 
-        # === Agent row ===
+        # === Agent row with training controls ===
         agent_row = QHBoxLayout()
+
         self.agent_btn = QPushButton("Choose Agent")
         self.agent_btn.clicked.connect(self.choose_agent)
         agent_row.addWidget(self.agent_btn)
+
+        self.train_btn = QPushButton("Start Training")
+        agent_row.addWidget(self.train_btn)
+
+        self.stop_btn = QPushButton("Stop Training")
+        agent_row.addWidget(self.stop_btn)
+
         layout.addLayout(agent_row)
 
         # Render mode
@@ -45,6 +53,9 @@ class CartPoleLauncher(QWidget):
         layout.addWidget(QLabel("Training Episodes:"))
         self.episodes_box = QSpinBox(); self.episodes_box.setRange(100, 10000); self.episodes_box.setValue(config.EPISODES)
         layout.addWidget(self.episodes_box)
+
+        # Agent's name
+        self.agent_name = None
 
         # Hyperparams defaults
         self.hyperparams = {
@@ -59,16 +70,11 @@ class CartPoleLauncher(QWidget):
         self.sutton_cb.setChecked(config.SUTTON_BARTO_REWARD)
         layout.addWidget(self.sutton_cb)
 
-        # Buttons
-        btn_row = QHBoxLayout()
-        self.train_btn = QPushButton("Start Training")
-        self.stop_btn = QPushButton("Stop Training")
+        # === Test button row ===
+        test_row = QHBoxLayout()
         self.test_btn = QPushButton("Test Pre-trained Model")
-        btn_row.addWidget(self.train_btn)
-        btn_row.addWidget(self.stop_btn)
-        btn_row.addWidget(self.test_btn)
-
-        layout.addLayout(btn_row)
+        test_row.addWidget(self.test_btn)
+        layout.addLayout(test_row)
 
         self.setLayout(layout)
 
@@ -84,6 +90,10 @@ class CartPoleLauncher(QWidget):
     def start_training(self):
         if self.training_thread and self.training_thread.isRunning():
             self.status_label.setText("⚠ Training already running!")
+            return
+
+        if self.agent_name is None:
+            self.status_label.setText("⚠ Please, select Agent to train first by pressing Choose Agent button")
             return
 
         agent_name = self.agent_name
