@@ -12,6 +12,7 @@
 - [ ] Remain only off and human rendering modes;
 - [ ] Add button for choosing training environment;
 - [ ] Add quantity of episodes for Testing models;
+- [ ] Add pause/continue buttons for Agent in training mode;
 
 
 ## Done
