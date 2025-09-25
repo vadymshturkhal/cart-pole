@@ -12,6 +12,7 @@
 - [ ] Autosave and save button for trained models;
 - [ ] Save trained models with particular name, descriptions;
 - [ ] Reorganize GUI test/train buttons and showing model's info;
+- [ ] Remain only off and human rendering modes;
 
 
 ## Done
