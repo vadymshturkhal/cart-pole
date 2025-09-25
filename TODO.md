@@ -10,7 +10,7 @@
 - [ ] Add save button;
 - [ ] Save info about agent's hyperparamaters with model;
 - [ ] Autosave and save button for trained models;
-- [ ] Save trained models with particular name, descriptions and info about hyperparameters;
+- [ ] Save trained models with particular name, descriptions;
 - [ ] Load trained models in additional window with the description of a model;
 
 
@@ -36,3 +36,4 @@
 - [x] Add global average;
 - [x] Adjusting parameters in starting menu;
 - [x] Render mode human works in Qt menu;
+- [x] Save trained models with info about hyperparameters;
