@@ -26,7 +26,7 @@ class CartPoleLauncher(QWidget):
 
         layout = QVBoxLayout()
         layout.addWidget(self.plot)
-        self.status_label = QLabel("Idle")
+        self.status_label = QLabel("Agent:")
         layout.addWidget(self.status_label)
 
         # === Agent row with training controls ===
@@ -42,7 +42,18 @@ class CartPoleLauncher(QWidget):
         self.stop_btn = QPushButton("Stop Training")
         agent_row.addWidget(self.stop_btn)
 
+        # Sutton reward
+        self.sutton_cb = QCheckBox("Use Sutton - Barto reward")
+        self.sutton_cb.setChecked(config.SUTTON_BARTO_REWARD)
+        agent_row.addWidget(self.sutton_cb)
+
         layout.addLayout(agent_row)
+
+        # === Test button row ===
+        test_row = QHBoxLayout()
+        self.test_btn = QPushButton("Test Pre-trained Model")
+        test_row.addWidget(self.test_btn)
+        layout.addLayout(test_row)
 
         # Render mode
         layout.addWidget(QLabel("Rendering Mode:"))
@@ -64,17 +75,6 @@ class CartPoleLauncher(QWidget):
             "n_step": config.N_STEP, "eps_start": config.EPSILON_START,
             "eps_end": config.EPSILON_END, "eps_decay": config.EPSILON_DECAY,
         }
-
-        # Sutton reward
-        self.sutton_cb = QCheckBox("Use Sutton & Barto reward")
-        self.sutton_cb.setChecked(config.SUTTON_BARTO_REWARD)
-        layout.addWidget(self.sutton_cb)
-
-        # === Test button row ===
-        test_row = QHBoxLayout()
-        self.test_btn = QPushButton("Test Pre-trained Model")
-        test_row.addWidget(self.test_btn)
-        layout.addLayout(test_row)
 
         self.setLayout(layout)
 
