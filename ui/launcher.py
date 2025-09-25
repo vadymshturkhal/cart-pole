@@ -1,12 +1,12 @@
-import os, torch, gymnasium as gym
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QSpinBox, QHBoxLayout, QFileDialog, QCheckBox, QApplication
+import torch
+import gymnasium as gym
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QSpinBox, QHBoxLayout, QCheckBox
 import config
+from ui.agent_dialog import AgentDialog
 from ui.hyperparams_dialog import HyperparamsDialog
 from ui.reward_plot import RewardPlot
 from agents.nstep_dqn_agent import NStepDeepQLearningAgent
 from agents.nstep_ddqn_agent import NStepDoubleDeepQLearningAgent
-from utils.training import train
-from utils.plotting import plot_rewards
 from utils.rendering import render_agent
 from PySide6.QtCore import QThread
 from ui.training_worker import TrainingWorker
@@ -31,13 +31,9 @@ class CartPoleLauncher(QWidget):
 
         # === Agent row ===
         agent_row = QHBoxLayout()
-        self.agent_box = QComboBox(); self.agent_box.addItems(["nstep_dqn", "nstep_ddqn"]); self.agent_box.setMaximumWidth(200)
-        agent_row.addWidget(QLabel("Choose Agent:"))
-        agent_row.addWidget(self.agent_box)
-
-        self.hyper_btn = QPushButton("Hyperparameters")
-        self.hyper_btn.clicked.connect(self.open_hyperparams)
-        agent_row.addWidget(self.hyper_btn)
+        self.agent_btn = QPushButton("Choose Agent")
+        self.agent_btn.clicked.connect(self.choose_agent)
+        agent_row.addWidget(self.agent_btn)
         layout.addLayout(agent_row)
 
         # Render mode
@@ -90,7 +86,7 @@ class CartPoleLauncher(QWidget):
             self.status_label.setText("⚠ Training already running!")
             return
 
-        agent_name = self.agent_box.currentText()
+        agent_name = self.agent_name
         render = self.render_box.currentText()
         episodes = self.episodes_box.value()
         sutton_basrto = self.sutton_cb.isChecked()
@@ -154,7 +150,7 @@ class CartPoleLauncher(QWidget):
 
             checkpoint = torch.load(model_file, map_location=config.DEVICE)
 
-            agent_name = self.agent_box.currentText()
+            agent_name = self.agent_name
             render = self.render_box.currentText()
 
             env = gym.make(config.ENV_NAME, render_mode="rgb_array" if render in ["gif","mp4"] else "human")
@@ -189,3 +185,11 @@ class CartPoleLauncher(QWidget):
     def _reset_training_refs(self):
         self.training_thread = None
         self.training_worker = None
+
+    def choose_agent(self):
+        dlg = AgentDialog(self, defaults=self.hyperparams)
+        if dlg.exec():
+            agent, hps = dlg.get_selection()
+            self.agent_name = agent
+            self.hyperparams = hps
+            self.agent_btn.setText(agent)  # show chosen agent
