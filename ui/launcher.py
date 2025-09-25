@@ -93,7 +93,7 @@ class CartPoleLauncher(QWidget):
             return
 
         if self.agent_name is None:
-            self.status_label.setText("⚠ Please, select Agent to train first by pressing Choose Agent button")
+            self.status_label.setText("⚠ Please select an agent to train first by pressing the Choose Agent button")
             return
 
         agent_name = self.agent_name
