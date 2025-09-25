@@ -10,6 +10,7 @@ from utils.plotting import plot_rewards
 from utils.rendering import render_agent
 from PySide6.QtCore import QThread
 from ui.training_worker import TrainingWorker
+from ui.test_model_dialog import TestModelDialog
 
 
 class CartPoleLauncher(QWidget):
@@ -144,26 +145,34 @@ class CartPoleLauncher(QWidget):
         self.status_label.setText("✅ Training finished!")
         
     def test_model(self):
-        model_file, _ = QFileDialog.getOpenFileName(self, "Select Pre-trained Model", "trained_models", "Model Files (*.pth)")
-        if not model_file: return
-        agent_name = self.agent_box.currentText()
-        render = self.render_box.currentText()
-        env = gym.make(config.ENV_NAME, render_mode="rgb_array" if render in ["gif","mp4"] else "human")
-        state_dim, action_dim = env.observation_space.shape[0], env.action_space.n
-        
-        if agent_name == "nstep_dqn": 
-            agent = NStepDeepQLearningAgent(state_dim, action_dim, **self.hyperparams)
-        else: 
-            agent = NStepDoubleDeepQLearningAgent(state_dim, action_dim, **self.hyperparams)
-        
-        checkpoint = torch.load(model_file, map_location=config.DEVICE)
-        agent.q_net.load_state_dict(checkpoint["model_state"])
-        print("✅ Loaded model with hyperparams:", checkpoint.get("hyperparams", {}))
-        print("📊 Episodes trained:", checkpoint.get("episodes_trained", "N/A"))
+        dlg = TestModelDialog("trained_models")
+        if dlg.exec():
+            model_file = dlg.get_selected()
 
-        agent.q_net.eval()
-        render_agent(env, agent, mode=render, episodes=5)
-        env.close()
+            if not model_file:
+                return
+
+            checkpoint = torch.load(model_file, map_location=config.DEVICE)
+
+            agent_name = self.agent_box.currentText()
+            render = self.render_box.currentText()
+
+            env = gym.make(config.ENV_NAME, render_mode="rgb_array" if render in ["gif","mp4"] else "human")
+            state_dim, action_dim = env.observation_space.shape[0], env.action_space.n
+
+            if agent_name == "nstep_dqn":
+                ag = NStepDeepQLearningAgent(state_dim, action_dim, **self.hyperparams)
+            else:
+                ag = NStepDoubleDeepQLearningAgent(state_dim, action_dim, **self.hyperparams)
+
+            if isinstance(checkpoint, dict) and "model_state" in checkpoint:
+                ag.q_net.load_state_dict(checkpoint["model_state"])
+            else:  # legacy
+                ag.q_net.load_state_dict(checkpoint)
+
+            ag.q_net.eval()
+            render_agent(env, ag, mode=render, episodes=5)
+            env.close()
 
     def closeEvent(self, event):
         if self.training_worker:
