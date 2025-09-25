@@ -106,15 +106,15 @@ class CartPoleLauncher(QWidget):
 
         params = self.hyperparams
         if agent_name == "nstep_dqn":
-            ag = NStepDeepQLearningAgent(state_dim, action_dim, **params)
+            agent = NStepDeepQLearningAgent(state_dim, action_dim, **params)
         else:
-            ag = NStepDoubleDeepQLearningAgent(state_dim, action_dim, **params)
+            agent = NStepDoubleDeepQLearningAgent(state_dim, action_dim, **params)
 
         model_path = f"{config.TRAINED_MODELS_FOLDER}/{agent_name}_qnet.pth"
 
         # === Create Worker & Thread ===
         self.training_thread = QThread()
-        self.training_worker = TrainingWorker(env, ag, episodes, model_path, render=(render == "human"))
+        self.training_worker = TrainingWorker(env, agent, episodes, model_path, render=(render == "human"))
         self.training_worker.moveToThread(self.training_thread)
 
         # Connect signals
@@ -150,11 +150,19 @@ class CartPoleLauncher(QWidget):
         render = self.render_box.currentText()
         env = gym.make(config.ENV_NAME, render_mode="rgb_array" if render in ["gif","mp4"] else "human")
         state_dim, action_dim = env.observation_space.shape[0], env.action_space.n
-        if agent_name == "nstep_dqn": ag = NStepDeepQLearningAgent(state_dim, action_dim, **self.hyperparams)
-        else: ag = NStepDoubleDeepQLearningAgent(state_dim, action_dim, **self.hyperparams)
-        ag.q_net.load_state_dict(torch.load(model_file, map_location=config.DEVICE))
-        ag.q_net.eval()
-        render_agent(env, ag, mode=render, episodes=5)
+        
+        if agent_name == "nstep_dqn": 
+            agent = NStepDeepQLearningAgent(state_dim, action_dim, **self.hyperparams)
+        else: 
+            agent = NStepDoubleDeepQLearningAgent(state_dim, action_dim, **self.hyperparams)
+        
+        checkpoint = torch.load(model_file, map_location=config.DEVICE)
+        agent.q_net.load_state_dict(checkpoint["model_state"])
+        print("✅ Loaded model with hyperparams:", checkpoint.get("hyperparams", {}))
+        print("📊 Episodes trained:", checkpoint.get("episodes_trained", "N/A"))
+
+        agent.q_net.eval()
+        render_agent(env, agent, mode=render, episodes=5)
         env.close()
 
     def closeEvent(self, event):

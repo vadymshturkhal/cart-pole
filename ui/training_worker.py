@@ -29,9 +29,26 @@ class TrainingWorker(QObject):
         )
         # Save model & plot after training
         os.makedirs(config.TRAINED_MODELS_FOLDER, exist_ok=True)
-        torch.save(self.agent.q_net.state_dict(), self.model_path)
-        # plot_rewards(from_file=False, rewards=rewards)
+
+        checkpoint = {
+            "model_state": self.agent.q_net.state_dict(),
+            "hyperparams": {
+                "gamma": self.agent.gamma,
+                "lr": self.agent.optimizer.param_groups[0]["lr"],
+                "buffer_size": getattr(self.agent.memory.buffer, "maxlen", None),
+                "batch_size": self.agent.batch_size,
+                "n_step": getattr(self.agent.memory, "n_step", None),
+                "eps_start": self.agent.eps_start,
+                "eps_end": self.agent.eps_end,
+                "eps_decay": self.agent.eps_decay,
+            },
+            "episodes_trained": len(rewards),
+        }
+
+        torch.save(checkpoint, self.model_path)
         self.finished.emit(rewards)
+
+        # plot_rewards(from_file=False, rewards=rewards)
         self.env.close()
 
     def _progress_cb(self, ep, episodes, ep_reward, rewards):
