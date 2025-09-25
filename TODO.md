@@ -4,14 +4,11 @@
 - [ ] Test menu choosing models for correctness;
 - [ ] Draggable indicator;
 - [ ] Do it optional to print to console using menu training variant;
-- [ ] Add feature to train or test trained agent to starting menu;
 - [ ] Change config from menu;
 - [ ] Add box with plot rewards after training choice;
 - [ ] Add save button;
-- [ ] Save info about agent's hyperparamaters with model;
 - [ ] Autosave and save button for trained models;
 - [ ] Save trained models with particular name, descriptions;
-- [ ] Reorganize GUI test/train buttons and showing model's info;
 - [ ] Remain only off and human rendering modes;
 - [ ] Add button for choosing training environment;
 - [ ] Add quantity of episodes for Testing models;
@@ -41,3 +38,6 @@
 - [x] Render mode human works in Qt menu;
 - [x] Save trained models with info about hyperparameters;
 - [x] Load trained models in additional window with the description of a model;
+- [x] Reorganize GUI test/train buttons and showing model's info;
+- [x] Save info about agent's hyperparamaters with model;
+- [x] Add feature to train or test trained agent to starting menu;
