@@ -1,5 +1,7 @@
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+import config
+
 
 class RewardPlot(FigureCanvas):
     def __init__(self):
@@ -10,6 +12,8 @@ class RewardPlot(FigureCanvas):
         self.ax.set_xlabel("Episode")
         self.ax.set_ylabel("Reward (normalized)")
         self.line, = self.ax.plot([], [], color="blue")
+        self.ax.set_xlim(0, config.EPISODES)
+        self.ax.set_ylim(0, 1.0)
         self.rewards = []
 
     def update_plot(self, rewards, episodes):
