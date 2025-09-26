@@ -14,8 +14,10 @@ class TestModelDialog(QDialog):
 
         self.list_widget = QListWidget()
         self.models = [f for f in os.listdir(folder) if f.endswith(".pth")]
+
         for m in self.models:
             self.list_widget.addItem(m)
+
         self.layout.addWidget(self.list_widget)
 
         self.info_label = QLabel("Model info will appear here.")
@@ -35,10 +37,16 @@ class TestModelDialog(QDialog):
             checkpoint = torch.load(path, map_location=config.DEVICE)
             if isinstance(checkpoint, dict) and "hyperparams" in checkpoint:
                 hps = checkpoint["hyperparams"]
-                episodes = checkpoint.get("episodes_trained", "N/A")
-                info = f"<b>Hyperparams:</b> {hps}<br><b>Episodes:</b> {episodes}"
+                episodes_trained = checkpoint.get("episodes_trained", "N/A")
+                episodes_total = checkpoint.get("episodes_total", "N/A")
+
+                if episodes_total != "N/A":
+                    info = f"<b>Hyperparams:</b> {hps}<br><b>Episodes:</b> {episodes_trained}/{episodes_total}"
+                else:
+                    info = f"<b>Hyperparams:</b> {hps}<br><b>Episodes:</b> {episodes_trained}"
             else:
                 info = "⚠ Legacy model — no metadata available"
+
         except Exception as e:
             info = f"❌ Could not load: {e}"
         self.info_label.setText(info)

@@ -43,6 +43,7 @@ class TrainingWorker(QObject):
                 "eps_decay": self.agent.eps_decay,
             },
             "episodes_trained": len(rewards),
+            "episodes_total": self.episodes,
         }
 
         torch.save(checkpoint, self.model_path)
