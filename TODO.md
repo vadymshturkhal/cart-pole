@@ -16,6 +16,7 @@
 - [ ] Integrate human render to GUI with plot replacement;
 - [ ] Stop Training button must clear the plot;
 - [ ] Add trained episodes/all episodes to model's data;
+- [ ] Test pre-trained model shouldn't open another window, it is better to show the test in another section instead;
 
 
 ## Done
