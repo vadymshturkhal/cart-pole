@@ -6,7 +6,6 @@
 - [ ] Do it optional to print to console using menu training variant;
 - [ ] Change config from menu;
 - [ ] Add box with plot rewards after training choice;
-- [ ] Add save button;
 - [ ] Autosave and save button for trained models;
 - [ ] Save trained models with particular name, descriptions;
 - [ ] Remain only off and human rendering modes;
