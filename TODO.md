@@ -16,6 +16,7 @@
 - [ ] Integrate human render to GUI with plot replacement;
 - [ ] Stop Training button must clear the plot;
 - [ ] Test pre-trained model shouldn't open another window, it is better to show the test in another section instead;
+- [ ] Add rewards section to description of a trained model;
 
 
 ## Done
