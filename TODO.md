@@ -15,6 +15,7 @@
 - [ ] Add pause/continue buttons for Agent in training mode;
 - [ ] Add Change resolution button with save to config;
 - [ ] Integrate human render to GUI with plot replacement;
+- [ ] Stop Training button must clear the plot;
 
 
 ## Done
