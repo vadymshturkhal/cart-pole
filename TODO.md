@@ -15,6 +15,7 @@
 - [ ] Add Change resolution button with save to config;
 - [ ] Integrate human render to GUI with plot replacement;
 - [ ] Stop Training button must clear the plot;
+- [ ] Add trained episodes/all episodes to model's data;
 
 
 ## Done
