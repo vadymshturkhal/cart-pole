@@ -33,7 +33,7 @@ class CartPoleLauncher(QWidget):
         env_row.addWidget(QLabel("Environment:"))
 
         self.env_box = QComboBox()
-        self.env_box.addItems(["CartPole-v1", "MountainCar-v0", "Acrobot-v1"])
+        self.env_box.addItems(config.AVAILABLE_ENVIRONMENTS)
         self.env_box.setCurrentText(config.DEFAULT_ENVIRONMENT)  # default from config
         env_row.addWidget(self.env_box)
 
