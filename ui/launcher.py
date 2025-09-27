@@ -43,11 +43,6 @@ class CartPoleLauncher(QWidget):
         self.stop_btn = QPushButton("Stop Training")
         agent_row.addWidget(self.stop_btn)
 
-        # Sutton reward
-        self.sutton_cb = QCheckBox("Use Sutton - Barto reward")
-        self.sutton_cb.setChecked(config.SUTTON_BARTO_REWARD)
-        agent_row.addWidget(self.sutton_cb)
-
         layout.addLayout(agent_row)
 
         # === Test button row ===
