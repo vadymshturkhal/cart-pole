@@ -24,6 +24,7 @@
 - [ ] Add Model management panel;
 - [ ] More visualizations like epsilon decay, loss or last N episode returns histogram;
 - [ ] Add a log window to capture status messages and scroll through training history (episode rewards, averages);
+- [ ] Decouple hyperparameters from launcher;
 
 
 ## Done
