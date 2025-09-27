@@ -19,6 +19,7 @@
 - [ ] Add rewards section to description of a trained model;
 - [ ] Standardise Agent's API;
 - [ ] Update README.md;
+- [ ] Get rid of train_menu;
 
 
 ## Done
