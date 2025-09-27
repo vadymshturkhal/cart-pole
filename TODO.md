@@ -20,7 +20,7 @@
 - [ ] Standardise Agent's API;
 - [ ] Update README.md;
 - [ ] Get rid of train_menu;
-- [ ] Add environment to saved model
+- [ ] Add environment to saved model;
 
 
 ## Done
