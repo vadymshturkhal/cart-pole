@@ -22,6 +22,7 @@
 
 
 ## Done
+- [x] Start decoupling environment from GUI;
 - [x] Add trained episodes/all episodes to model's data;
 - [x] Add starting menu;
 - [x] Separate console and menu variants;
