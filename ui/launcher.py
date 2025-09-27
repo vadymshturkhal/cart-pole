@@ -105,9 +105,8 @@ class CartPoleLauncher(QWidget):
         agent_name = self.agent_name
         render = self.render_box.currentText()
         episodes = self.episodes_box.value()
-        sutton_barto_reward = self.sutton_cb.isChecked()
 
-        env, state_dim, action_dim = create_environment(config.CART_POLE_ENVIRONMENT, render, sutton_barto_reward)
+        env, state_dim, action_dim = create_environment(config.CART_POLE_ENVIRONMENT, render)
 
         params = self.hyperparams
         if agent_name == "nstep_dqn":

@@ -20,7 +20,7 @@ def make_agent(agent_name, state_dim, action_dim):
 
 def main():
     agent_name, render_mode = menu_loop()
-    env = gym.make(config.ENV_NAME)
+    env = gym.make(config.DEFAULT_ENVIRONMENT)
     state_dim, action_dim = env.observation_space.shape[0], env.action_space.n
     agent = make_agent(agent_name, state_dim, action_dim)
     rewards = train(env, agent, episodes=config.EPISODES, progress_cb=progress_callback)
@@ -32,7 +32,7 @@ def main():
     model_file, render_mode, episodes = test_menu_loop()
     model_path = os.path.join(config.TRAINED_MODELS_FOLDER, model_file)
 
-    env = gym.make(config.ENV_NAME, render_mode="rgb_array" if render_mode in ["gif", "mp4"] else "human")
+    env = gym.make(config.DEFAULT_ENVIRONMENT, render_mode="rgb_array" if render_mode in ["gif", "mp4"] else "human")
     agent = make_agent(agent_name, env.observation_space.shape[0], env.action_space.n)
     agent.q_net.load_state_dict(torch.load(model_path, map_location=config.DEVICE))
     agent.q_net.eval()

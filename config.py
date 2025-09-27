@@ -3,7 +3,7 @@ import torch
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-ENV_NAME = "CartPole-v1"
+DEFAULT_ENVIRONMENT = "CartPole-v1"
 CART_POLE_ENVIRONMENT = "CartPole-v1"
 SEED = 42
 

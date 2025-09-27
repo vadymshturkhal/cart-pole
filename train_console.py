@@ -9,7 +9,7 @@ from utils.plotting import plot_rewards
 
 def main():
     print("🚀 Starting training...")
-    env = gym.make(config.ENV_NAME)
+    env = gym.make(config.DEFAULT_ENVIRONMENT)
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.n
     
