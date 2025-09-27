@@ -57,7 +57,8 @@ class CartPoleLauncher(QWidget):
 
         # Render mode
         layout.addWidget(QLabel("Rendering Mode:"))
-        self.render_box = QComboBox(); self.render_box.addItems(["off","human","gif","mp4"])
+        self.render_box = QComboBox(); 
+        self.render_box.addItems(["off","human","gif","mp4"])
         layout.addWidget(self.render_box)
 
         # Episodes
@@ -70,10 +71,14 @@ class CartPoleLauncher(QWidget):
 
         # Hyperparams defaults
         self.hyperparams = {
-            "gamma": config.GAMMA, "lr": config.LR,
-            "buffer_size": config.BUFFER_SIZE, "batch_size": config.BATCH_SIZE,
-            "n_step": config.N_STEP, "eps_start": config.EPSILON_START,
-            "eps_end": config.EPSILON_END, "eps_decay": config.EPSILON_DECAY,
+            "gamma": config.GAMMA, 
+            "lr": config.LR,
+            "buffer_size": config.BUFFER_SIZE, 
+            "batch_size": config.BATCH_SIZE,
+            "n_step": config.N_STEP, 
+            "eps_start": config.EPSILON_START,
+            "eps_end": config.EPSILON_END, 
+            "eps_decay": config.EPSILON_DECAY,
         }
 
         self.setLayout(layout)
@@ -99,15 +104,15 @@ class CartPoleLauncher(QWidget):
         agent_name = self.agent_name
         render = self.render_box.currentText()
         episodes = self.episodes_box.value()
-        sutton_basrto = self.sutton_cb.isChecked()
+        sutton_barto_reward = self.sutton_cb.isChecked()
 
         # set correct render mode
         if render == "human":
-            env = gym.make(config.ENV_NAME, render_mode="human", sutton_barto_reward=sutton_basrto)
+            env = gym.make(config.ENV_NAME, render_mode="human", sutton_barto_reward=sutton_barto_reward)
         elif render in ["gif", "mp4"]:
-            env = gym.make(config.ENV_NAME, render_mode="rgb_array", sutton_barto_reward=sutton_basrto)
+            env = gym.make(config.ENV_NAME, render_mode="rgb_array", sutton_barto_reward=sutton_barto_reward)
         else:  # off
-            env = gym.make(config.ENV_NAME, sutton_barto_reward=sutton_basrto)
+            env = gym.make(config.ENV_NAME, sutton_barto_reward=sutton_barto_reward)
 
         state_dim, action_dim = env.observation_space.shape[0], env.action_space.n
 
