@@ -18,6 +18,7 @@
 - [ ] Test pre-trained model shouldn't open another window, it is better to show the test in another section instead;
 - [ ] Add rewards section to description of a trained model;
 - [ ] Standardise Agent's API;
+- [ ] Update README.md;
 
 
 ## Done
