@@ -27,10 +27,21 @@ class CartPoleLauncher(QWidget):
 
         layout = QVBoxLayout()
         layout.addWidget(self.plot)
-        self.status_label = QLabel("Agent:")
-        layout.addWidget(self.status_label)
+
+        # Environment row
+        env_row = QHBoxLayout()
+        env_row.addWidget(QLabel("Environment:"))
+
+        self.env_box = QComboBox()
+        self.env_box.addItems(["CartPole-v1", "MountainCar-v0", "Acrobot-v1"])
+        self.env_box.setCurrentText(config.DEFAULT_ENVIRONMENT)  # default from config
+        env_row.addWidget(self.env_box)
+
+        layout.addLayout(env_row)
 
         # === Agent row with training controls ===
+        self.status_label = QLabel("Agent:")
+        layout.addWidget(self.status_label)
         agent_row = QHBoxLayout()
 
         self.agent_btn = QPushButton("Choose Agent")
@@ -101,7 +112,8 @@ class CartPoleLauncher(QWidget):
         render = self.render_box.currentText()
         episodes = self.episodes_box.value()
 
-        env, state_dim, action_dim = create_environment(config.CART_POLE_ENVIRONMENT, render)
+        env_name = self.env_box.currentText()
+        env, state_dim, action_dim = create_environment(env_name, render)
 
         params = self.hyperparams
         if agent_name == "nstep_dqn":
@@ -153,9 +165,9 @@ class CartPoleLauncher(QWidget):
             checkpoint = torch.load(model_file, map_location=config.DEVICE)
 
             agent_name = self.agent_name
-            render = self.render_box.currentText()
 
-            env, state_dim, action_dim = create_environment(config.CART_POLE_ENVIRONMENT, render='human')
+            env_name = self.env_box.currentText()
+            env, state_dim, action_dim = create_environment(env_name, render='human')
 
             if agent_name == "nstep_dqn":
                 ag = NStepDeepQLearningAgent(state_dim, action_dim, **self.hyperparams)
