@@ -11,7 +11,7 @@ from utils.rendering import render_agent
 from PySide6.QtCore import QThread
 from ui.training_worker import TrainingWorker
 from ui.test_model_dialog import TestModelDialog
-from environments.cart_pole import create_cart_pole_environment
+from environments.factory import create_environment
 
 
 class CartPoleLauncher(QWidget):
@@ -107,7 +107,7 @@ class CartPoleLauncher(QWidget):
         episodes = self.episodes_box.value()
         sutton_barto_reward = self.sutton_cb.isChecked()
 
-        env, state_dim, action_dim = create_cart_pole_environment(render, sutton_barto_reward)
+        env, state_dim, action_dim = create_environment(config.CART_POLE_ENVIRONMENT, render, sutton_barto_reward)
 
         params = self.hyperparams
         if agent_name == "nstep_dqn":
@@ -161,7 +161,7 @@ class CartPoleLauncher(QWidget):
             agent_name = self.agent_name
             render = self.render_box.currentText()
 
-            env, state_dim, action_dim = create_cart_pole_environment(render='human')
+            env, state_dim, action_dim = create_environment(config.CART_POLE_ENVIRONMENT, render='human')
 
             if agent_name == "nstep_dqn":
                 ag = NStepDeepQLearningAgent(state_dim, action_dim, **self.hyperparams)
