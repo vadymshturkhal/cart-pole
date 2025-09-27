@@ -1,4 +1,4 @@
-import os, imageio, torch, time
+import os, imageio, time
 import config
 import pygame
 

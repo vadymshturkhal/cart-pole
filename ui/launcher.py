@@ -11,6 +11,7 @@ from utils.rendering import render_agent
 from PySide6.QtCore import QThread
 from ui.training_worker import TrainingWorker
 from ui.test_model_dialog import TestModelDialog
+from environments.cart_pole import create_cart_pole_environment
 
 
 class CartPoleLauncher(QWidget):
@@ -106,15 +107,7 @@ class CartPoleLauncher(QWidget):
         episodes = self.episodes_box.value()
         sutton_barto_reward = self.sutton_cb.isChecked()
 
-        # set correct render mode
-        if render == "human":
-            env = gym.make(config.ENV_NAME, render_mode="human", sutton_barto_reward=sutton_barto_reward)
-        elif render in ["gif", "mp4"]:
-            env = gym.make(config.ENV_NAME, render_mode="rgb_array", sutton_barto_reward=sutton_barto_reward)
-        else:  # off
-            env = gym.make(config.ENV_NAME, sutton_barto_reward=sutton_barto_reward)
-
-        state_dim, action_dim = env.observation_space.shape[0], env.action_space.n
+        env, state_dim, action_dim = create_cart_pole_environment(render, sutton_barto_reward)
 
         params = self.hyperparams
         if agent_name == "nstep_dqn":
@@ -168,8 +161,7 @@ class CartPoleLauncher(QWidget):
             agent_name = self.agent_name
             render = self.render_box.currentText()
 
-            env = gym.make(config.ENV_NAME, render_mode="rgb_array" if render in ["gif","mp4"] else "human")
-            state_dim, action_dim = env.observation_space.shape[0], env.action_space.n
+            env, state_dim, action_dim = create_cart_pole_environment(render='human')
 
             if agent_name == "nstep_dqn":
                 ag = NStepDeepQLearningAgent(state_dim, action_dim, **self.hyperparams)
@@ -182,7 +174,7 @@ class CartPoleLauncher(QWidget):
                 ag.q_net.load_state_dict(checkpoint)
 
             ag.q_net.eval()
-            render_agent(env, ag, mode=render, episodes=5)
+            render_agent(env, ag, episodes=5)
             env.close()
 
     def closeEvent(self, event):
