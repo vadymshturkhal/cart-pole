@@ -9,8 +9,9 @@ class TrainingWorker(QObject):
     progress = Signal(int, int, float, list)  # ep, episodes, ep_reward, rewards
     finished = Signal(list)                   # rewards when done
 
-    def __init__(self, env, agent, episodes, model_path, render=False):
+    def __init__(self, env_name, env, agent, episodes, model_path, render=False):
         super().__init__()
+        self.env_name = env_name
         self.env = env
         self.agent = agent
         self.episodes = episodes
@@ -44,6 +45,7 @@ class TrainingWorker(QObject):
             },
             "episodes_trained": len(rewards),
             "episodes_total": self.episodes,
+            "environment": self.env_name,
         }
 
         torch.save(checkpoint, self.model_path)

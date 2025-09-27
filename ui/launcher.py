@@ -1,5 +1,4 @@
 import torch
-import gymnasium as gym
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QSpinBox, QHBoxLayout, QCheckBox
 import config
 from ui.agent_dialog import AgentDialog
@@ -125,7 +124,7 @@ class CartPoleLauncher(QWidget):
 
         # === Create Worker & Thread ===
         self.training_thread = QThread()
-        self.training_worker = TrainingWorker(env, agent, episodes, model_path, render=(render == "human"))
+        self.training_worker = TrainingWorker(env_name, env, agent, episodes, model_path, render=(render == "human"))
         self.training_worker.moveToThread(self.training_thread)
 
         # Connect signals
@@ -151,7 +150,7 @@ class CartPoleLauncher(QWidget):
         )
         self.plot.update_plot(rewards, episodes)
 
-    def _on_finished(self, rewards):
+    def _on_finished(self):
         self.status_label.setText("✅ Training finished!")
         
     def test_model(self):

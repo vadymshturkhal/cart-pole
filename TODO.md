@@ -20,7 +20,6 @@
 - [ ] Standardise Agent's API;
 - [ ] Update README.md;
 - [ ] Get rid of train_menu;
-- [ ] Add environment to saved model;
 - [ ] Add Model management panel;
 - [ ] More visualizations like epsilon decay, loss or last N episode returns histogram;
 - [ ] Add a log window to capture status messages and scroll through training history (episode rewards, averages);
@@ -28,6 +27,7 @@
 
 
 ## Done
+- [x] Add environment to saved model;
 - [x] Start decoupling environment from GUI;
 - [x] Add trained episodes/all episodes to model's data;
 - [x] Add starting menu;
