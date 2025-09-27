@@ -25,6 +25,7 @@
 - [ ] Add a log window to capture status messages and scroll through training history (episode rewards, averages);
 - [ ] Decouple hyperparameters from launcher;
 - [ ] Raise error if choose a wrong agent for training in wrong environment;
+- [ ] Add Create Agent section;
 
 
 ## Done
