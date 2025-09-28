@@ -26,6 +26,7 @@
 - [ ] Decouple hyperparameters from launcher;
 - [ ] Raise error if choose a wrong agent for training in wrong environment;
 - [ ] Add Create Agent section;
+- [ ] Add Delete Agent button;
 
 
 ## Done
