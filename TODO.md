@@ -6,8 +6,6 @@
 - [ ] Do it optional to print to console using menu training variant;
 - [ ] Change config from menu;
 - [ ] Add box with plot rewards after training choice;
-- [ ] Autosave and save button for trained models;
-- [ ] Save trained models with particular name, descriptions;
 - [ ] Remain only off and human rendering modes;
 - [ ] Add button for choosing training environment;
 - [ ] Add quantity of episodes for Testing models;
@@ -30,6 +28,8 @@
 
 
 ## Done
+- [x] Autosave and save button for trained models;
+- [x] Save trained models with particular name, descriptions;
 - [x] Add environment to saved model;
 - [x] Start decoupling environment from GUI;
 - [x] Add trained episodes/all episodes to model's data;

@@ -12,6 +12,7 @@ from ui.training_worker import TrainingWorker
 from ui.test_model_dialog import TestModelDialog
 from environments.factory import create_environment
 import datetime
+from PySide6.QtWidgets import QFileDialog
 
 
 class CartPoleLauncher(QWidget):
@@ -61,6 +62,12 @@ class CartPoleLauncher(QWidget):
         self.test_btn = QPushButton("Test Pre-trained Model")
         test_row.addWidget(self.test_btn)
         layout.addLayout(test_row)
+
+        self.save_btn = QPushButton("Save Agent As...")
+        self.save_btn.setEnabled(False)  # disabled until training/test agent exists
+        layout.addWidget(self.save_btn)
+
+        self.save_btn.clicked.connect(self.save_agent_as)
 
         # Render mode
         layout.addWidget(QLabel("Rendering Mode:"))
@@ -126,7 +133,7 @@ class CartPoleLauncher(QWidget):
 
         # === Create Worker & Thread ===
         self.training_thread = QThread()
-        self.training_worker = TrainingWorker(env_name, env, agent, episodes, model_path, render=(render == "human"))
+        self.training_worker = TrainingWorker(env_name, env, agent_name, agent, episodes, model_path, render=(render == "human"))
         self.training_worker.moveToThread(self.training_thread)
 
         # Connect signals
@@ -152,8 +159,10 @@ class CartPoleLauncher(QWidget):
         )
         self.plot.update_plot(rewards, episodes)
 
-    def _on_finished(self):
+    def _on_finished(self, rewards, checkpoint):
         self.status_label.setText("✅ Training finished!")
+        self.last_checkpoint = checkpoint
+        self.save_btn.setEnabled(True)
         
     def test_model(self):
         dlg = TestModelDialog("trained_models")
@@ -207,3 +216,16 @@ class CartPoleLauncher(QWidget):
             self.agent_name = agent
             self.hyperparams = hps
             self.agent_btn.setText(agent)  # show chosen agent
+
+    def save_agent_as(self):
+        if not hasattr(self, "last_checkpoint"):
+            self.status_label.setText("⚠ No trained agent to save")
+            return
+
+        # Suggest default filename with timestamp
+        default_name = f"{self.last_checkpoint['agent_name']}_{self.last_checkpoint['environment']}.pth"
+        path, _ = QFileDialog.getSaveFileName(self, "Save Agent", f"trained_models/{default_name}", "Model Files (*.pth)")
+
+        if path:
+            torch.save(self.last_checkpoint, path)
+            self.status_label.setText(f"✅ Agent saved as {path}")

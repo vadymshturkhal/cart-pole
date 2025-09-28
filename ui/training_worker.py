@@ -3,16 +3,18 @@ import torch, os
 import config
 from utils.training import train
 from utils.plotting import plot_rewards
+from collections import OrderedDict
 
 
 class TrainingWorker(QObject):
     progress = Signal(int, int, float, list)  # ep, episodes, ep_reward, rewards
-    finished = Signal(list)                   # rewards when done
+    finished = Signal(list, dict) # rewards and checkpoint
 
-    def __init__(self, env_name, env, agent, episodes, model_path, render=False):
+    def __init__(self, env_name, env, agent_name, agent, episodes, model_path, render=False):
         super().__init__()
         self.env_name = env_name
         self.env = env
+        self.agent_name = agent_name
         self.agent = agent
         self.episodes = episodes
         self.model_path = model_path
@@ -33,7 +35,7 @@ class TrainingWorker(QObject):
 
         checkpoint = {
             "model_state": self.agent.q_net.state_dict(),
-            "hyperparams": {
+            "hyperparams": OrderedDict({
                 "gamma": self.agent.gamma,
                 "lr": self.agent.optimizer.param_groups[0]["lr"],
                 "buffer_size": getattr(self.agent.memory.buffer, "maxlen", None),
@@ -42,14 +44,15 @@ class TrainingWorker(QObject):
                 "eps_start": self.agent.eps_start,
                 "eps_end": self.agent.eps_end,
                 "eps_decay": self.agent.eps_decay,
-            },
+            }),
+            "agent_name": self.agent_name,
             "episodes_trained": len(rewards),
             "episodes_total": self.episodes,
             "environment": self.env_name,
         }
 
         torch.save(checkpoint, self.model_path)
-        self.finished.emit(rewards)
+        self.finished.emit(rewards, checkpoint)
 
         # plot_rewards(from_file=False, rewards=rewards)
         self.env.close()
