@@ -120,7 +120,7 @@ class CartPoleLauncher(QWidget):
         else:
             agent = NStepDoubleDeepQLearningAgent(state_dim, action_dim, **params)
 
-        model_path = f"{config.TRAINED_MODELS_FOLDER}/{agent_name}_qnet.pth"
+        model_path = f"{config.TRAINED_MODELS_FOLDER}/{agent_name}_{env_name}_qnet.pth"
 
         # === Create Worker & Thread ===
         self.training_thread = QThread()
