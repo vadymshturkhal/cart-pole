@@ -11,6 +11,7 @@ from PySide6.QtCore import QThread
 from ui.training_worker import TrainingWorker
 from ui.test_model_dialog import TestModelDialog
 from environments.factory import create_environment
+import datetime
 
 
 class CartPoleLauncher(QWidget):
@@ -120,7 +121,8 @@ class CartPoleLauncher(QWidget):
         else:
             agent = NStepDoubleDeepQLearningAgent(state_dim, action_dim, **params)
 
-        model_path = f"{config.TRAINED_MODELS_FOLDER}/{agent_name}_{env_name}_qnet.pth"
+        timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        model_path = f"{config.TRAINED_MODELS_FOLDER}/{agent_name}_{env_name}_{timestamp}_qnet.pth"
 
         # === Create Worker & Thread ===
         self.training_thread = QThread()
