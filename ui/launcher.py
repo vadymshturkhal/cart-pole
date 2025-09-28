@@ -128,12 +128,13 @@ class CartPoleLauncher(QWidget):
         else:
             agent = NStepDoubleDeepQLearningAgent(state_dim, action_dim, **params)
 
-        timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        model_path = f"{config.TRAINED_MODELS_FOLDER}/{agent_name}_{env_name}_{timestamp}_qnet.pth"
+        # timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        model_path = f"{config.TRAINED_MODELS_FOLDER}/{agent_name}_{env_name}_qnet.pth"
 
         # === Create Worker & Thread ===
         self.training_thread = QThread()
-        self.training_worker = TrainingWorker(env_name, env, agent_name, agent, episodes, model_path, render=(render == "human"))
+        self.training_worker = TrainingWorker(env_name, env, agent_name, agent, episodes, 
+                                              model_path, hyperparams=self.hyperparams, render=(render == "human"))
         self.training_worker.moveToThread(self.training_thread)
 
         # Connect signals
@@ -162,6 +163,7 @@ class CartPoleLauncher(QWidget):
     def _on_finished(self, rewards, checkpoint):
         self.status_label.setText("✅ Training finished!")
         self.last_checkpoint = checkpoint
+        self.last_checkpoint['hyperparams'] = self.hyperparams
         self.save_btn.setEnabled(True)
         
     def test_model(self):
