@@ -128,7 +128,7 @@ class CartPoleLauncher(QWidget):
             agent = NStepDoubleDeepQLearningAgent(state_dim, action_dim, **params)
 
         # timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        model_path = f"{config.TRAINED_MODELS_FOLDER}/{agent_name}_{env_name}_qnet.pth"
+        model_path = f"{config.TRAINED_MODELS_FOLDER}/{env_name}_{agent_name}.pth"
 
         # === Create Worker & Thread ===
         self.training_thread = QThread()
@@ -162,6 +162,8 @@ class CartPoleLauncher(QWidget):
     def _on_finished(self, rewards, checkpoint):
         self.status_label.setText("✅ Training finished!")
         self.last_checkpoint = checkpoint
+
+        # FIXME
         self.last_checkpoint['hyperparams'] = self.hyperparams
         self.save_btn.setEnabled(True)
         
@@ -224,7 +226,7 @@ class CartPoleLauncher(QWidget):
             return
 
         # Suggest default filename with timestamp
-        default_name = f"{self.last_checkpoint['agent_name']}_{self.last_checkpoint['environment']}.pth"
+        default_name = f"{self.last_checkpoint['environment']}_{self.last_checkpoint['agent_name']}.pth"
         path, _ = QFileDialog.getSaveFileName(self, "Save Agent", f"trained_models/{default_name}", "Model Files (*.pth)")
 
         if path:
