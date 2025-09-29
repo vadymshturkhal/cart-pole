@@ -25,7 +25,8 @@ class SettingsDialog(QDialog):
         self.res_combo.addItems(self.resolutions.keys())
 
         # pre-select current resolution
-        current_res = config.RESOLUTION
+        current_cfg = config.load_user_config()
+        current_res = current_cfg.get("RESOLUTION", config.DEFAULTS["RESOLUTION"])
         for name, res in self.resolutions.items():
             if res == current_res:
                 self.res_combo.setCurrentText(name)
