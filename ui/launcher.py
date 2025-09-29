@@ -1,5 +1,8 @@
 import torch
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QSpinBox, QHBoxLayout, QFileDialog
+from PySide6.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel,
+    QComboBox, QSpinBox, QFileDialog, QStackedWidget
+)
 import config
 from agents.nstep_dqn_agent import NStepDeepQLearningAgent
 from agents.nstep_ddqn_agent import NStepDoubleDeepQLearningAgent
@@ -18,95 +21,111 @@ import datetime
 class CartPoleLauncher(QWidget):
     def __init__(self):
         super().__init__()
-        self.plot = RewardPlot()
-
         self.setWindowTitle("CartPole RL Launcher")
         self.resize(*config.RESOLUTION)
 
+        # === Stack of pages ===
+        self.stack = QStackedWidget()
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.stack)
+
+        # Create 3 pages
+        self.main_page = QWidget()
+        self.train_page = QWidget()
+        self.test_page = QWidget()
+
+        self.stack.addWidget(self.main_page)
+        self.stack.addWidget(self.train_page)
+        self.stack.addWidget(self.test_page)
+
+        # Build content
+        self._build_main_page()
+        self._build_train_page()
+        self._build_test_page()
+
+        # Default page
+        self.stack.setCurrentWidget(self.main_page)
+
+        # State
         self.training_thread = None
-        self.training_worker = None 
-
-        layout = QVBoxLayout()
-        layout.addWidget(self.plot)
-
-        # Environment row
-        env_row = QHBoxLayout()
-        env_row.addWidget(QLabel("Environment:"))
-
-        self.env_box = QComboBox()
-        self.env_box.addItems(config.AVAILABLE_ENVIRONMENTS)
-        self.env_box.setCurrentText(config.DEFAULT_ENVIRONMENT)  # default from config
-        env_row.addWidget(self.env_box)
-
-        layout.addLayout(env_row)
-
-        # === Agent row with training controls ===
-        self.status_label = QLabel("Agent:")
-        layout.addWidget(self.status_label)
-        agent_row = QHBoxLayout()
-
-        self.agent_btn = QPushButton("Choose Agent")
-        self.agent_btn.clicked.connect(self.choose_agent)
-        agent_row.addWidget(self.agent_btn)
-
-        self.train_btn = QPushButton("Start Training")
-        agent_row.addWidget(self.train_btn)
-
-        self.stop_btn = QPushButton("Stop Training")
-        agent_row.addWidget(self.stop_btn)
-
-        layout.addLayout(agent_row)
-
-        # === Test button row ===
-        test_row = QHBoxLayout()
-        self.test_btn = QPushButton("Test Pre-trained Model")
-        test_row.addWidget(self.test_btn)
-        layout.addLayout(test_row)
-
-        self.save_btn = QPushButton("Save Agent As...")
-        self.save_btn.setEnabled(False)  # disabled until training/test agent exists
-        layout.addWidget(self.save_btn)
-
-        self.save_btn.clicked.connect(self.save_agent_as)
-
-        # Render mode
-        layout.addWidget(QLabel("Rendering Mode:"))
-        self.render_box = QComboBox(); 
-        self.render_box.addItems(["off","human","gif","mp4"])
-        layout.addWidget(self.render_box)
-
-        # Episodes
-        layout.addWidget(QLabel("Training Episodes:"))
-        self.episodes_box = QSpinBox(); self.episodes_box.setRange(100, 10000); self.episodes_box.setValue(config.EPISODES)
-        layout.addWidget(self.episodes_box)
-
-        # Settings button
-        settings_row = QHBoxLayout()
-        self.settings_btn = QPushButton("Settings")
-        settings_row.addWidget(self.settings_btn)
-        layout.addLayout(settings_row)
-
-        self.settings_btn.clicked.connect(self.open_settings)
-
-        # Agent's name
+        self.training_worker = None
         self.agent_name = None
-
-        # Hyperparams defaults
         self.hyperparams = {
             "gamma": config.GAMMA, 
             "lr": config.LR,
             "buffer_size": config.BUFFER_SIZE, 
             "batch_size": config.BATCH_SIZE,
-            "n_step": config.N_STEP, 
-            "eps_start": config.EPSILON_START,
+            "n_step": config.N_STEP, "eps_start": 
+            config.EPSILON_START,
             "eps_end": config.EPSILON_END, 
             "eps_decay": config.EPSILON_DECAY,
         }
 
-        self.setLayout(layout)
+    # === Pages ===
+    def _build_main_page(self):
+        layout = QVBoxLayout(self.main_page)
 
+        # === Column of big menu buttons ===
+        self.train_page_btn = QPushButton("▶ Train Agent")
+        self.test_page_btn = QPushButton("🎮 Test Agent")
+        self.settings_btn = QPushButton("⚙ Settings")
+
+        # Make buttons taller/wider like a game menu
+        for btn in (self.train_page_btn, self.test_page_btn, self.settings_btn):
+            btn.setMinimumHeight(50)
+            btn.setStyleSheet("font-size: 18px;")  # bigger font
+            layout.addWidget(btn)
+
+        self.train_page_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.train_page))
+        self.test_page_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.test_page))
+        self.settings_btn.clicked.connect(self.open_settings)
+
+    def _build_train_page(self):
+        layout = QVBoxLayout(self.train_page)
+
+        # Plot
+        self.plot = RewardPlot()
+        layout.addWidget(self.plot)
+
+        layout.addWidget(QLabel("Environment:"))
+        self.env_box = QComboBox()
+        self.env_box.addItems(config.AVAILABLE_ENVIRONMENTS)
+        self.env_box.setCurrentText(config.DEFAULT_ENVIRONMENT)
+        layout.addWidget(self.env_box)
+
+        layout.addWidget(QLabel("Agent:"))
+        self.agent_btn = QPushButton("Choose Agent")
+        self.train_btn = QPushButton("Start Training")
+        self.stop_btn = QPushButton("Stop Training")
+        row = QHBoxLayout()
+        row.addWidget(self.agent_btn)
+        row.addWidget(self.train_btn)
+        row.addWidget(self.stop_btn)
+        layout.addLayout(row)
+
+        layout.addWidget(QLabel("Rendering Mode:"))
+        self.render_box = QComboBox()
+        self.render_box.addItems(["off", "human", "gif", "mp4"])
+        layout.addWidget(self.render_box)
+
+        layout.addWidget(QLabel("Training Episodes:"))
+        self.episodes_box = QSpinBox()
+        self.episodes_box.setRange(100, 10000)
+        self.episodes_box.setValue(config.EPISODES)
+        layout.addWidget(self.episodes_box)
+
+        self.status_label = QLabel("Idle")
+        layout.addWidget(self.status_label)
+
+        # Connects
+        self.agent_btn.clicked.connect(self.choose_agent)
         self.train_btn.clicked.connect(self.start_training)
         self.stop_btn.clicked.connect(self.stop_training)
+
+    def _build_test_page(self):
+        layout = QVBoxLayout(self.test_page)
+        self.test_btn = QPushButton("Test Pre-trained Model")
+        layout.addWidget(self.test_btn)
         self.test_btn.clicked.connect(self.test_model)
 
     def open_hyperparams(self):
@@ -253,3 +272,12 @@ class CartPoleLauncher(QWidget):
             if "EPISODES" in values:
                 self.episodes_box.setValue(values["EPISODES"])
                 
+    def open_settings(self):
+        dlg = SettingsDialog(self)
+        if dlg.exec():
+            values = dlg.get_values()
+            config.save_user_config(values)
+            if "RESOLUTION" in values:
+                self.resize(*values["RESOLUTION"])
+            if "EPISODES" in values:
+                self.episodes_box.setValue(values["EPISODES"])
