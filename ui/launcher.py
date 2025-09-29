@@ -20,7 +20,7 @@ class CartPoleLauncher(QWidget):
         self.plot = RewardPlot()
 
         self.setWindowTitle("CartPole RL Launcher")
-        self.resize(config.WIDTH, config.HEIGHT)
+        self.resize(*config.RESOLUTION)
 
         self.training_thread = None
         self.training_worker = None 
