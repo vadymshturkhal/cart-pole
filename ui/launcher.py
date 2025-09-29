@@ -79,6 +79,14 @@ class CartPoleLauncher(QWidget):
         self.episodes_box = QSpinBox(); self.episodes_box.setRange(100, 10000); self.episodes_box.setValue(config.EPISODES)
         layout.addWidget(self.episodes_box)
 
+        # Settings button
+        settings_row = QHBoxLayout()
+        self.settings_btn = QPushButton("Settings")
+        settings_row.addWidget(self.settings_btn)
+        layout.addLayout(settings_row)
+
+        self.settings_btn.clicked.connect(self.open_settings)
+
         # Agent's name
         self.agent_name = None
 
@@ -232,3 +240,16 @@ class CartPoleLauncher(QWidget):
         if path:
             torch.save(self.last_checkpoint, path)
             self.status_label.setText(f"✅ Agent saved as {path}")
+
+    def open_settings(self):
+        from ui.settings_dialog import SettingsDialog
+        dlg = SettingsDialog(self)
+        if dlg.exec():
+            values = dlg.get_values()
+            config.save_user_config(values)
+            # apply changes immediately
+            if "RESOLUTION" in values:
+                self.resize(*values["RESOLUTION"])
+            if "EPISODES" in values:
+                self.episodes_box.setValue(values["EPISODES"])
+                
