@@ -117,6 +117,13 @@ class CartPoleLauncher(QWidget):
         self.status_label = QLabel("Idle")
         layout.addWidget(self.status_label)
 
+        # Back to main menu
+        back_btn = QPushButton("⬅ Back to Main Menu")
+        back_btn.setMinimumHeight(40)
+        back_btn.setStyleSheet("font-size: 16px;")
+        back_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.main_page))
+        layout.addWidget(back_btn)
+
         # Connects
         self.agent_btn.clicked.connect(self.choose_agent)
         self.train_btn.clicked.connect(self.start_training)
@@ -127,6 +134,13 @@ class CartPoleLauncher(QWidget):
         self.test_btn = QPushButton("Test Pre-trained Model")
         layout.addWidget(self.test_btn)
         self.test_btn.clicked.connect(self.test_model)
+
+        # Back to main menu
+        back_btn = QPushButton("⬅ Back to Main Menu")
+        back_btn.setMinimumHeight(40)
+        back_btn.setStyleSheet("font-size: 16px;")
+        layout.addWidget(back_btn)
+        back_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.main_page))
 
     def open_hyperparams(self):
         dlg = HyperparamsDialog(self, defaults=self.hyperparams)
