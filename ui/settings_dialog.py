@@ -1,9 +1,9 @@
-# ui/settings_dialog.py
 from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QComboBox, QSpinBox,
-    QPushButton, QHBoxLayout
+    QDialog, QVBoxLayout, QLabel, QComboBox,
+    QPushButton, QHBoxLayout, QMessageBox
 )
 import config
+
 
 class SettingsDialog(QDialog):
     def __init__(self, parent=None):
@@ -37,14 +37,27 @@ class SettingsDialog(QDialog):
         btns = QHBoxLayout()
         self.ok_btn = QPushButton("Save")
         self.cancel_btn = QPushButton("Cancel")
+        self.restore_btn = QPushButton("Restore Defaults")
         btns.addWidget(self.ok_btn)
         btns.addWidget(self.cancel_btn)
+        btns.addWidget(self.restore_btn)
         layout.addLayout(btns)
 
         self.ok_btn.clicked.connect(self.accept)
         self.cancel_btn.clicked.connect(self.reject)
+        self.restore_btn.clicked.connect(self.restore_defaults)
 
     def get_values(self):
         return {
             "RESOLUTION": self.resolutions[self.res_combo.currentText()],
         }
+
+    def restore_defaults(self):
+        config.restore_defaults()
+        # update combobox to reflect default resolution
+        default_res = config.DEFAULTS["RESOLUTION"]
+        for name, res in self.resolutions.items():
+            if res == default_res:
+                self.res_combo.setCurrentText(name)
+                break
+        QMessageBox.information(self, "Restored", "✅ Defaults restored!")

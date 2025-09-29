@@ -1,13 +1,14 @@
 import torch
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QSpinBox, QHBoxLayout, QFileDialog
 import config
-from ui.agent_dialog import AgentDialog
-from ui.hyperparams_dialog import HyperparamsDialog
-from ui.reward_plot import RewardPlot
 from agents.nstep_dqn_agent import NStepDeepQLearningAgent
 from agents.nstep_ddqn_agent import NStepDoubleDeepQLearningAgent
 from utils.rendering import render_agent
 from PySide6.QtCore import QThread
+from ui.agent_dialog import AgentDialog
+from ui.hyperparams_dialog import HyperparamsDialog
+from ui.reward_plot import RewardPlot
+from ui.settings_dialog import SettingsDialog
 from ui.training_worker import TrainingWorker
 from ui.test_model_dialog import TestModelDialog
 from environments.factory import create_environment
@@ -242,7 +243,6 @@ class CartPoleLauncher(QWidget):
             self.status_label.setText(f"✅ Agent saved as {path}")
 
     def open_settings(self):
-        from ui.settings_dialog import SettingsDialog
         dlg = SettingsDialog(self)
         if dlg.exec():
             values = dlg.get_values()
