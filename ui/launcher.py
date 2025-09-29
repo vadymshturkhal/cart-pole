@@ -179,7 +179,7 @@ class CartPoleLauncher(QWidget):
 
             agent_name = self.agent_name
 
-            env_name = self.env_box.currentText()
+            env_name = checkpoint.get("environment")
             env, state_dim, action_dim = create_environment(env_name, render='human')
 
             if agent_name == "nstep_dqn":
