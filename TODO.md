@@ -22,11 +22,11 @@
 - [ ] More visualizations like epsilon decay, loss or last N episode returns histogram;
 - [ ] Add a log window to capture status messages and scroll through training history (episode rewards, averages);
 - [ ] Decouple hyperparameters from launcher;
-- [ ] Raise error if choose a wrong agent for training in wrong environment;
 - [ ] Add Create Agent section;
 
 
 ## Done
+- [x] Raise error if choose a wrong agent for training in wrong environment (solved by choosing environment from model's data);
 - [x] Add Delete Agent button;
 - [x] Autosave and save button for trained models;
 - [x] Save trained models with particular name, descriptions;
