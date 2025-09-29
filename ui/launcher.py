@@ -1,5 +1,5 @@
 import torch
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QSpinBox, QHBoxLayout, QCheckBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QSpinBox, QHBoxLayout, QFileDialog
 import config
 from ui.agent_dialog import AgentDialog
 from ui.hyperparams_dialog import HyperparamsDialog
@@ -12,7 +12,6 @@ from ui.training_worker import TrainingWorker
 from ui.test_model_dialog import TestModelDialog
 from environments.factory import create_environment
 import datetime
-from PySide6.QtWidgets import QFileDialog
 
 
 class CartPoleLauncher(QWidget):

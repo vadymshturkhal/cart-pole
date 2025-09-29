@@ -1,5 +1,5 @@
 import os, torch, config
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QListWidget, QPushButton
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QListWidget, QPushButton, QHBoxLayout, QMessageBox
 
 class TestModelDialog(QDialog):
     def __init__(self, folder="trained_models"):
@@ -23,13 +23,25 @@ class TestModelDialog(QDialog):
         self.info_label = QLabel("Model info will appear here.")
         self.layout.addWidget(self.info_label)
 
-        self.test_btn = QPushButton("Test Selected Model")
-        self.layout.addWidget(self.test_btn)
+        # self.test_btn = QPushButton("Test Selected Model")
+        # self.layout.addWidget(self.test_btn)
 
         self.list_widget.currentTextChanged.connect(self.show_info)
 
-        self.selected_model = None
-        self.test_btn.clicked.connect(self.accept)
+        # self.selected_model = None
+        # self.test_btn.clicked.connect(self.accept)
+
+        # Model management buttons
+        btn_row = QHBoxLayout()
+        self.test_btn = QPushButton("Test Selected Model")
+        self.delete_btn = QPushButton("Delete Selected Model")
+
+        btn_row.addWidget(self.test_btn)
+        btn_row.addWidget(self.delete_btn)
+        self.layout.addLayout(btn_row)
+
+        self.delete_btn.clicked.connect(self.delete_model)
+
 
     def show_info(self, filename):
         path = os.path.join("trained_models", filename)
@@ -56,3 +68,23 @@ class TestModelDialog(QDialog):
 
     def get_selected(self):
         return self.selected_model
+
+    def delete_model(self):
+        row = self.list_widget.currentRow()
+        if row < 0:
+            QMessageBox.warning(self, "Warning", "⚠ No model selected")
+            return
+
+        model_file = os.path.join(
+            config.TRAINED_MODELS_FOLDER,
+            self.list_widget.item(row).text()
+        )
+
+        try:
+            os.remove(model_file)
+            # QMessageBox.information(self, "Deleted", f"🗑 Deleted {os.path.basename(model_file)}")
+            self.list_widget.takeItem(row)  # remove from list
+            self.info_label.setText("Model info will appear here.")
+            self.selected_model = None
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Could not delete model:\n{e}")

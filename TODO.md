@@ -24,10 +24,10 @@
 - [ ] Decouple hyperparameters from launcher;
 - [ ] Raise error if choose a wrong agent for training in wrong environment;
 - [ ] Add Create Agent section;
-- [ ] Add Delete Agent button;
 
 
 ## Done
+- [x] Add Delete Agent button;
 - [x] Autosave and save button for trained models;
 - [x] Save trained models with particular name, descriptions;
 - [x] Add environment to saved model;
