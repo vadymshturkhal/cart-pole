@@ -22,14 +22,7 @@ class TestModelDialog(QDialog):
 
         self.info_label = QLabel("Model info will appear here.")
         self.layout.addWidget(self.info_label)
-
-        # self.test_btn = QPushButton("Test Selected Model")
-        # self.layout.addWidget(self.test_btn)
-
         self.list_widget.currentTextChanged.connect(self.show_info)
-
-        # self.selected_model = None
-        # self.test_btn.clicked.connect(self.accept)
 
         # Model management buttons
         btn_row = QHBoxLayout()
@@ -40,8 +33,9 @@ class TestModelDialog(QDialog):
         btn_row.addWidget(self.delete_btn)
         self.layout.addLayout(btn_row)
 
+        self.selected_model = None
+        self.test_btn.clicked.connect(self.accept)
         self.delete_btn.clicked.connect(self.delete_model)
-
 
     def show_info(self, filename):
         path = os.path.join("trained_models", filename)
@@ -82,7 +76,6 @@ class TestModelDialog(QDialog):
 
         try:
             os.remove(model_file)
-            # QMessageBox.information(self, "Deleted", f"🗑 Deleted {os.path.basename(model_file)}")
             self.list_widget.takeItem(row)  # remove from list
             self.info_label.setText("Model info will appear here.")
             self.selected_model = None
