@@ -353,13 +353,13 @@ class CartPoleLauncher(QWidget):
                 episodes_trained = checkpoint.get("episodes_trained", "N/A")
                 episodes_total = checkpoint.get("episodes_total", "N/A")
                 hps = checkpoint.get("hyperparams", {})
+                hps_html = "<ul>" + "".join(f"<li>{k}: {v}</li>" for k, v in hps.items()) + "</ul>"
 
-                # ✅ Rich info message
                 info_html = (
                     f"<b>Environment:</b> {env_name}<br>"
                     f"<b>Agent:</b> {agent_name}<br>"
                     f"<b>Episodes:</b> {episodes_trained}/{episodes_total}<br>"
-                    f"<b>Hyperparams:</b> {hps}"
+                    f"<b>Hyperparameters:</b>{hps_html}"
                 )
                 self.env_label.setText(info_html)
 
