@@ -1,7 +1,6 @@
-# ui/env_viewer.py
 from PySide6.QtWidgets import QLabel
 from PySide6.QtGui import QImage, QPixmap
-from PySide6.QtCore import QTimer
+from PySide6.QtCore import QTimer, Qt
 import numpy as np
 
 
@@ -14,6 +13,7 @@ class EnvViewer(QLabel):
         self.fps = fps
         self.timer = QTimer()
         self.timer.timeout.connect(self.step_env)
+        self.setAlignment(Qt.AlignCenter)
 
         self.obs, _ = env.reset()
         self.done = False
