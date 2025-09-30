@@ -4,6 +4,7 @@ from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import QTimer
 import numpy as np
 
+
 class EnvViewer(QLabel):
     def __init__(self, env, agent, episodes=1, fps=30, parent=None):
         super().__init__(parent)
@@ -30,7 +31,7 @@ class EnvViewer(QLabel):
             self.obs, _ = self.env.reset()
             self.done = False
 
-        action = self.agent.select_action(self.obs)  # use policy
+        action = self.agent.select_action(self.obs, greedy=True)  # use policy
         self.obs, _, terminated, truncated, _ = self.env.step(action)
         self.done = terminated or truncated
 
