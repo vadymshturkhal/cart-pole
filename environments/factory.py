@@ -7,7 +7,7 @@ def create_environment(env_name=config.DEFAULT_ENVIRONMENT, render='off'):
 
     if render == "human":
         env = gym.make(env_name, render_mode="human")
-    elif render in ["gif", "mp4"]:
+    elif render in ["gif", "mp4", "rgb_array"]:
         env = gym.make(env_name, render_mode="rgb_array")
     else:  # off
         env = gym.make(env_name)

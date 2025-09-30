@@ -98,10 +98,12 @@ class CartPoleLauncher(QWidget):
         self.agent_btn = QPushButton("Choose Agent")
         self.train_btn = QPushButton("Start Training")
         self.stop_btn = QPushButton("Stop Training")
+        self.save_btn = QPushButton("Save Model")
         row = QHBoxLayout()
         row.addWidget(self.agent_btn)
         row.addWidget(self.train_btn)
         row.addWidget(self.stop_btn)
+        row.addWidget(self.save_btn)
         layout.addLayout(row)
 
         layout.addWidget(QLabel("Rendering Mode:"))
@@ -123,12 +125,14 @@ class CartPoleLauncher(QWidget):
         back_btn.setMinimumHeight(40)
         back_btn.setStyleSheet("font-size: 16px;")
         back_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.main_page))
+        back_btn.clicked.connect(self.stop_viewer_and_back)
         layout.addWidget(back_btn)
 
         # Connects
         self.agent_btn.clicked.connect(self.choose_agent)
         self.train_btn.clicked.connect(self.start_training)
         self.stop_btn.clicked.connect(self.stop_training)
+        self.save_btn.clicked.connect(self.save_agent_as)
 
     def _build_test_page(self):
         layout = QVBoxLayout(self.test_page)
@@ -309,3 +313,9 @@ class CartPoleLauncher(QWidget):
                 self.resize(*values["RESOLUTION"])
             if "EPISODES" in values:
                 self.episodes_box.setValue(values["EPISODES"])
+
+    def stop_viewer_and_back(self):
+        if hasattr(self, "viewer") and self.viewer:
+            self.viewer.stop()
+        self.stack.setCurrentWidget(self.main_page)
+        
