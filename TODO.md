@@ -22,7 +22,8 @@
 - [ ] Add Create Agent section;
 - [ ] Stop rendering after pressing Back to Main button;
 - [ ] In Training section make all buttons except Stop training unavailable during training;
-- [ ] Refactor launcher.py
+- [ ] Refactor launcher.py;
+- [ ] Add logger to Testing section;
 
 
 ## Done
