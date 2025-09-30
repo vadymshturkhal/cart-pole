@@ -14,6 +14,7 @@ from ui.reward_plot import RewardPlot
 from ui.settings_dialog import SettingsDialog
 from ui.training_worker import TrainingWorker
 from ui.test_model_dialog import TestModelDialog
+from ui.env_viewer import EnvViewer
 from environments.factory import create_environment
 import datetime
 
@@ -131,6 +132,12 @@ class CartPoleLauncher(QWidget):
 
     def _build_test_page(self):
         layout = QVBoxLayout(self.test_page)
+
+        # Show environment name
+        self.env_label = QLabel("Environment: (not loaded)")
+        layout.addWidget(self.env_label)
+    
+        # Test Button
         self.test_btn = QPushButton("Test Pre-trained Model")
         layout.addWidget(self.test_btn)
         self.test_btn.clicked.connect(self.test_model)
@@ -222,8 +229,12 @@ class CartPoleLauncher(QWidget):
             agent_name = self.agent_name
 
             env_name = checkpoint.get("environment")
-            env, state_dim, action_dim = create_environment(env_name, render='human')
+            self.env_label.setText(f"Environment: {env_name}")
 
+            # Create environment with rgb_array mode
+            env, state_dim, action_dim = create_environment(env_name, render='rgb_array')
+
+            # Build Agent
             if agent_name == "nstep_dqn":
                 ag = NStepDeepQLearningAgent(state_dim, action_dim, **self.hyperparams)
             else:
@@ -235,8 +246,11 @@ class CartPoleLauncher(QWidget):
                 ag.q_net.load_state_dict(checkpoint)
 
             ag.q_net.eval()
-            render_agent(env, ag, episodes=5)
-            env.close()
+
+            # ✅ Use embedded EnvViewer directly, no blocking call
+            self.viewer = EnvViewer(env, ag, episodes=5, fps=30)
+            self.test_page.layout().insertWidget(1, self.viewer)  # put under env_label
+            self.viewer.start()
 
     def closeEvent(self, event):
         if self.training_worker:
