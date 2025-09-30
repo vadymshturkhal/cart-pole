@@ -345,6 +345,9 @@ class CartPoleLauncher(QWidget):
         if dlg.exec():
             model_file = dlg.get_selected()
             if model_file:
+                # ✅ set button text to model name
+                self.choose_model_btn.setText(model_file.split("/")[-1])  
+
                 self.selected_model_file = model_file
                 checkpoint = torch.load(model_file, map_location=config.DEVICE)
 
@@ -368,6 +371,8 @@ class CartPoleLauncher(QWidget):
                 self.selected_model_file = None
                 self.selected_checkpoint = None
                 self.env_label.setText("⚠ No model selected")
+                # reset button text
+                self.choose_model_btn.setText("Choose Model")
                 
     def start_testing_model(self):
         if not hasattr(self, "selected_checkpoint") or self.selected_checkpoint is None:
