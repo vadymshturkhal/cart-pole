@@ -25,10 +25,10 @@
 - [ ] Add Create Agent section;
 - [ ] Stop rendering after pressing Back to Main button;
 - [ ] In Training section make all buttons except Stop training unavailable during training;
-- [ ] Adjust console training;
 
 
 ## Done
+- [x] Adjust console training;
 - [x] Raise error if choose a wrong agent for training in wrong environment (solved by choosing environment from model's data);
 - [x] Add Delete Agent button;
 - [x] Autosave and save button for trained models;
