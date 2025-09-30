@@ -141,10 +141,16 @@ class CartPoleLauncher(QWidget):
         self.env_label = QLabel("Environment: (not loaded)")
         layout.addWidget(self.env_label)
     
-        # Test Button
-        self.test_btn = QPushButton("Test Pre-trained Model")
-        layout.addWidget(self.test_btn)
+        # Test and Stop buttons
+        row = QHBoxLayout()
+        self.test_btn = QPushButton("Test Model")
+        self.stop_testing_btn = QPushButton("Stop Testing")
+        row.addWidget(self.test_btn)
+        row.addWidget(self.stop_testing_btn)
+        layout.addLayout(row)
+
         self.test_btn.clicked.connect(self.test_model)
+        self.stop_testing_btn.clicked.connect(self.stop_testing_model)
 
         # Back to main menu
         back_btn = QPushButton("⬅ Back to Main Menu")
@@ -318,4 +324,9 @@ class CartPoleLauncher(QWidget):
         if hasattr(self, "viewer") and self.viewer:
             self.viewer.stop()
         self.stack.setCurrentWidget(self.main_page)
-        
+        self.stop_testing_model()
+
+    def stop_testing_model(self):
+        if hasattr(self, "viewer") and self.viewer:
+            self.viewer.stop()
+            self.env_label.setText("Environment: (stopped)")
