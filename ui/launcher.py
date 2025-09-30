@@ -347,13 +347,27 @@ class CartPoleLauncher(QWidget):
             if model_file:
                 self.selected_model_file = model_file
                 checkpoint = torch.load(model_file, map_location=config.DEVICE)
-                env_name = checkpoint.get("environment", "N/A")
-                self.env_label.setText(f"Environment: {env_name}")
+
+                agent_name = checkpoint.get("agent_name", "Unknown")
+                env_name = checkpoint.get("environment", "Unknown")
+                episodes_trained = checkpoint.get("episodes_trained", "N/A")
+                episodes_total = checkpoint.get("episodes_total", "N/A")
+                hps = checkpoint.get("hyperparams", {})
+
+                # ✅ Rich info message
+                info_html = (
+                    f"<b>Environment:</b> {env_name}<br>"
+                    f"<b>Agent:</b> {agent_name}<br>"
+                    f"<b>Episodes:</b> {episodes_trained}/{episodes_total}<br>"
+                    f"<b>Hyperparams:</b> {hps}"
+                )
+                self.env_label.setText(info_html)
+
                 self.selected_checkpoint = checkpoint
             else:
                 self.selected_model_file = None
                 self.selected_checkpoint = None
-                self.env_label.setText("Environment: (not loaded)")
+                self.env_label.setText("⚠ No model selected")
                 
     def start_testing_model(self):
         if not hasattr(self, "selected_checkpoint") or self.selected_checkpoint is None:
