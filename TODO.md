@@ -23,6 +23,9 @@
 - [ ] Add a log window to capture status messages and scroll through training history (episode rewards, averages);
 - [ ] Decouple hyperparameters from launcher;
 - [ ] Add Create Agent section;
+- [ ] Stop rendering after pressing Back to Main button;
+- [ ] In Training section make all buttons except Stop training unavailable during training;
+- [ ] Adjust console training;
 
 
 ## Done
