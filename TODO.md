@@ -24,6 +24,7 @@
 - [ ] In Training section make all buttons except Stop training unavailable during training;
 - [ ] Refactor launcher.py;
 - [ ] Add logger to Testing section;
+- [ ] Make log window with all info from Agent when training;
 
 
 ## Done
