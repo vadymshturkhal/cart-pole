@@ -141,15 +141,18 @@ class CartPoleLauncher(QWidget):
         self.env_label = QLabel("Environment: (not loaded)")
         layout.addWidget(self.env_label)
     
-        # Test and Stop buttons
+        # Buttons row
         row = QHBoxLayout()
-        self.test_btn = QPushButton("Test Model")
+        self.choose_model_btn = QPushButton("Choose Model")
+        self.start_testing_btn = QPushButton("Start Testing")
         self.stop_testing_btn = QPushButton("Stop Testing")
-        row.addWidget(self.test_btn)
+        row.addWidget(self.choose_model_btn)
+        row.addWidget(self.start_testing_btn)
         row.addWidget(self.stop_testing_btn)
         layout.addLayout(row)
 
-        self.test_btn.clicked.connect(self.test_model)
+        self.choose_model_btn.clicked.connect(self.choose_model)
+        self.start_testing_btn.clicked.connect(self.start_testing_model)
         self.stop_testing_btn.clicked.connect(self.stop_testing_model)
 
         # Back to main menu
@@ -336,3 +339,52 @@ class CartPoleLauncher(QWidget):
         if hasattr(self, "viewer") and self.viewer:
             self.viewer.stop()
             self.env_label.setText("Environment: (stopped)")
+
+    def choose_model(self):
+        dlg = TestModelDialog("trained_models")
+        if dlg.exec():
+            model_file = dlg.get_selected()
+            if model_file:
+                self.selected_model_file = model_file
+                checkpoint = torch.load(model_file, map_location=config.DEVICE)
+                env_name = checkpoint.get("environment", "N/A")
+                self.env_label.setText(f"Environment: {env_name}")
+                self.selected_checkpoint = checkpoint
+            else:
+                self.selected_model_file = None
+                self.selected_checkpoint = None
+                self.env_label.setText("Environment: (not loaded)")
+                
+    def start_testing_model(self):
+        if not hasattr(self, "selected_checkpoint") or self.selected_checkpoint is None:
+            self.env_label.setText("⚠ Please choose a model first")
+            return
+
+        checkpoint = self.selected_checkpoint
+        env_name = checkpoint.get("environment", config.DEFAULT_ENVIRONMENT)
+        agent_name = checkpoint.get("agent_name", "nstep_dqn")
+        hps = checkpoint.get("hyperparams", self.hyperparams)
+
+        env, state_dim, action_dim = create_environment(env_name, render="rgb_array")
+
+        if agent_name == "nstep_dqn":
+            ag = NStepDeepQLearningAgent(state_dim, action_dim, **hps)
+        else:
+            ag = NStepDoubleDeepQLearningAgent(state_dim, action_dim, **hps)
+
+        if "model_state" in checkpoint:
+            ag.q_net.load_state_dict(checkpoint["model_state"])
+        ag.q_net.eval()
+        if hasattr(ag, "epsilon"):
+            ag.epsilon = 0.0
+
+        # Remove old viewer
+        if hasattr(self, "viewer") and self.viewer:
+            self.test_page.layout().removeWidget(self.viewer)
+            self.viewer.deleteLater()
+            self.viewer = None
+
+        # Add new viewer
+        self.viewer = EnvViewer(env, ag, episodes=5, fps=30)
+        self.test_page.layout().insertWidget(1, self.viewer)  # right under env_label
+        self.viewer.start()
