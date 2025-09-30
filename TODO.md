@@ -10,11 +10,8 @@
 - [ ] Add button for choosing training environment;
 - [ ] Add quantity of episodes for Testing models;
 - [ ] Add pause/continue buttons for Agent in training mode;
-- [ ] Add Change resolution button with save to config;
-- [ ] Integrate human render to GUI with plot replacement;
 - [ ] Stop Training button must clear the plot;
-- [ ] Test pre-trained model shouldn't open another window, it is better to show the test in another section instead;
-- [ ] Add rewards section to description of a trained model;
+- [ ] Add Average and Average 100 rewards section to description of a trained model;
 - [ ] Standardise Agent's API;
 - [ ] Update README.md;
 - [ ] Get rid of train_menu;
@@ -25,10 +22,12 @@
 - [ ] Add Create Agent section;
 - [ ] Stop rendering after pressing Back to Main button;
 - [ ] In Training section make all buttons except Stop training unavailable during training;
-- [ ] Add Average and Average 100 to model's checkpoint;
+- [ ] Refacror launcher.py
 
 
 ## Done
+- [x] Test pre-trained model shouldn't open another window, it is better to show the test in another section instead;
+- [x] Add Change resolution button with save to config;
 - [x] Adjust console training;
 - [x] Raise error if choose a wrong agent for training in wrong environment (solved by choosing environment from model's data);
 - [x] Add Delete Agent button;
