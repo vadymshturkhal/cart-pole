@@ -25,6 +25,7 @@
 - [ ] Add Create Agent section;
 - [ ] Stop rendering after pressing Back to Main button;
 - [ ] In Training section make all buttons except Stop training unavailable during training;
+- [ ] Add Average and Average 100 to model's checkpoint;
 
 
 ## Done
