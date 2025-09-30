@@ -11,7 +11,7 @@ def render_trained_agent(episodes=3):
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"❌ Trained model not found: {model_path}. Run main.py first.")
     
-    env = gym.make(config.ENV_NAME, render_mode="human")
+    env = gym.make(config.DEFAULT_ENVIRONMENT, render_mode="human")
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.n
     

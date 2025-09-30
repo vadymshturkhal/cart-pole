@@ -1,10 +1,9 @@
 import torch
 import gymnasium as gym
 import config
-# from agents.nstep_ddqn_agent import NStepDoubleDeepQLearningAgent
+from agents.nstep_ddqn_agent import NStepDoubleDeepQLearningAgent
 from agents.nstep_dqn_agent import NStepDeepQLearningAgent
 from utils.training import train
-from utils.plotting import plot_rewards
 
 
 def main():
