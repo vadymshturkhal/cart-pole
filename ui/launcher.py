@@ -234,10 +234,9 @@ class CartPoleLauncher(QWidget):
             if not model_file:
                 return
 
+            # Model's data
             checkpoint = torch.load(model_file, map_location=config.DEVICE)
-
             agent_name = self.agent_name
-
             env_name = checkpoint.get("environment")
             self.env_label.setText(f"Environment: {env_name}")
 
@@ -257,10 +256,17 @@ class CartPoleLauncher(QWidget):
 
             ag.q_net.eval()
 
-            # ✅ Use embedded EnvViewer directly, no blocking call
+            # Remove old environment if it exists
+            if hasattr(self, "viewer") and self.viewer:
+                self.test_page.layout().removeWidget(self.viewer)
+                self.viewer.deleteLater()
+                self.viewer = None
+                
+            # Use embedded EnvViewer for rendering in GUI
             self.viewer = EnvViewer(env, ag, episodes=5, fps=30)
             self.test_page.layout().insertWidget(1, self.viewer)  # put under env_label
             self.viewer.start()
+            
 
     def closeEvent(self, event):
         if self.training_worker:
