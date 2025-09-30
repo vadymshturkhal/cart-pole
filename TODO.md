@@ -25,6 +25,8 @@
 - [ ] Refactor launcher.py;
 - [ ] Add logger to Testing section;
 - [ ] Make log window with all info from Agent when training;
+- [ ] Grouping related controls into collapsible panels;
+- [ ] Add feature to choose already trained agent for further training;
 
 
 ## Done
