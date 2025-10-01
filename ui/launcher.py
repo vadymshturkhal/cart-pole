@@ -20,12 +20,20 @@ class CartPoleLauncher(QWidget):
 
         # === Stack of pages ===
         self.stack = QStackedWidget()
+
+        # Training section
+        self.train_page = TrainingSection()
+        self.stack.addWidget(self.train_page)
+        # Connect signal
+        self.train_page.back_to_main.connect(
+            lambda: self.stack.setCurrentWidget(self.main_page)
+        )
+
         layout = QVBoxLayout(self)
         layout.addWidget(self.stack)
 
-        # Create 3 pages
+        # Create Main and Testing sections
         self.main_page = QWidget()
-        self.train_page = QWidget()
         self.test_page = QWidget()
 
         self.stack.addWidget(self.main_page)
@@ -34,8 +42,6 @@ class CartPoleLauncher(QWidget):
 
         # Build content
         self._build_main_page()
-        training_section = TrainingSection()
-        training_section.build_training_page(self.train_page)
         self._build_test_page()
 
         # Default page

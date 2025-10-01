@@ -1,6 +1,6 @@
 import torch
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QComboBox, QSpinBox, QFileDialog
-from PySide6.QtCore import QThread
+from PySide6.QtCore import QThread, Signal
 from ui.agent_dialog import AgentDialog
 from ui.reward_plot import RewardPlot
 from ui.training_worker import TrainingWorker
@@ -12,6 +12,8 @@ import config
 
 
 class TrainingSection(QWidget):
+    back_to_main = Signal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -30,8 +32,10 @@ class TrainingSection(QWidget):
             "eps_decay": config.EPSILON_DECAY,
         }
 
-    def build_training_page(self, train_page):
-        layout = QVBoxLayout(train_page)
+        self._build_training_section()
+
+    def _build_training_section(self):
+        layout = QVBoxLayout(self)
 
         # Plot
         self.plot = RewardPlot()
@@ -69,12 +73,13 @@ class TrainingSection(QWidget):
         self.status_label = QLabel("Idle")
         layout.addWidget(self.status_label)
 
-        # Back to main menu
+        # Back button
         back_btn = QPushButton("⬅ Back to Main Menu")
         back_btn.setMinimumHeight(40)
         back_btn.setStyleSheet("font-size: 16px;")
-        back_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.main_page))
-        back_btn.clicked.connect(self._stop_viewer_and_back)
+
+        # Emit Signal
+        back_btn.clicked.connect(self.back_to_main.emit)
         layout.addWidget(back_btn)
 
         # Connects
