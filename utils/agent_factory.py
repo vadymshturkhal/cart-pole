@@ -6,7 +6,6 @@ def build_agent(agent_name: str, state_dim: int, action_dim: int, hyperparams: d
         Factory function to create an agent based on name.
     """
 
-    print('aaaa')
     if agent_name == "nstep_dqn":
         return NStepDeepQLearningAgent(state_dim, action_dim, **hyperparams)
     elif agent_name == "nstep_ddqn":
