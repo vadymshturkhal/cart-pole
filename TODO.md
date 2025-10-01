@@ -28,11 +28,11 @@
 - [ ] Grouping related controls into collapsible panels;
 - [ ] Add feature to choose already trained agent for further training;
 - [ ] Add feature to save GIF in Testing section;
-- [ ] Create TrainPage class;
-- [ ] Create TestPage class;
+- [ ] Create TestSection class;
 
 
 ## Done
+- [x] Create TrainingSection class;
 - [x] Test pre-trained model shouldn't open another window, it is better to show the test in another section instead;
 - [x] Add Change resolution button with save to config;
 - [x] Adjust console training;

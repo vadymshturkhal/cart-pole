@@ -1,20 +1,14 @@
 import torch
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-    QLabel, QFileDialog, QStackedWidget
-)
-import config
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QStackedWidget
 from agents.nstep_dqn_agent import NStepDeepQLearningAgent
 from agents.nstep_ddqn_agent import NStepDoubleDeepQLearningAgent
-from PySide6.QtCore import QThread
-from ui.agent_dialog import AgentDialog
 from ui.hyperparams_dialog import HyperparamsDialog
 from ui.settings_dialog import SettingsDialog
-from ui.training_worker import TrainingWorker
 from ui.test_model_dialog import TestModelDialog
 from ui.env_viewer import EnvViewer
 from ui.training_section import TrainingSection
 from environments.factory import create_environment
+import config
 import datetime
 
 
@@ -40,7 +34,8 @@ class CartPoleLauncher(QWidget):
 
         # Build content
         self._build_main_page()
-        TrainingSection.build_training_page(self)
+        training_section = TrainingSection()
+        training_section.build_training_page(self.train_page)
         self._build_test_page()
 
         # Default page
@@ -112,68 +107,6 @@ class CartPoleLauncher(QWidget):
         dlg = HyperparamsDialog(self, defaults=self.hyperparams)
         if dlg.exec():
             self.hyperparams = dlg.get_params()
-
-    def start_training(self):
-        if self.training_thread and self.training_thread.isRunning():
-            self.status_label.setText("⚠ Training is already running!")
-            return
-
-        if self.agent_name is None:
-            self.status_label.setText("⚠ Please select an agent to train first by pressing the Choose Agent button")
-            return
-
-        agent_name = self.agent_name
-        render = self.render_box.currentText()
-        episodes = self.episodes_box.value()
-
-        env_name = self.env_box.currentText()
-        env, state_dim, action_dim = create_environment(env_name, render)
-
-        params = self.hyperparams
-        if agent_name == "nstep_dqn":
-            agent = NStepDeepQLearningAgent(state_dim, action_dim, **params)
-        else:
-            agent = NStepDoubleDeepQLearningAgent(state_dim, action_dim, **params)
-
-        # timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        model_path = f"{config.TRAINED_MODELS_FOLDER}/{env_name}_{agent_name}.pth"
-
-        # === Create Worker & Thread ===
-        self.training_thread = QThread()
-        self.training_worker = TrainingWorker(env_name, env, agent_name, agent, episodes, 
-                                              model_path, hyperparams=self.hyperparams, render=(render == "human"))
-        self.training_worker.moveToThread(self.training_thread)
-
-        # Connect signals
-        self.training_thread.started.connect(self.training_worker.run)
-        self.training_worker.progress.connect(self._on_progress)
-        self.training_worker.finished.connect(self._on_finished)
-
-        # Cleanup
-        self.training_worker.finished.connect(self.training_thread.quit)
-        self.training_worker.finished.connect(self.training_worker.deleteLater)
-        self.training_thread.finished.connect(self.training_thread.deleteLater)
-        self.training_thread.finished.connect(self._reset_training_refs)
-
-        # Start training
-        self.training_thread.start()
-        self.status_label.setText("🚀 Training started...")
-
-    def _on_progress(self, ep, episodes, ep_reward, rewards):
-        avg20 = sum(rewards[-20:]) / min(len(rewards), 20)
-        global_avg = sum(rewards) / len(rewards)
-        self.status_label.setText(
-            f"Ep {ep+1}/{episodes} — R {ep_reward:.1f}, Avg20 {avg20:.1f}, Global {global_avg:.1f}"
-        )
-        self.plot.update_plot(rewards, episodes)
-
-    def _on_finished(self, rewards, checkpoint):
-        self.status_label.setText("✅ Training finished!")
-        self.last_checkpoint = checkpoint
-
-        # FIXME
-        self.last_checkpoint['hyperparams'] = self.hyperparams
-        self.save_btn.setEnabled(True)
         
     def test_model(self):
         dlg = TestModelDialog("trained_models")
@@ -215,44 +148,11 @@ class CartPoleLauncher(QWidget):
             self.viewer = EnvViewer(env, ag, episodes=5, fps=30)
             self.test_page.layout().insertWidget(1, self.viewer)  # put under env_label
             self.viewer.start()
-            
 
     def closeEvent(self, event):
         if self.training_worker:
             self.training_worker.stop()
         event.accept()
-
-    def stop_training(self):
-        if self.training_worker:
-            self.training_worker.stop()
-            self.status_label.setText("⏹ Training stopped by user")
-        else:
-            self.status_label.setText("⚠ No training is running")
-
-    def _reset_training_refs(self):
-        self.training_thread = None
-        self.training_worker = None
-
-    def choose_agent(self):
-        dlg = AgentDialog(self, defaults=self.hyperparams)
-        if dlg.exec():
-            agent, hps = dlg.get_selection()
-            self.agent_name = agent
-            self.hyperparams = hps
-            self.agent_btn.setText(agent)  # show chosen agent
-
-    def save_agent_as(self):
-        if not hasattr(self, "last_checkpoint"):
-            self.status_label.setText("⚠ No trained agent to save")
-            return
-
-        # Suggest default filename with timestamp
-        default_name = f"{self.last_checkpoint['environment']}_{self.last_checkpoint['agent_name']}.pth"
-        path, _ = QFileDialog.getSaveFileName(self, "Save Agent", f"trained_models/{default_name}", "Model Files (*.pth)")
-
-        if path:
-            torch.save(self.last_checkpoint, path)
-            self.status_label.setText(f"✅ Agent saved as {path}")
 
     def open_settings(self):
         dlg = SettingsDialog(self)
@@ -274,12 +174,6 @@ class CartPoleLauncher(QWidget):
                 self.resize(*values["RESOLUTION"])
             if "EPISODES" in values:
                 self.episodes_box.setValue(values["EPISODES"])
-
-    def stop_viewer_and_back(self):
-        if hasattr(self, "viewer") and self.viewer:
-            self.viewer.stop()
-        self.stack.setCurrentWidget(self.main_page)
-        self.stop_testing_model()
 
     def stop_testing_model(self):
         if hasattr(self, "viewer") and self.viewer:
@@ -353,3 +247,4 @@ class CartPoleLauncher(QWidget):
         self.viewer = EnvViewer(env, ag, episodes=5, fps=30)
         self.test_page.layout().insertWidget(1, self.viewer)  # right under env_label
         self.viewer.start()
+        
