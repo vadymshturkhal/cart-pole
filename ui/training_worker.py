@@ -2,7 +2,6 @@ from PySide6.QtCore import QObject, Signal, Slot
 import torch, os
 import config
 from utils.training import train
-from utils.plotting import plot_rewards
 
 
 class TrainingWorker(QObject):
