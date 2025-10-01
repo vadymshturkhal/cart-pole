@@ -1,20 +1,19 @@
 import torch
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel,
-    QComboBox, QSpinBox, QFileDialog, QStackedWidget
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
+    QLabel, QFileDialog, QStackedWidget
 )
 import config
 from agents.nstep_dqn_agent import NStepDeepQLearningAgent
 from agents.nstep_ddqn_agent import NStepDoubleDeepQLearningAgent
-from utils.rendering import render_agent
 from PySide6.QtCore import QThread
 from ui.agent_dialog import AgentDialog
 from ui.hyperparams_dialog import HyperparamsDialog
-from ui.reward_plot import RewardPlot
 from ui.settings_dialog import SettingsDialog
 from ui.training_worker import TrainingWorker
 from ui.test_model_dialog import TestModelDialog
 from ui.env_viewer import EnvViewer
+from ui.training_section import TrainingSection
 from environments.factory import create_environment
 import datetime
 
@@ -41,7 +40,7 @@ class CartPoleLauncher(QWidget):
 
         # Build content
         self._build_main_page()
-        self._build_train_page()
+        TrainingSection.build_training_page(self)
         self._build_test_page()
 
         # Default page
@@ -80,59 +79,6 @@ class CartPoleLauncher(QWidget):
         self.train_page_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.train_page))
         self.test_page_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.test_page))
         self.settings_btn.clicked.connect(self.open_settings)
-
-    def _build_train_page(self):
-        layout = QVBoxLayout(self.train_page)
-
-        # Plot
-        self.plot = RewardPlot()
-        layout.addWidget(self.plot)
-
-        layout.addWidget(QLabel("Environment:"))
-        self.env_box = QComboBox()
-        self.env_box.addItems(config.AVAILABLE_ENVIRONMENTS)
-        self.env_box.setCurrentText(config.DEFAULT_ENVIRONMENT)
-        layout.addWidget(self.env_box)
-
-        layout.addWidget(QLabel("Agent:"))
-        self.agent_btn = QPushButton("Choose Agent")
-        self.train_btn = QPushButton("Start Training")
-        self.stop_btn = QPushButton("Stop Training")
-        self.save_btn = QPushButton("Save Model")
-        row = QHBoxLayout()
-        row.addWidget(self.agent_btn)
-        row.addWidget(self.train_btn)
-        row.addWidget(self.stop_btn)
-        row.addWidget(self.save_btn)
-        layout.addLayout(row)
-
-        layout.addWidget(QLabel("Rendering Mode:"))
-        self.render_box = QComboBox()
-        self.render_box.addItems(["off", "human", "gif", "mp4"])
-        layout.addWidget(self.render_box)
-
-        layout.addWidget(QLabel("Training Episodes:"))
-        self.episodes_box = QSpinBox()
-        self.episodes_box.setRange(100, 10000)
-        self.episodes_box.setValue(config.EPISODES)
-        layout.addWidget(self.episodes_box)
-
-        self.status_label = QLabel("Idle")
-        layout.addWidget(self.status_label)
-
-        # Back to main menu
-        back_btn = QPushButton("⬅ Back to Main Menu")
-        back_btn.setMinimumHeight(40)
-        back_btn.setStyleSheet("font-size: 16px;")
-        back_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.main_page))
-        back_btn.clicked.connect(self.stop_viewer_and_back)
-        layout.addWidget(back_btn)
-
-        # Connects
-        self.agent_btn.clicked.connect(self.choose_agent)
-        self.train_btn.clicked.connect(self.start_training)
-        self.stop_btn.clicked.connect(self.stop_training)
-        self.save_btn.clicked.connect(self.save_agent_as)
 
     def _build_test_page(self):
         layout = QVBoxLayout(self.test_page)
