@@ -95,8 +95,6 @@ class TestingSection(QWidget):
         if "model_state" in checkpoint:
             agent.q_net.load_state_dict(checkpoint["model_state"])
         agent.q_net.eval()
-        if hasattr(agent, "epsilon"):
-            agent.epsilon = 0.0
 
         # Remove old viewer
         if hasattr(self, "viewer") and self.viewer:
