@@ -165,17 +165,6 @@ class CartPoleLauncher(QWidget):
         if dlg.exec():
             values = dlg.get_values()
             config.save_user_config(values)
-            # apply changes immediately
-            if "RESOLUTION" in values:
-                self.resize(*values["RESOLUTION"])
-            if "EPISODES" in values:
-                self.episodes_box.setValue(values["EPISODES"])
-                
-    def open_settings(self):
-        dlg = SettingsDialog(self)
-        if dlg.exec():
-            values = dlg.get_values()
-            config.save_user_config(values)
             if "RESOLUTION" in values:
                 self.resize(*values["RESOLUTION"])
             if "EPISODES" in values:
