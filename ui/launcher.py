@@ -124,7 +124,7 @@ class CartPoleLauncher(QWidget):
 
             # Model's data
             checkpoint = torch.load(model_file, map_location=config.DEVICE)
-            agent_name = self.agent_name
+            agent_name = checkpoint.get("agent_name", "nstep_dqn")
             env_name = checkpoint.get("environment")
             self.env_label.setText(f"Environment: {env_name}")
 
