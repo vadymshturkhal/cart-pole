@@ -22,30 +22,29 @@ class CartPoleLauncher(QWidget):
         self.stack = QStackedWidget()
 
         # Training section
-        self.train_page = TrainingSection()
-        self.stack.addWidget(self.train_page)
+        self.training_section = TrainingSection()
+        self.stack.addWidget(self.training_section)
         # Connect signal
-        self.train_page.back_to_main.connect(
-            lambda: self.stack.setCurrentWidget(self.main_page)
+        self.training_section.back_to_main.connect(
+            lambda: self.stack.setCurrentWidget(self.main_section)
         )
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.stack)
 
         # Create Main and Testing sections
-        self.main_page = QWidget()
-        self.test_page = QWidget()
+        self.main_section = QWidget()
+        self.testing_section = QWidget()
 
-        self.stack.addWidget(self.main_page)
-        self.stack.addWidget(self.train_page)
-        self.stack.addWidget(self.test_page)
+        self.stack.addWidget(self.main_section)
+        self.stack.addWidget(self.testing_section)
 
         # Build content
-        self._build_main_page()
-        self._build_test_page()
+        self._build_main_section()
+        self._build_testing_section()
 
         # Default page
-        self.stack.setCurrentWidget(self.main_page)
+        self.stack.setCurrentWidget(self.main_section)
 
         # State
         self.training_thread = None
@@ -63,26 +62,26 @@ class CartPoleLauncher(QWidget):
         }
 
     # === Pages ===
-    def _build_main_page(self):
-        layout = QVBoxLayout(self.main_page)
+    def _build_main_section(self):
+        layout = QVBoxLayout(self.main_section)
 
         # === Column of big menu buttons ===
-        self.train_page_btn = QPushButton("▶ Train Agent")
-        self.test_page_btn = QPushButton("🎮 Test Agent")
+        self.training_section_btn = QPushButton("▶ Train Agent")
+        self.testing_section_btn = QPushButton("🎮 Test Agent")
         self.settings_btn = QPushButton("⚙ Settings")
 
         # Make buttons taller/wider like a game menu
-        for btn in (self.train_page_btn, self.test_page_btn, self.settings_btn):
+        for btn in (self.training_section_btn, self.testing_section_btn, self.settings_btn):
             btn.setMinimumHeight(50)
             btn.setStyleSheet("font-size: 18px;")  # bigger font
             layout.addWidget(btn)
 
-        self.train_page_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.train_page))
-        self.test_page_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.test_page))
+        self.training_section_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.training_section))
+        self.testing_section_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.testing_section))
         self.settings_btn.clicked.connect(self.open_settings)
 
-    def _build_test_page(self):
-        layout = QVBoxLayout(self.test_page)
+    def _build_testing_section(self):
+        layout = QVBoxLayout(self.testing_section)
 
         # Show environment name
         self.env_label = QLabel("Environment: (not loaded)")
@@ -107,7 +106,7 @@ class CartPoleLauncher(QWidget):
         back_btn.setMinimumHeight(40)
         back_btn.setStyleSheet("font-size: 16px;")
         layout.addWidget(back_btn)
-        back_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.main_page))
+        back_btn.clicked.connect(lambda: self.stack.setCurrentWidget(self.main_section))
 
     def open_hyperparams(self):
         dlg = HyperparamsDialog(self, defaults=self.hyperparams)
@@ -146,13 +145,13 @@ class CartPoleLauncher(QWidget):
 
             # Remove old environment if it exists
             if hasattr(self, "viewer") and self.viewer:
-                self.test_page.layout().removeWidget(self.viewer)
+                self.testing_section.layout().removeWidget(self.viewer)
                 self.viewer.deleteLater()
                 self.viewer = None
                 
             # Use embedded EnvViewer for rendering in GUI
             self.viewer = EnvViewer(env, ag, episodes=5, fps=30)
-            self.test_page.layout().insertWidget(1, self.viewer)  # put under env_label
+            self.testing_section.layout().insertWidget(1, self.viewer)  # put under env_label
             self.viewer.start()
 
     def closeEvent(self, event):
@@ -234,12 +233,12 @@ class CartPoleLauncher(QWidget):
 
         # Remove old viewer
         if hasattr(self, "viewer") and self.viewer:
-            self.test_page.layout().removeWidget(self.viewer)
+            self.testing_section.layout().removeWidget(self.viewer)
             self.viewer.deleteLater()
             self.viewer = None
 
         # Add new viewer
         self.viewer = EnvViewer(env, ag, episodes=5, fps=30)
-        self.test_page.layout().insertWidget(1, self.viewer)  # right under env_label
+        self.testing_section.layout().insertWidget(1, self.viewer)  # right under env_label
         self.viewer.start()
         
