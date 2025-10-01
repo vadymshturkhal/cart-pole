@@ -27,10 +27,11 @@
 - [ ] Grouping related controls into collapsible panels;
 - [ ] Add feature to choose already trained agent for further training;
 - [ ] Add feature to save GIF in Testing section;
-- [ ] Create TestSection class;
+- [ ] Create ModelInfoWidget;
 
 
 ## Done
+- [x] Create TestSection class;
 - [x] Refactor launcher.py;
 - [x] Create TrainingSection class;
 - [x] Test pre-trained model shouldn't open another window, it is better to show the test in another section instead;
