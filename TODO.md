@@ -28,6 +28,8 @@
 - [ ] Grouping related controls into collapsible panels;
 - [ ] Add feature to choose already trained agent for further training;
 - [ ] Add feature to save GIF in Testing section;
+- [ ] Create TrainPage class;
+- [ ] Create TestPage class;
 
 
 ## Done
