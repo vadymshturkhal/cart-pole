@@ -5,8 +5,7 @@ from ui.agent_dialog import AgentDialog
 from ui.reward_plot import RewardPlot
 from ui.training_worker import TrainingWorker
 from ui.agent_dialog import AgentDialog
-from agents.nstep_dqn_agent import NStepDeepQLearningAgent
-from agents.nstep_ddqn_agent import NStepDoubleDeepQLearningAgent
+from utils.agent_factory import build_agent
 from environments.factory import create_environment
 import config
 
@@ -111,11 +110,7 @@ class TrainingSection(QWidget):
         env_name = self.env_box.currentText()
         env, state_dim, action_dim = create_environment(env_name, render)
 
-        params = self.hyperparams
-        if agent_name == "nstep_dqn":
-            agent = NStepDeepQLearningAgent(state_dim, action_dim, **params)
-        else:
-            agent = NStepDoubleDeepQLearningAgent(state_dim, action_dim, **params)
+        agent = build_agent(agent_name, state_dim, action_dim, self.hyperparams)
 
         # timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         model_path = f"{config.TRAINED_MODELS_FOLDER}/{env_name}_{agent_name}.pth"
