@@ -77,7 +77,6 @@ class TrainingSection(QWidget):
         back_btn = QPushButton("⬅ Back to Main Menu")
         back_btn.setMinimumHeight(40)
         back_btn.setStyleSheet("font-size: 16px;")
-
         # Emit Signal
         back_btn.clicked.connect(self.back_to_main.emit)
         layout.addWidget(back_btn)
@@ -161,12 +160,6 @@ class TrainingSection(QWidget):
         if path:
             torch.save(self.last_checkpoint, path)
             self.status_label.setText(f"✅ Agent saved as {path}")
-
-    def _stop_viewer_and_back(self):
-        if hasattr(self, "viewer") and self.viewer:
-            self.viewer.stop()
-        self.stack.setCurrentWidget(self.main_page)
-        self.stop_testing_model()
 
     def _reset_training_refs(self):
         self.training_thread = None
