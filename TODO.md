@@ -29,6 +29,7 @@
 - [ ] Add feature to save GIF in Testing section;
 - [ ] Create ModelInfoWidget;
 - [ ] Create TestingWorker;
+- [ ] Create Experiments section with Barto, Sutton, and Anderson (1983) Cart Pole;
 
 
 ## Done
