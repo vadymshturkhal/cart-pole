@@ -30,6 +30,7 @@
 - [ ] Create ModelInfoWidget;
 - [ ] Create TestingWorker;
 - [ ] Create Experiments section with Barto, Sutton, and Anderson (1983) Cart Pole;
+- [ ] Variables Dialog in Training section when choosing agent, must be specific for choosen agent;
 
 
 ## Done
