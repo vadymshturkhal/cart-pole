@@ -21,8 +21,7 @@ def train(env, agent, episodes=config.EPISODES,
             next_state, reward, terminated, truncated, _ = env.step(action)
             done = terminated or truncated
 
-            agent.memory.push(state, action, reward, next_state, done)
-            agent.update()  # still guarded by batch_size in agent
+            agent.update_step(state, action, reward, next_state, done)
             state = next_state
             total_reward += reward
 

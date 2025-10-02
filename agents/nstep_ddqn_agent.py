@@ -75,6 +75,10 @@ class NStepDoubleDeepQLearningAgent:
                 q_values = self.q_net(state)
                 return q_values.argmax().item()
 
+    def update_step(self, state, action, reward, next_state, done):
+        self.memory.push(state, action, reward, next_state, done)
+        self.update()
+
     def update(self):
         """Sample batch and update Q-network (Double DQN + N-step)."""
         if len(self.memory) < self.batch_size:
