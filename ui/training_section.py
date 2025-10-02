@@ -4,10 +4,10 @@ from PySide6.QtCore import QThread, Signal
 from ui.agent_dialog import AgentDialog
 from ui.reward_plot import RewardPlot
 from ui.training_worker import TrainingWorker
-from ui.agent_dialog import AgentDialog
 from utils.agent_factory import build_agent
 from environments.factory import create_environment
 import config
+from utils.agent_specs import default_hparams
 
 
 class TrainingSection(QWidget):
@@ -18,18 +18,8 @@ class TrainingSection(QWidget):
 
         self.training_thread = None
         self.training_worker = None
-        self.agent_name = None
-
-        self.hyperparams = {
-            "gamma": config.GAMMA, 
-            "lr": config.LR,
-            "buffer_size": config.BUFFER_SIZE, 
-            "batch_size": config.BATCH_SIZE,
-            "n_step": config.N_STEP, "eps_start": 
-            config.EPSILON_START,
-            "eps_end": config.EPSILON_END, 
-            "eps_decay": config.EPSILON_DECAY,
-        }
+        self.agent_name = "nstep_dqn"
+        self.hyperparams = default_hparams(self.agent_name)
 
         self._build_training_section()
 
@@ -87,12 +77,14 @@ class TrainingSection(QWidget):
         self.save_btn.clicked.connect(self._save_agent_as)
     
     def _choose_agent(self):
-        dlg = AgentDialog(self, defaults=self.hyperparams)
+        current = self.agent_name or "nstep_dqn"
+        dlg = AgentDialog(self, current_agent=current, defaults=self.hyperparams)
         if dlg.exec():
-            agent, hps = dlg.get_selection()
+            agent, hyperparams = dlg.get_selection()
             self.agent_name = agent
-            self.hyperparams = hps
-            self.agent_btn.setText(agent)  # show chosen agent
+            self.hyperparams = hyperparams
+            self.agent_btn.setText(agent)
+
 
     def _start_training(self):
         if self.training_thread and self.training_thread.isRunning():
