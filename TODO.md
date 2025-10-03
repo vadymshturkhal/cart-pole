@@ -12,7 +12,6 @@
 - [ ] Add pause/continue buttons for Agent in training mode;
 - [ ] Stop Training button must clear the plot;
 - [ ] Add Average and Average 100 rewards section to description of a trained model;
-- [ ] Standardise Agent's API;
 - [ ] Update README.md;
 - [ ] Get rid of train_menu;
 - [ ] Add Model management panel;
@@ -35,6 +34,7 @@
 
 
 ## Done
+- [x] Standardise Agent's API;
 - [x] Variables Dialog in Training section when choosing agent, must be specific for choosen agent;
 - [x] Create TestSection class;
 - [x] Refactor launcher.py;
