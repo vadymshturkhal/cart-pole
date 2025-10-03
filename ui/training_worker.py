@@ -29,9 +29,9 @@ class TrainingWorker(QObject):
             stop_flag=lambda: self._stop_flag,
             render=self.render
         )
-        # Save model & plot after training
-        os.makedirs(config.TRAINED_MODELS_FOLDER, exist_ok=True)
 
+        # Save model and close environment
+        os.makedirs(config.TRAINED_MODELS_FOLDER, exist_ok=True)
         self._save_checkpoint(self.episodes, rewards)
         self.finished.emit()
         self.env.close()
