@@ -30,6 +30,7 @@
 - [ ] Create ModelInfoWidget;
 - [ ] Create TestingWorker;
 - [ ] Create Experiments section with Barto, Sutton, and Anderson (1983) Cart Pole;
+- [ ] Contain reaquired hyperparameters in agent's class;
 
 
 ## Done
