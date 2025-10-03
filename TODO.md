@@ -31,6 +31,7 @@
 - [ ] Create TestingWorker;
 - [ ] Create Experiments section with Barto, Sutton, and Anderson (1983) Cart Pole;
 - [ ] Contain reaquired hyperparameters in agent's class;
+- [ ] Set min training episodes for training;
 
 
 ## Done
