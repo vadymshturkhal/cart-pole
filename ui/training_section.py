@@ -80,10 +80,10 @@ class TrainingSection(QWidget):
         current = self.agent_name or "nstep_dqn"
         dlg = AgentDialog(self, current_agent=current, defaults=self.hyperparams)
         if dlg.exec():
-            agent, hyperparams = dlg.get_selection()
-            self.agent_name = agent
+            agent_name, hyperparams = dlg.get_selection()
+            self.agent_name = agent_name
             self.hyperparams = hyperparams
-            self.agent_btn.setText(agent)
+            self.agent_btn.setText(agent_name)
 
 
     def _start_training(self):
@@ -95,21 +95,20 @@ class TrainingSection(QWidget):
             self.status_label.setText("⚠ Please select an agent to train first by pressing the Choose Agent button")
             return
 
-        agent_name = self.agent_name
         render = self.render_box.currentText()
         episodes = self.episodes_box.value()
 
         env_name = self.env_box.currentText()
         env, state_dim, action_dim = create_environment(env_name, render)
 
-        agent = build_agent(agent_name, state_dim, action_dim, self.hyperparams)
+        agent = build_agent(self.agent_name, state_dim, action_dim, self.hyperparams)
 
         # timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        model_path = f"{config.TRAINED_MODELS_FOLDER}/{env_name}_{agent_name}.pth"
+        model_path = f"{config.TRAINED_MODELS_FOLDER}/{env_name}_{self.agent_name}.pth"
 
         # === Create Worker & Thread ===
         self.training_thread = QThread()
-        self.training_worker = TrainingWorker(env_name, env, agent_name, agent, episodes, 
+        self.training_worker = TrainingWorker(env_name, env, self.agent_name, agent, episodes, 
                                               model_path, hyperparams=self.hyperparams, render=(render == "human"))
         self.training_worker.moveToThread(self.training_thread)
 
