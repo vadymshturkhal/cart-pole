@@ -7,7 +7,6 @@ from ui.training_worker import TrainingWorker
 from utils.agent_factory import build_agent
 from environments.factory import create_environment
 import config
-from utils.agent_specs import default_hparams
 
 
 class TrainingSection(QWidget):
@@ -18,9 +17,8 @@ class TrainingSection(QWidget):
 
         self.training_thread = None
         self.training_worker = None
-        self.agent_name = "nstep_dqn"
-        self.hyperparams = default_hparams(self.agent_name)
-
+        self.agent_name = None
+        self.hyperparams = None
         self._build_training_section()
 
     def _build_training_section(self):
@@ -77,14 +75,12 @@ class TrainingSection(QWidget):
         self.save_btn.clicked.connect(self._save_agent_as)
     
     def _choose_agent(self):
-        current = self.agent_name or "nstep_dqn"
-        dlg = AgentDialog(self, current_agent=current, defaults=self.hyperparams)
+        dlg = AgentDialog(self, current_agent=self.agent_name)
         if dlg.exec():
             agent_name, hyperparams = dlg.get_selection()
             self.agent_name = agent_name
             self.hyperparams = hyperparams
             self.agent_btn.setText(agent_name)
-
 
     def _start_training(self):
         if self.training_thread and self.training_thread.isRunning():
@@ -101,14 +97,14 @@ class TrainingSection(QWidget):
         env_name = self.env_box.currentText()
         env, state_dim, action_dim = create_environment(env_name, render)
 
-        agent = build_agent(self.agent_name, state_dim, action_dim, self.hyperparams)
+        self.agent = build_agent(self.agent_name, state_dim, action_dim, self.hyperparams)
 
         # timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         model_path = f"{config.TRAINED_MODELS_FOLDER}/{env_name}_{self.agent_name}.pth"
 
         # === Create Worker & Thread ===
         self.training_thread = QThread()
-        self.training_worker = TrainingWorker(env_name, env, self.agent_name, agent, episodes, 
+        self.training_worker = TrainingWorker(env_name, env, self.agent_name, self.agent, episodes, 
                                               model_path, hyperparams=self.hyperparams, render=(render == "human"))
         self.training_worker.moveToThread(self.training_thread)
 
@@ -144,7 +140,7 @@ class TrainingSection(QWidget):
         path, _ = QFileDialog.getSaveFileName(self, "Save Agent", f"trained_models/{default_name}", "Model Files (*.pth)")
 
         if path:
-            torch.save(self.last_checkpoint, path)
+            self.agent.save(path, self.last_checkpoint)
             self.status_label.setText(f"✅ Agent saved as {path}")
 
     def _reset_training_refs(self):
