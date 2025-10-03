@@ -47,3 +47,8 @@ class BaseAgent(ABC):
     def get_hyperparams(self):
         """Get parameters specific for the agent in particular training section"""
         pass
+
+    @abstractmethod
+    def get_checkpoint(self):
+        """Get the original checkpoint created right after training."""
+        pass
