@@ -32,26 +32,27 @@ class TrainingWorker(QObject):
         # Save model & plot after training
         os.makedirs(config.TRAINED_MODELS_FOLDER, exist_ok=True)
 
-        # Ensure q_net has the final weights
-        if hasattr(self.agent, "target_net"):
-            self.agent.q_net.load_state_dict(self.agent.target_net.state_dict())
+        self._save_checkpoint(self.episodes, rewards)
+        self.finished.emit(rewards, self.checkpoint_path)
+        self.env.close()
 
-        checkpoint = {
-            "model_state": self.agent.q_net.state_dict(),
-            "hyperparams": self.hyperparams,
-            "agent_name": self.agent_name,
-            "episodes_trained": len(rewards),
-            "episodes_total": self.episodes,
+    def _save_checkpoint(self, episodes, rewards):
+        path = f"trained_models/{self.agent_name}_{self.env_name}.pth"
+        self.extra = {
             "environment": self.env_name,
+            "episodes_trained": len(rewards),
+            "episodes_total": episodes,
         }
 
-        torch.save(checkpoint, self.model_path)
-        self.finished.emit(rewards, checkpoint)
-
-        self.env.close()
+        self.agent.save(path, extra=self.extra)
+        self.checkpoint_path = path
 
     def _progress_cb(self, ep, episodes, ep_reward, rewards):
         self.progress.emit(ep, episodes, ep_reward, rewards)
+
+    def _on_finished(self, checkpoint_path):
+        self.status_label.setText("✅ Training finished!")
+        self.last_checkpoint = self.extra
 
     def stop(self):
         self._stop_flag = True

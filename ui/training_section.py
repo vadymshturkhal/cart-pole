@@ -94,17 +94,17 @@ class TrainingSection(QWidget):
         render = self.render_box.currentText()
         episodes = self.episodes_box.value()
 
-        env_name = self.env_box.currentText()
-        env, state_dim, action_dim = create_environment(env_name, render)
+        self.env_name = self.env_box.currentText()
+        env, state_dim, action_dim = create_environment(self.env_name, render)
 
         self.agent = build_agent(self.agent_name, state_dim, action_dim, self.hyperparams)
 
         # timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        model_path = f"{config.TRAINED_MODELS_FOLDER}/{env_name}_{self.agent_name}.pth"
+        model_path = f"{config.TRAINED_MODELS_FOLDER}/{self.env_name}_{self.agent_name}.pth"
 
         # === Create Worker & Thread ===
         self.training_thread = QThread()
-        self.training_worker = TrainingWorker(env_name, env, self.agent_name, self.agent, episodes, 
+        self.training_worker = TrainingWorker(self.env_name, env, self.agent_name, self.agent, episodes, 
                                               model_path, hyperparams=self.hyperparams, render=(render == "human"))
         self.training_worker.moveToThread(self.training_thread)
 
@@ -136,11 +136,11 @@ class TrainingSection(QWidget):
             return
 
         # Suggest default filename with timestamp
-        default_name = f"{self.last_checkpoint['environment']}_{self.last_checkpoint['agent_name']}.pth"
+        default_name = f"{self.env_name}_{self.agent_name}.pth"
         path, _ = QFileDialog.getSaveFileName(self, "Save Agent", f"trained_models/{default_name}", "Model Files (*.pth)")
 
         if path:
-            self.agent.save(path, self.last_checkpoint)
+            self.agent.save(path, self.agent.get_checkpoint())
             self.status_label.setText(f"✅ Agent saved as {path}")
 
     def _reset_training_refs(self):

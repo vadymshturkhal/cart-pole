@@ -41,6 +41,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         hyperparams = self.DEFAULT_PARAMS.copy()
         hyperparams.update(kwargs)
         self.hyperparams = hyperparams
+        self.checkpooint = {}
 
         # Hyperparameters
         self.gamma = hyperparams["gamma"]
@@ -126,18 +127,21 @@ class NStepDeepQLearningAgent(BaseAgent):
 
     def get_hyperparams(self) -> dict:
         return self.hyperparams.copy()
+    
+    def get_checkpoint(self):
+        return self.checkpoint
 
     def save(self, path: str, extra: dict = None):
-        checkpoint = {
+        self.checkpoint = {
             "agent_name": "nstep_dqn",
             "model_state": self.q_net.state_dict(),
             "hyperparams": self.hyperparams
         }
 
         if extra:
-            checkpoint.update(extra)
+            self.checkpoint.update(extra)
 
-        torch.save(checkpoint, path)
+        torch.save(self.checkpoint, path)
 
     def load(self, path: str):
         """
