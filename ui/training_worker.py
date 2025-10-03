@@ -6,7 +6,7 @@ from utils.training import train
 
 class TrainingWorker(QObject):
     progress = Signal(int, int, float, list)  # ep, episodes, ep_reward, rewards
-    finished = Signal(list, dict) # rewards and checkpoint
+    finished = Signal()
 
     def __init__(self, env_name, env, agent_name, agent, episodes, model_path, hyperparams, render=False):
         super().__init__()
@@ -33,11 +33,11 @@ class TrainingWorker(QObject):
         os.makedirs(config.TRAINED_MODELS_FOLDER, exist_ok=True)
 
         self._save_checkpoint(self.episodes, rewards)
-        self.finished.emit(rewards, self.checkpoint_path)
+        self.finished.emit()
         self.env.close()
 
     def _save_checkpoint(self, episodes, rewards):
-        path = f"trained_models/{self.agent_name}_{self.env_name}.pth"
+        path = f"trained_models/{self.env_name}_{self.agent_name}.pth"
         self.extra = {
             "environment": self.env_name,
             "episodes_trained": len(rewards),
@@ -50,9 +50,8 @@ class TrainingWorker(QObject):
     def _progress_cb(self, ep, episodes, ep_reward, rewards):
         self.progress.emit(ep, episodes, ep_reward, rewards)
 
-    def _on_finished(self, checkpoint_path):
+    def _on_finished(self):
         self.status_label.setText("✅ Training finished!")
-        self.last_checkpoint = self.extra
 
     def stop(self):
         self._stop_flag = True

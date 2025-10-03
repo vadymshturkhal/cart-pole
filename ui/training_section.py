@@ -17,6 +17,7 @@ class TrainingSection(QWidget):
 
         self.training_thread = None
         self.training_worker = None
+        self.training_done = False
         self.agent_name = None
         self.hyperparams = None
         self._build_training_section()
@@ -131,7 +132,7 @@ class TrainingSection(QWidget):
             self.status_label.setText("⚠ No training is running")
 
     def _save_agent_as(self):
-        if not hasattr(self, "last_checkpoint"):
+        if not self.training_done:
             self.status_label.setText("⚠ No trained agent to save")
             return
 
@@ -155,10 +156,7 @@ class TrainingSection(QWidget):
         )
         self.plot.update_plot(rewards, episodes)
 
-    def _on_finished(self, rewards, checkpoint):
+    def _on_finished(self ):
+        self.training_done = True
         self.status_label.setText("✅ Training finished!")
-        self.last_checkpoint = checkpoint
-
-        # FIXME
-        self.last_checkpoint['hyperparams'] = self.hyperparams
         self.save_btn.setEnabled(True)
