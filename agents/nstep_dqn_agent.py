@@ -140,5 +140,28 @@ class NStepDeepQLearningAgent(BaseAgent):
         torch.save(checkpoint, path)
 
     def load(self, path: str):
-        """Load model parameters + hyperparameters from a file."""
-        pass
+        """
+        Load model weights and hyperparameters from a checkpoint file.
+
+        Args:
+            path (str): path to checkpoint file
+        """
+        checkpoint = torch.load(path, map_location=config.DEVICE)
+
+        # Restore hyperparams (merge defaults + checkpoint)
+        hyperparams = self.DEFAULT_PARAMS.copy()
+        hyperparams.update(checkpoint.get("hyperparams", {}))
+        self.hyperparams = hyperparams
+
+        # Restore exploration settings
+        self.eps_start = hyperparams["eps_start"]
+        self.eps_end = hyperparams["eps_end"]
+        self.eps_decay = hyperparams["eps_decay"]
+
+        # Load model weights
+        if "model_state" in checkpoint:
+            self.q_net.load_state_dict(checkpoint["model_state"])
+            self.target_net.load_state_dict(self.q_net.state_dict())
+
+        # Re-create optimizer with correct learning rate
+        self.optimizer = optim.Adam(self.q_net.parameters(), lr=hyperparams["lr"])

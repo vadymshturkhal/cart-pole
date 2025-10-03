@@ -91,9 +91,7 @@ class TestingSection(QWidget):
         env, state_dim, action_dim = create_environment(env_name, render="rgb_array")
 
         agent = build_agent(agent_name, state_dim, action_dim, hyperparams)
-
-        if "model_state" in checkpoint:
-            agent.q_net.load_state_dict(checkpoint["model_state"])
+        agent.load(self.selected_model_file)
         agent.q_net.eval()
 
         # Remove old viewer
