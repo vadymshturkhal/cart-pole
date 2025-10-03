@@ -34,7 +34,7 @@
 - [ ] Update nstep_ddqn agent to use BaseAgent's API;
 - [ ] Update ase_ace agent to use BaseAgent's API;
 - [ ] Update ase_ace agent to use torch;
-- [ ] Planning for resume/continue training (hyperparam overrides)
+- [ ] Planning for resume/continue training (hyperparam overrides);
 
 
 ## Done
