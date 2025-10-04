@@ -22,6 +22,12 @@ class RewardPlot(FigureCanvas):
                  max_episodes: Optional[int] = None,
                  ma_window: int = 20,
                  normalize: bool = False):
+        
+        """
+            MA means Moving Average.
+            It smooths the reward curve by averaging the last N episode rewards, where N is the chosen window.
+        """
+
         self.fig = Figure(figsize=(5, 2.6), tight_layout=True)
         super().__init__(self.fig)
 
