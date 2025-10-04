@@ -33,11 +33,11 @@
 - [ ] Planning for resume/continue training (hyperparam overrides);
 - [ ] Add testing;
 - [ ] Add loss tracking;
-- [ ] Refactor reward_plot;
 - [ ] Add Specific section with description to agent choosing in Training section;
 
 
 ## Done
+- [x] Refactor reward_plot;
 - [x] Contain reaquired hyperparameters in agent's class;
 - [x] Update ase_ace agent to use torch;
 - [x] Update ase_ace agent to use BaseAgent's API;
