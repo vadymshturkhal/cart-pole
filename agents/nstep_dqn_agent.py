@@ -41,7 +41,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         hyperparams = self.DEFAULT_PARAMS.copy()
         hyperparams.update(kwargs)
         self.hyperparams = hyperparams
-        self.checkpooint = {}
+        self.checkpoint = {}
 
         # Hyperparameters
         self.gamma = hyperparams["gamma"]
