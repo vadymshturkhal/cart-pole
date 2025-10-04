@@ -54,7 +54,7 @@ class AgentDialog(QDialog):
         self.agent_name = name
         if name not in self._cache:
             AgentClass = AGENTS[name]
-            self._cache[name] = AgentClass.get_default_params()
+            self._cache[name] = AgentClass.get_default_hyperparams()
         self._rebuild_form(name)
 
     def _clear_form(self):

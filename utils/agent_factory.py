@@ -15,13 +15,7 @@ def build_agent(agent_name: str, state_dim: int, action_dim: int, hyperparams: d
         return NStepDeepQLearningAgent(state_dim, action_dim, **hyperparams)
 
     if agent_name == "nstep_ddqn":
-        return NStepDoubleDeepQLearningAgent(
-            state_dim, action_dim,
-            gamma=hyperparams["gamma"], lr=hyperparams["lr"],
-            buffer_size=int(hyperparams["buffer_size"]), batch_size=int(hyperparams["batch_size"]),
-            n_step=int(hyperparams["n_step"]),
-            eps_start=hyperparams["eps_start"], eps_end=hyperparams["eps_end"], eps_decay=int(hyperparams["eps_decay"])
-        )
+        return NStepDoubleDeepQLearningAgent(state_dim, action_dim, **hyperparams)
 
     if agent_name == "ase_ace":
         cfg = ACConfig(

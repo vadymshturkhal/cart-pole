@@ -38,8 +38,9 @@ class BaseAgent(ABC):
         """Load model parameters + hyperparameters from a file."""
         pass
 
+    @classmethod
     @abstractmethod
-    def get_default_hyperparams(self):
+    def get_default_hyperparams(cls):
         """Get default parameters specific for the agent"""
         pass
 

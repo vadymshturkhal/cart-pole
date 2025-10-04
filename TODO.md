@@ -31,7 +31,6 @@
 - [ ] Create Experiments section with Barto, Sutton, and Anderson (1983) Cart Pole;
 - [ ] Contain reaquired hyperparameters in agent's class;
 - [ ] Set min training episodes for training;
-- [ ] Update nstep_ddqn agent to use BaseAgent's API;
 - [ ] Update ase_ace agent to use BaseAgent's API;
 - [ ] Update ase_ace agent to use torch;
 - [ ] Planning for resume/continue training (hyperparam overrides);
@@ -39,6 +38,7 @@
 
 
 ## Done
+- [x] Update nstep_ddqn agent to use BaseAgent's API;
 - [x] Standardise Agent's API;
 - [x] Variables Dialog in Training section when choosing agent, must be specific for choosen agent;
 - [x] Create TestSection class;

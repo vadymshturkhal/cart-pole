@@ -73,15 +73,16 @@ class NStepDeepQLearningAgent(BaseAgent):
                 - True  → always choose best action (evaluation/testing)
                 - False → epsilon-greedy (training)
         """
+
         if greedy:
             with torch.no_grad():
                 state = torch.FloatTensor(state).unsqueeze(0).to(config.DEVICE)
                 q_values = self.q_net(state)
                 return q_values.argmax().item()
 
-        # epsilon-greedy (training mode)
+        # Epsilon-greedy for training
         eps = self.eps_end + (self.eps_start - self.eps_end) * \
-            np.exp(-1.0 * self.steps_done / self.eps_decay)
+                np.exp(-1 * self.steps_done / self.eps_decay)
         self.steps_done += 1
 
         if random.random() < eps:

@@ -3,21 +3,25 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import random
+from agents.base_agent import BaseAgent
 from .q_network import QNetwork
 from memory.replay_buffer import NStepReplayBuffer
 import config
 
 
-class NStepDoubleDeepQLearningAgent:
-    def __init__(self, state_dim, action_dim,
-                 gamma: float = config.GAMMA,
-                 lr: float = config.LR,
-                 buffer_size: int = config.BUFFER_SIZE,
-                 batch_size: int = config.BATCH_SIZE,
-                 n_step: int = config.N_STEP,
-                 eps_start: float = config.EPSILON_START,
-                 eps_end: float = config.EPSILON_END,
-                 eps_decay: int = config.EPSILON_DECAY):
+class NStepDoubleDeepQLearningAgent(BaseAgent):
+    DEFAULT_PARAMS = {
+        "gamma": config.GAMMA,
+        "lr": config.LR,
+        "buffer_size": config.BUFFER_SIZE,
+        "batch_size": config.BATCH_SIZE,
+        "n_step": config.N_STEP,
+        "eps_start": config.EPSILON_START,
+        "eps_end": config.EPSILON_END,
+        "eps_decay": config.EPSILON_DECAY,
+    }
+        
+    def __init__(self, state_dim, action_dim, **kwargs):
         """
         N-step DDQN agent.
 
@@ -34,28 +38,42 @@ class NStepDoubleDeepQLearningAgent:
             eps_decay (int): decay factor for epsilon
         """
 
-        # Networks
-        self.q_net = QNetwork(state_dim, action_dim).to(config.DEVICE)
-        self.target_net = QNetwork(state_dim, action_dim).to(config.DEVICE)
-        self.target_net.load_state_dict(self.q_net.state_dict())
-        self.optimizer = optim.Adam(self.q_net.parameters(), lr=lr)
-
-        # Replay buffer (use n-step > 1)
-        self.memory = NStepReplayBuffer(buffer_size, n_step, gamma)
+        hyperparams = self.DEFAULT_PARAMS.copy()
+        hyperparams.update(kwargs)
+        self.hyperparams = hyperparams
+        self.checkpooint = {}
 
         # Hyperparameters
-        self.gamma = gamma
-        self.batch_size = batch_size
+        self.gamma = hyperparams["gamma"]
+        self.batch_size = hyperparams["batch_size"]
         self.action_dim = action_dim
         self.steps_done = 0
 
         # Exploration
-        self.eps_start = eps_start
-        self.eps_end = eps_end
-        self.eps_decay = eps_decay
+        self.eps_start = hyperparams["eps_start"]
+        self.eps_end = hyperparams["eps_end"]
+        self.eps_decay = hyperparams["eps_decay"]
+        
+        # Replay buffer (use n-step > 1)
+        self.memory = NStepReplayBuffer(hyperparams["buffer_size"], hyperparams["n_step"], self.gamma)
+
+        # Networks
+        self.q_net = QNetwork(state_dim, action_dim).to(config.DEVICE)
+        self.target_net = QNetwork(state_dim, action_dim).to(config.DEVICE)
+        self.target_net.load_state_dict(self.q_net.state_dict())
+        self.optimizer = optim.Adam(self.q_net.parameters(), lr=hyperparams["lr"])
 
     def select_action(self, state, greedy: bool = False):
-        """Choose an action (epsilon-greedy for training, greedy-only for eval)."""
+        """
+        Select an action from the state.
+
+        Args:
+            state (ndarray): environment state
+            greedy (bool): 
+                - True  → always choose best action (evaluation/testing)
+                - False → epsilon-greedy (training)
+        """
+
         if greedy:
             with torch.no_grad():
                 state = torch.FloatTensor(state).unsqueeze(0).to(config.DEVICE)
@@ -64,7 +82,7 @@ class NStepDoubleDeepQLearningAgent:
 
         # Epsilon-greedy for training
         eps = self.eps_end + (self.eps_start - self.eps_end) * \
-              np.exp(-1. * self.steps_done / self.eps_decay)
+                np.exp(-1 * self.steps_done / self.eps_decay)
         self.steps_done += 1
 
         if random.random() < eps:
@@ -80,7 +98,8 @@ class NStepDoubleDeepQLearningAgent:
         self.update()
 
     def update(self):
-        """Sample batch and update Q-network (Double DQN + N-step)."""
+        """Sample batch and update Q-network (Double DQN + N-step)"""
+        
         if len(self.memory) < self.batch_size:
             return
 
@@ -115,3 +134,52 @@ class NStepDoubleDeepQLearningAgent:
     def update_target(self):
         """Update target network weights."""
         self.target_net.load_state_dict(self.q_net.state_dict())
+
+    @classmethod
+    def get_default_hyperparams(cls) -> dict:
+        return cls.DEFAULT_PARAMS.copy()
+    
+    def get_hyperparams(self) -> dict:
+        return self.hyperparams.copy()
+    
+    def get_checkpoint(self):
+        return self.checkpoint
+    
+    def save(self, path: str, extra: dict = None):
+        self.checkpoint = {
+            "agent_name": "nstep_ddqn",
+            "model_state": self.q_net.state_dict(),
+            "hyperparams": self.hyperparams
+        }
+
+        if extra:
+            self.checkpoint.update(extra)
+
+        torch.save(self.checkpoint, path)
+
+    def load(self, path: str):
+        """
+        Load model weights and hyperparameters from a checkpoint file.
+
+        Args:
+            path (str): path to checkpoint file
+        """
+        checkpoint = torch.load(path, map_location=config.DEVICE)
+
+        # Restore hyperparams (merge defaults + checkpoint)
+        hyperparams = self.DEFAULT_PARAMS.copy()
+        hyperparams.update(checkpoint.get("hyperparams", {}))
+        self.hyperparams = hyperparams
+
+        # Restore exploration settings
+        self.eps_start = hyperparams["eps_start"]
+        self.eps_end = hyperparams["eps_end"]
+        self.eps_decay = hyperparams["eps_decay"]
+
+        # Load model weights
+        if "model_state" in checkpoint:
+            self.q_net.load_state_dict(checkpoint["model_state"])
+            self.target_net.load_state_dict(self.q_net.state_dict())
+
+        # Re-create optimizer with correct learning rate
+        self.optimizer = optim.Adam(self.q_net.parameters(), lr=hyperparams["lr"])
