@@ -34,6 +34,7 @@
 - [ ] Planning for resume/continue training (hyperparam overrides);
 - [ ] Add testing;
 - [ ] Add loss tracking;
+- [ ] Refactor reward_plot;
 
 
 ## Done
