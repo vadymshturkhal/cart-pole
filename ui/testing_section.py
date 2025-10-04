@@ -92,7 +92,6 @@ class TestingSection(QWidget):
 
         agent = build_agent(agent_name, state_dim, action_dim, hyperparams)
         agent.load(self.selected_model_file)
-        agent.q_net.eval()
 
         # Remove old viewer
         if hasattr(self, "viewer") and self.viewer:

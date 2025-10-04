@@ -173,7 +173,7 @@ class ASEACEAgent(BaseAgent):
             sparse_reward=self.hyperparams["sparse_reward"],
         )
 
-    def select_action(self, state) -> int:
+    def select_action(self, state, greedy=False) -> int:
         phi = self.disc.encode_one_hot(np.asarray(state, dtype=np.float32))
         if self.hyperparams.get("eval_deterministic", True):
             return self.core.best_action(phi)

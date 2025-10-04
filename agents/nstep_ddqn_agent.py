@@ -183,3 +183,4 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
 
         # Re-create optimizer with correct learning rate
         self.optimizer = optim.Adam(self.q_net.parameters(), lr=hyperparams["lr"])
+        self.q_net.eval()
