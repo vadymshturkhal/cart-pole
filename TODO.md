@@ -35,6 +35,7 @@
 - [ ] Update ase_ace agent to use BaseAgent's API;
 - [ ] Update ase_ace agent to use torch;
 - [ ] Planning for resume/continue training (hyperparam overrides);
+- [ ] Add testing;
 
 
 ## Done
