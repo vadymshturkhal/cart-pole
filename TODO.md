@@ -29,7 +29,6 @@
 - [ ] Create ModelInfoWidget;
 - [ ] Create TestingWorker;
 - [ ] Create Experiments section with Barto, Sutton, and Anderson (1983) Cart Pole;
-- [ ] Contain reaquired hyperparameters in agent's class;
 - [ ] Set min training episodes for training;
 - [ ] Planning for resume/continue training (hyperparam overrides);
 - [ ] Add testing;
@@ -39,6 +38,7 @@
 
 
 ## Done
+- [x] Contain reaquired hyperparameters in agent's class;
 - [x] Update ase_ace agent to use torch;
 - [x] Update ase_ace agent to use BaseAgent's API;
 - [x] Update nstep_ddqn agent to use BaseAgent's API;
