@@ -155,7 +155,7 @@ class TrainingSection(QWidget):
             f"Ep {ep+1}/{episodes} — R {ep_reward:.1f}, Avg20 {avg20:.1f}, Global {global_avg:.1f}"
         )
         self.plot.update_plot(rewards, episodes)
-
+    
     def _on_finished(self ):
         self.training_done = True
         self.status_label.setText("✅ Training finished!")
