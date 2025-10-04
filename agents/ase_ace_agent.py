@@ -1,8 +1,10 @@
 from __future__ import annotations
 import math
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, Dict, Any
 import numpy as np
+import torch
+from agents.base_agent import BaseAgent
 
 
 @dataclass
@@ -20,28 +22,22 @@ class BoxDiscretizer:
 
     def __post_init__(self):
         self.dim = self.x_bins * self.xdot_bins * self.th_bins * self.thdot_bins  # 162
-        # Precompute edges for uniform binning
-        def edges(lo, hi, k):
-            return np.linspace(lo, hi, k + 1)
+        def edges(lo, hi, k): return np.linspace(lo, hi, k + 1)
         self._x_edges = edges(*self.x_bounds, self.x_bins)
         self._xdot_edges = edges(*self.xdot_bounds, self.xdot_bins)
         self._th_edges = edges(*self.th_bounds, self.th_bins)
         self._thdot_edges = edges(*self.thdot_bounds, self.thdot_bins)
 
     def _bin_index(self, val: float, edges: np.ndarray) -> int:
-        # Place values below/above range into edge bins
         idx = int(np.digitize([val], edges[1:-1])[0])
         return max(0, min(idx, len(edges) - 2))
 
     def encode_index(self, s: np.ndarray) -> int:
-        # s = [x, xdot, theta, thetadot]
-        bx = self._bin_index(float(s[0]), self._x_edges)
+        bx  = self._bin_index(float(s[0]), self._x_edges)
         bxd = self._bin_index(float(s[1]), self._xdot_edges)
         bth = self._bin_index(float(s[2]), self._th_edges)
-        bthd = self._bin_index(float(s[3]), self._thdot_edges)
-        # map 4D indices to flat index
-        idx = (((bx * self.xdot_bins) + bxd) * self.th_bins + bth) * self.thdot_bins + bthd
-        return int(idx)
+        bthd= self._bin_index(float(s[3]), self._thdot_edges)
+        return int((((bx * self.xdot_bins) + bxd) * self.th_bins + bth) * self.thdot_bins + bthd)
 
     def encode_one_hot(self, s: np.ndarray) -> np.ndarray:
         idx = self.encode_index(s)
@@ -49,9 +45,6 @@ class BoxDiscretizer:
         phi[idx] = 1.0
         return phi
 
-# -------------------------------------------------------------
-# Actor–Critic with eligibility traces (softmax actor, linear critic)
-# -------------------------------------------------------------
 
 @dataclass
 class ACConfig:
@@ -88,6 +81,9 @@ class ActorCriticASEACE:
         p = self.policy(phi)
         return int(rng.choice(self.A, p=p))
 
+    def best_action(self, phi: np.ndarray) -> int:
+        return int(np.argmax(self.logits(phi)))
+
     def step(self, phi_t: np.ndarray, a_t: int, r_tp1: float, phi_tp1: np.ndarray, done: bool):
         cfg = self.cfg
         v_t = self.value(phi_t)
@@ -106,50 +102,130 @@ class ActorCriticASEACE:
         self.theta += cfg.alpha_pi * delta * self.e_theta
 
         return delta
-    
 
-class ASEACEAgent:
-    """Thin wrapper exposing a simple Agent API with `select_action` and `update`.
 
-    - Encodes raw state with the 162-BOXES discretizer
-    - Uses the Actor–Critic core with eligibilities under the hood
+class ASEACEAgent(BaseAgent):
     """
-    def __init__(self, cfg: ACConfig, seed: int = 0):
-        self.cfg = cfg
-        self.disc = BoxDiscretizer()
-        self.core = ActorCriticASEACE(self.disc.dim, cfg)
-        self.rng = np.random.default_rng(seed)
+    NumPy-based Actor–Critic with eligibility traces, using a 162-dim one-hot
+    discretization of CartPole state. Conforms to BaseAgent for GUI integration.
+    """
+    DEFAULT_PARAMS = {
+        "gamma": 0.99,
+        "lam_v": 0.8,
+        "lam_pi": 0.8,
+        "alpha_v": 0.2,
+        "alpha_pi": 0.05,
+        "max_steps": 2000,
+        "sparse_reward": False,
+        "seed": 0,
+        # no epsilon here (stochastic policy); we’ll add eval_deterministic flag
+        "eval_deterministic": False,
+    }
 
-    # -------- public API --------
-    def select_action(self, state: np.ndarray) -> int:
-        """Return an action (0=Left, 1=Right) given the raw environment state."""
+    def __init__(self, state_dim=None, action_dim=None, **kwargs):
+        super().__init__(state_dim, action_dim)
+        hyperparams = self.DEFAULT_PARAMS.copy()
+        hyperparams.update(kwargs)
+        self.hyperparams = hyperparams
+        self.checkpoint = {}
+
+        self.cfg = ACConfig(
+            gamma=hyperparams["gamma"],
+            lam_v=hyperparams["lam_v"],
+            lam_pi=hyperparams["lam_pi"],
+            alpha_v=hyperparams["alpha_v"],
+            alpha_pi=hyperparams["alpha_pi"],
+            max_steps=hyperparams["max_steps"],
+            sparse_reward=hyperparams["sparse_reward"],
+        )
+        self.disc = BoxDiscretizer()
+        self.core = ActorCriticASEACE(self.disc.dim, self.cfg)
+        self.rng = np.random.default_rng(hyperparams["seed"])
+
+    # ---- BaseAgent API ----
+    @classmethod
+    def get_default_hyperparams(cls) -> Dict[str, Any]:
+        return cls.DEFAULT_PARAMS.copy()
+
+    def get_hyperparams(self) -> Dict[str, Any]:
+        return self.hyperparams.copy()
+
+    def set_hyperparams(self, updates: Dict[str, Any]) -> None:
+        # Only allow "safe" updates at runtime
+        for k, v in updates.items():
+            if k not in self.hyperparams:
+                raise ValueError(f"Unknown parameter: {k}")
+            if k in ["gamma", "lam_v", "lam_pi", "alpha_v", "alpha_pi", "max_steps", "sparse_reward"]:
+                # Requires re-creating cfg / traces for full correctness. Keep it simple:
+                self.hyperparams[k] = v
+            elif k in ["seed", "eval_deterministic"]:
+                self.hyperparams[k] = v
+            else:
+                self.hyperparams[k] = v
+        # If core-level params changed, re-init minimal parts:
+        self.cfg = ACConfig(
+            gamma=self.hyperparams["gamma"],
+            lam_v=self.hyperparams["lam_v"],
+            lam_pi=self.hyperparams["lam_pi"],
+            alpha_v=self.hyperparams["alpha_v"],
+            alpha_pi=self.hyperparams["alpha_pi"],
+            max_steps=self.hyperparams["max_steps"],
+            sparse_reward=self.hyperparams["sparse_reward"],
+        )
+
+    def select_action(self, state) -> int:
         phi = self.disc.encode_one_hot(np.asarray(state, dtype=np.float32))
+        if self.hyperparams.get("eval_deterministic", True):
+            return self.core.best_action(phi)
         return self.core.sample_action(phi, self.rng)
 
     def update_step(self, state, action, reward, next_state, done):
-        # For actor–critic: directly update online, no replay buffer
-        self.update(state, action, reward, next_state, done)
-        
-    def update(self, state: np.ndarray, action: int, reward: float, next_state: np.ndarray, done: bool) -> float:
-        """Single-step actor–critic update. Returns TD error δ.
-        Accepts raw states; handles feature encoding internally.
-        """
         phi_t = self.disc.encode_one_hot(np.asarray(state, dtype=np.float32))
-        if done:
-            phi_tp1 = np.zeros_like(phi_t)
-        else:
-            phi_tp1 = self.disc.encode_one_hot(np.asarray(next_state, dtype=np.float32))
+        phi_tp1 = np.zeros_like(phi_t) if done else self.disc.encode_one_hot(np.asarray(next_state, dtype=np.float32))
         return self.core.step(phi_t, action, reward, phi_tp1, done)
 
-    def reset_traces(self):
-        self.core.e_w.fill(0.0)
-        self.core.e_theta.fill(0.0)
-
-    # Optional helpers
-    def value(self, state: np.ndarray) -> float:
-        phi = self.disc.encode_one_hot(np.asarray(state, dtype=np.float32))
-        return self.core.value(phi)
+    def get_checkpoint(self):
+        return self.checkpoint
     
     def update_target(self):
-        """Update target network weights."""
         pass
+
+    def save(self, path: str, extra: dict | None = None) -> None:
+        self.checkpoint = {
+            "agent_name": "ase_ace",
+            "hyperparams": self.hyperparams,
+            # numpy arrays serialize fine with torch.save
+            "w": self.core.w,
+            "theta": self.core.theta,
+            "e_w": self.core.e_w,
+            "e_theta": self.core.e_theta,
+        }
+
+        if extra:
+            self.checkpoint.update(extra)
+
+        torch.save(self.checkpoint, path)
+
+    def load(self, path: str):
+        checkpoint = torch.load(path, map_location="cpu")  # this agent is CPU/NumPy
+        hyperparams = self.DEFAULT_PARAMS.copy()
+        hyperparams.update(checkpoint.get("hyperparams", {}))
+        self.hyperparams = hyperparams
+        # rebuild config & core (dim must match discretizer)
+        self.cfg = ACConfig(
+            gamma=hyperparams["gamma"],
+            lam_v=hyperparams["lam_v"],
+            lam_pi=hyperparams["lam_pi"],
+            alpha_v=hyperparams["alpha_v"],
+            alpha_pi=hyperparams["alpha_pi"],
+            max_steps=hyperparams["max_steps"],
+            sparse_reward=hyperparams["sparse_reward"],
+        )
+        self.core = ActorCriticASEACE(self.disc.dim, self.cfg)
+        # restore weights/traces if present
+
+        self.hyperparams.update({"eval_deterministic": True})
+        for name in ["w", "theta", "e_w", "e_theta"]:
+            if name in checkpoint:
+                getattr(self.core, name)[:] = checkpoint[name]
+        return self

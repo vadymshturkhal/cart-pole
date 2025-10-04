@@ -26,13 +26,15 @@ AGENT_SPECS = {
 
     # Actor–Critic w/ eligibilities (your ase_ace)
     "ase_ace": {
-        "gamma":        ("float", 0.0,  0.9999, 0.001, 0.99),
-        "lam_v":        ("float", 0.0,  1.0,    0.01,  0.8),
-        "lam_pi":       ("float", 0.0,  1.0,    0.01,  0.8),
-        "alpha_v":      ("float", 1e-5, 1.0,    1e-3,  0.2),
-        "alpha_pi":     ("float", 1e-5, 1.0,    1e-3,  0.05),
-        "max_steps":    ("int",   1,    100_000, 1,    2000),
-        "sparse_reward":("bool",),
+        "gamma":       ("float", 0.8, 0.999, 0.001, 0.99),
+        "lam_v":       ("float", 0.0, 1.0,   0.05,  0.8),
+        "lam_pi":      ("float", 0.0, 1.0,   0.05,  0.8),
+        "alpha_v":     ("float", 0.001, 1.0, 0.005, 0.2),
+        "alpha_pi":    ("float", 0.001, 1.0, 0.005, 0.05),
+        "max_steps":   ("int",   200,  5000, 50,    2000),
+        "sparse_reward": ("bool",),
+        "seed":        ("int",   0,    2_147_483_647, 1, 0),
+        "eval_deterministic": ("bool",),
     },
 }
 
