@@ -18,6 +18,7 @@ class RewardPlot(FigureCanvas):
     - Configurable smoothing window.
     - Export helpers (PNG, CSV).
     """
+
     def __init__(self,
                  max_episodes: Optional[int] = None,
                  ma_window: int = 20,
