@@ -35,6 +35,7 @@
 - [ ] Add testing;
 - [ ] Add loss tracking;
 - [ ] Refactor reward_plot;
+- [ ] Add Specific section with description to agent choosing in Training section;
 
 
 ## Done
