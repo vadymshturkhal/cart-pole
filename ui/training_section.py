@@ -65,6 +65,7 @@ class TrainingSection(QWidget):
         back_btn = QPushButton("⬅ Back to Main Menu")
         back_btn.setMinimumHeight(40)
         back_btn.setStyleSheet("font-size: 16px;")
+
         # Emit Signal
         back_btn.clicked.connect(self.back_to_main.emit)
         layout.addWidget(back_btn)
