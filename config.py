@@ -12,7 +12,7 @@ DEFAULTS = {
     "SEED": 42,
 
     # Rendering
-    "RESOLUTION": [800, 600],
+    "RESOLUTION": [1280, 720],
 
     # File management
     "REWARDS_FILE": "rewards.csv",
