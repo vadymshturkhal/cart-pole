@@ -7,6 +7,7 @@ from agents.base_agent import BaseAgent
 from .q_network import QNetwork
 from memory.replay_buffer import NStepReplayBuffer
 import config
+from datetime import datetime
 
 
 class NStepDeepQLearningAgent(BaseAgent):
@@ -138,7 +139,8 @@ class NStepDeepQLearningAgent(BaseAgent):
         self.checkpoint = {
             "agent_name": "nstep_dqn",
             "model_state": self.q_net.state_dict(),
-            "hyperparams": self.hyperparams
+            "hyperparams": self.hyperparams,
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
 
         if extra:

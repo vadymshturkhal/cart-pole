@@ -61,13 +61,16 @@ class TestingSection(QWidget):
                 episodes_total = checkpoint.get("episodes_total", "N/A")
                 hps = checkpoint.get("hyperparams", {})
                 hps_html = "<ul>" + "".join(f"<li>{k}: {v}</li>" for k, v in hps.items()) + "</ul>"
+                timestamp = checkpoint.get("timestamp", "Unknown")
 
                 info_html = (
                     f"<b>Environment:</b> {env_name}<br>"
                     f"<b>Agent:</b> {agent_name}<br>"
                     f"<b>Episodes:</b> {episodes_trained}/{episodes_total}<br>"
                     f"<b>Hyperparameters:</b>{hps_html}"
+                    f"<b>Created:</b> {timestamp}<br>"
                 )
+
                 self.env_label.setText(info_html)
 
                 self.selected_checkpoint = checkpoint

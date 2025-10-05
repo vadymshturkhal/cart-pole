@@ -46,9 +46,15 @@ class TestModelDialog(QDialog):
                 episodes_trained = checkpoint.get("episodes_trained", "N/A")
                 episodes_total = checkpoint.get("episodes_total", "N/A")
                 environment = checkpoint.get("environment", "N/A")
+                timestamp = checkpoint.get("timestamp", "Unknown")
 
                 if episodes_total != "N/A":
-                    info = f"<b>Hyperparams:</b>{hps}<br><b>Episodes: </b>{episodes_trained}/{episodes_total}<br><b>Environment: </b> {environment}"
+                    info = f"""
+                            <b>Hyperparams:</b>{hps}<br>
+                            <b>Episodes: </b>{episodes_trained}/{episodes_total}<br>
+                            <b>Environment: </b> {environment}<br>
+                            <b>Created:</b> {timestamp}<br>
+                            """
                 else:
                     info = f"<b>Hyperparams:</b>{hps}<br><b>Episodes: </b>{episodes_trained} <br><b>Environment: </b>{environment}"
 
