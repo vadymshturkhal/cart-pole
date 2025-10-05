@@ -34,6 +34,7 @@
 - [ ] Add testing;
 - [ ] Add loss tracking;
 - [ ] Add Specific section with description to agent choosing in Training section;
+- [ ] Add date to trained model's data;
 
 
 ## Done
