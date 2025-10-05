@@ -225,9 +225,10 @@ class ASEACEAgent(BaseAgent):
             sparse_reward=hyperparams["sparse_reward"],
         )
         self.core = ActorCriticASEACE(self.disc.dim, self.cfg)
-        # restore weights/traces if present
 
+        # For testing
         self.hyperparams.update({"eval_deterministic": True})
+
         for name in ["w", "theta", "e_w", "e_theta"]:
             if name in checkpoint:
                 getattr(self.core, name)[:] = checkpoint[name]
