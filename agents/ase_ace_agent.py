@@ -5,6 +5,7 @@ from typing import Tuple, Dict, Any
 import numpy as np
 import torch
 from agents.base_agent import BaseAgent
+from datetime import datetime
 
 
 @dataclass
@@ -202,6 +203,7 @@ class ASEACEAgent(BaseAgent):
             "theta": self.core.theta,
             "e_w": self.core.e_w,
             "e_theta": self.core.e_theta,
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
 
         if extra:
