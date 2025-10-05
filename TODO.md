@@ -36,7 +36,8 @@
 - [ ] Add Specific section with description to agent choosing in Training section;
 - [ ] Add date to trained model's data;
 - [ ] After choosing agent there must be info about its parameters;
-- [ ] Add detailed description to agent after training, including optimizer, loss, nn layers; 
+- [ ] Add detailed description to agent after training, including optimizer, loss, nn layers;
+- [ ] Add CUDA tick to Training section;
 
 
 ## Done
