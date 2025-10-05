@@ -45,7 +45,6 @@ class TrainingWorker(QObject):
         }
 
         self.agent.save(path, extra=self.extra)
-        self.checkpoint_path = path
 
     def _progress_cb(self, ep, episodes, ep_reward, rewards):
         self.progress.emit(ep, episodes, ep_reward, rewards)
