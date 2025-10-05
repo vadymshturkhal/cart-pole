@@ -125,9 +125,8 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
         expected_q = rewards + (1 - dones) * self.gamma * next_q_values
 
         # Loss
-        loss = nn.MSELoss()(q_values, expected_q.detach())
-
         self.optimizer.zero_grad()
+        loss = nn.MSELoss()(q_values, expected_q.detach())
         loss.backward()
         self.optimizer.step()
 

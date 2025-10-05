@@ -111,11 +111,13 @@ class NStepDeepQLearningAgent(BaseAgent):
 
         q_values = self.q_net(states).gather(1, actions).squeeze(1)
         next_q_values = self.target_net(next_states).max(1)[0]
+
+        # Compute target with n-step returns already handled by replay buffer
         expected_q = rewards + (1 - dones) * self.gamma * next_q_values
 
-        loss = nn.MSELoss()(q_values, expected_q.detach())
-
+        # Loss
         self.optimizer.zero_grad()
+        loss = nn.MSELoss()(q_values, expected_q.detach())
         loss.backward()
         self.optimizer.step()
 
