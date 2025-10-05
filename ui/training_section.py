@@ -1,5 +1,7 @@
-import torch
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QComboBox, QSpinBox, QFileDialog
+from PySide6.QtWidgets import (
+    QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QComboBox, QSpinBox,
+    QFileDialog, QDialog, QTreeWidget, QTreeWidgetItem, QHeaderView, QVBoxLayout
+)
 from PySide6.QtCore import QThread, Signal
 from ui.agent_dialog import AgentDialog
 from ui.reward_plot import RewardPlot
@@ -7,6 +9,33 @@ from ui.training_worker import TrainingWorker
 from utils.agent_factory import build_agent
 from environments.factory import create_environment
 import config
+
+
+class AgentDetailsDialog(QDialog):
+    def __init__(self, agent_name: str, hyperparams: dict, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(f"Agent Details — {agent_name}")
+        self.resize(400, 500)
+
+        layout = QVBoxLayout(self)
+
+        tree = QTreeWidget()
+        tree.setColumnCount(2)
+        tree.setHeaderLabels(["Parameter", "Value"])
+        tree.header().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+        tree.header().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        tree.setAlternatingRowColors(True)
+        tree.setMinimumHeight(400)
+        layout.addWidget(tree)
+
+        if isinstance(hyperparams, dict):
+            for k in sorted(hyperparams.keys()):
+                QTreeWidgetItem(tree, [str(k), str(hyperparams[k])])
+            tree.expandAll()
+
+        close_btn = QPushButton("Close")
+        close_btn.clicked.connect(self.accept)
+        layout.addWidget(close_btn)
 
 
 class TrainingSection(QWidget):
@@ -47,6 +76,14 @@ class TrainingSection(QWidget):
         row.addWidget(self.save_btn)
         layout.addLayout(row)
 
+        agent_row = QHBoxLayout()
+        self.details_btn = QPushButton("Selected Agent Details")
+        self.details_btn.setVisible(False)
+        self.details_btn.setMinimumWidth(150)
+        self.details_btn.clicked.connect(self._show_agent_details)
+        agent_row.addWidget(self.details_btn)
+        layout.addLayout(agent_row)
+
         layout.addWidget(QLabel("Rendering Mode:"))
         self.render_box = QComboBox()
         self.render_box.addItems(["off", "human", "gif", "mp4"])
@@ -83,6 +120,9 @@ class TrainingSection(QWidget):
             self.agent_name = agent_name
             self.hyperparams = hyperparams
             self.agent_btn.setText(agent_name)
+
+            # reveal the already-placed button
+            self.details_btn.setVisible(True)
 
     def _start_training(self):
         if self.training_thread and self.training_thread.isRunning():
@@ -161,3 +201,9 @@ class TrainingSection(QWidget):
         self.training_done = True
         self.status_label.setText("✅ Training finished!")
         self.save_btn.setEnabled(True)
+
+    def _show_agent_details(self):
+        if not hasattr(self, "hyperparams") or not self.hyperparams:
+            return
+        dlg = AgentDetailsDialog(self.agent_name, self.hyperparams, self)
+        dlg.exec()
