@@ -11,13 +11,10 @@ AGENTS = {
 
 
 def build_agent(agent_name: str, state_dim: int, action_dim: int, hyperparams: dict):
-    if agent_name == "nstep_dqn":
-        return NStepDeepQLearningAgent(state_dim, action_dim, **hyperparams)
-
-    if agent_name == "nstep_ddqn":
-        return NStepDoubleDeepQLearningAgent(state_dim, action_dim, **hyperparams)
-
-    if agent_name == "ase_ace":
-        return ASEACEAgent(state_dim, action_dim, **hyperparams)
-
-    raise ValueError(f"Unknown agent: {agent_name}")
+    AgentClass = AGENTS.get(agent_name)
+    
+    if AgentClass is None:
+        raise ValueError(f"❌ Unknown agent name: '{agent_name}'. Available: {list(AGENTS)}")
+    
+    agent = AgentClass(state_dim, action_dim, **hyperparams)
+    return agent
