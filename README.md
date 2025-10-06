@@ -46,22 +46,9 @@ pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 \
 
 ---
 
-## 🏋️ Training
+## 🏋️ Training and Testing
 
-You can train the agent in **three ways** but **second one** is the most useful:
-
-### 1. Console Mode (minimal & script-friendly)
-Run plain console training with::
-```bash
-python3 train_console.py
-```
-This will:
-- Train the agent
-- Save rewards to rewards.csv
-- Save the model to models/{agent}_qnet.pth
-- Plot the learning curve to docs/rewards_plot.png
-
-### 2. Qt Menu Mode (interactive, game-like UI)
+### Qt Menu Mode (interactive, game-like UI)
 Run the pygame menu with:
 ```bash
 python3 train_qt_menu.py
@@ -71,13 +58,10 @@ This will:
   - Which agent to train (N-step DQN / N-step DDQN)
   - Rendering mode (off, human, gif, mp4)
 - Show live training progress, episode rewards, and average rewards in the window
-- Save rewards, model, and plots like the console mode
-
-### 3. Pygame Menu Mode (Legacy UI)
-Run the pygame menu with:
-```bash
-python3 train_menu.py
-```
+- Save rewards to rewards.csv
+- Save the model to trained_models/{env}_{agent}_qnet.pth
+- Plot the learning curve to docs/rewards_plot.png
+- And which agent to test;
 
 ---
 
