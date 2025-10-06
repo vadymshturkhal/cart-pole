@@ -104,11 +104,11 @@ class NStepDeepQLearningAgent(BaseAgent):
 
         batch = self.memory.sample(self.batch_size)
 
-        states = torch.FloatTensor(batch.state).to(config.DEVICE)
-        actions = torch.LongTensor(batch.action).unsqueeze(1).to(config.DEVICE)
-        rewards = torch.FloatTensor(batch.reward).to(config.DEVICE)
-        next_states = torch.FloatTensor(batch.next_state).to(config.DEVICE)
-        dones = torch.FloatTensor(batch.done).to(config.DEVICE)
+        states = torch.from_numpy(batch.state).to(config.DEVICE)
+        actions = torch.from_numpy(batch.action).unsqueeze(1).to(config.DEVICE)
+        rewards = torch.from_numpy(batch.reward).to(config.DEVICE)
+        next_states = torch.from_numpy(batch.next_state).to(config.DEVICE)
+        dones = torch.from_numpy(batch.done).to(config.DEVICE)
 
         q_values = self.q_net(states).gather(1, actions).squeeze(1)
         next_q_values = self.target_net(next_states).max(1)[0]

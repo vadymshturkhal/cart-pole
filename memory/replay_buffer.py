@@ -1,5 +1,6 @@
 from collections import deque, namedtuple
 import random
+import numpy as np
 
 
 Transition = namedtuple("Transition", ("state", "action", "reward", "next_state", "done"))
@@ -32,7 +33,15 @@ class NStepReplayBuffer:
     def sample(self, batch_size):
         transitions = random.sample(self.buffer, batch_size)
         batch = Transition(*zip(*transitions))
-        return batch
+
+        # Numpy arrays
+        states = np.array(batch.state, dtype=np.float32)
+        actions = np.array(batch.action)
+        rewards = np.array(batch.reward, dtype=np.float32)
+        next_states = np.array(batch.next_state, dtype=np.float32)
+        dones = np.array(batch.done, dtype=np.float32)
+
+        return Transition(states, actions, rewards, next_states, dones)
     
     def __len__(self):
         return len(self.buffer)
