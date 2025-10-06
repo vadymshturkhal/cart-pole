@@ -39,6 +39,7 @@
 - [ ] Add continuous environment;
 - [ ] Hide discrete agents for continuous environments and vice versa;
 - [ ] Add DDPG (Deep Deterministic Policy Gradient) agent for continuous environments;
+- [ ] Add target network update	every N steps ti AgentDialog in Training section;
 
 
 ## Done
