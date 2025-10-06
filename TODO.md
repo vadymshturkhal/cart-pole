@@ -36,7 +36,7 @@
 - [ ] Add date to trained model's data;
 - [ ] Add detailed description to agent after training, including optimizer, loss, nn layers;
 - [ ] Add CUDA tick to Training section;
-- [ ] Add discrete environment;
+- [ ] Add continuous environment;
 - [ ] Hide discrete agents for continuous environments and vice versa;
 - [ ] Add DDPG (Deep Deterministic Policy Gradient) agent for continuous environments;
 
