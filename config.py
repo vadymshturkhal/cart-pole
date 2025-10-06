@@ -8,7 +8,7 @@ DEFAULTS = {
 
     # Environment
     "DEFAULT_ENVIRONMENT": "CartPole-v1",
-    "AVAILABLE_ENVIRONMENTS": ["CartPole-v1", "MountainCar-v0", "Acrobot-v1"],
+    "AVAILABLE_ENVIRONMENTS": ["CartPole-v1", "MountainCar-v0", "Acrobot-v1", "LunarLander-v3"],
     "SEED": 42,
 
     # Rendering
