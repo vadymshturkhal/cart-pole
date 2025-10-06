@@ -13,7 +13,6 @@
 - [ ] Stop Training button must clear the plot;
 - [ ] Add Average and Average 100 rewards section to description of a trained model;
 - [ ] Update README.md;
-- [ ] Get rid of train_menu;
 - [ ] Add Model management panel;
 - [ ] More visualizations like epsilon decay, loss or last N episode returns histogram;
 - [ ] Add a log window to capture status messages and scroll through training history (episode rewards, averages);
@@ -43,6 +42,7 @@
 
 
 ## Done
+- [x] Get rid of train_menu;
 - [x] After choosing agent there must be info about its parameters;
 - [x] Refactor reward_plot;
 - [x] Contain reaquired hyperparameters in agent's class;
