@@ -37,6 +37,8 @@
 - [ ] Add date to trained model's data;
 - [ ] Add detailed description to agent after training, including optimizer, loss, nn layers;
 - [ ] Add CUDA tick to Training section;
+- [ ] Add discrete environment;
+- [ ] Hide discrete agents for continuous environments and vice versa;
 
 
 ## Done
