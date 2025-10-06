@@ -3,3 +3,5 @@ env
 runs
 ex*
 trained_models/
+user_config.json
+rewards.csv
