@@ -1,6 +1,6 @@
 from agents.nstep_dqn_agent import NStepDeepQLearningAgent
 from agents.nstep_ddqn_agent import NStepDoubleDeepQLearningAgent
-from agents.ase_ace_agent import ASEACEAgent, ACConfig
+from agents.ase_ace_agent import ASEACEAgent
 
 
 AGENTS = {
