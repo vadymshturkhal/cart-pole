@@ -33,8 +33,8 @@ def train(env, agent, episodes=config.EPISODES,
 
         # Loss
         average_loss = 0
-        if hasattr(agent, "get_losses"):
-            losses = agent.get_losses
+        if hasattr(agent, "losses"):
+            losses = agent.losses
 
             if len(losses) > 0:
                 average_loss = sum(losses) / len(losses)
