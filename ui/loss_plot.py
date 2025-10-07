@@ -65,7 +65,7 @@ class LossPlot(FigureCanvas):
         self.ax.set_ylim(0, 1.0)
         self.draw_idle()
 
-    def add_point(self, step_idx: int, loss: float):
+    def add_point(self, loss: float):
         """Incremental update from training loop."""
         self._losses.append(float(loss))
 

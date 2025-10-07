@@ -38,10 +38,8 @@ class TrainingSection(QWidget):
         self.tabs.addTab(self.loss_plot, "Loss Curve")
 
         layout.addWidget(self.tabs)
-
-        # Plot
-        # self.plot = RewardPlot()
-        # layout.addWidget(self.plot)
+        self.tabs.setMinimumHeight(300)
+        self.tabs.setMaximumHeight(310)
 
         layout.addWidget(QLabel("Environment:"))
         self.env_box = QComboBox()
@@ -184,13 +182,10 @@ class TrainingSection(QWidget):
         self.status_label.setText(
             f"Ep {ep+1}/{episodes} — R {ep_reward:.1f}, Avg20 {avg20:.1f}, Global {global_avg:.1f}, Average episode loss {average_loss:.2f}"
         )
-        # self.plot.update_plot(rewards, episodes)
 
+        # Update plots
         self.reward_plot.update_plot(rewards, episodes)
-
-        # Update the loss plot incrementally
-        self.loss_plot.add_point(ep + 1, average_loss)
-
+        self.loss_plot.add_point(average_loss)
     
     def _on_finished(self ):
         self.training_done = True
