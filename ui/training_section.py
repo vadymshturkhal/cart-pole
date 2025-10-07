@@ -1,11 +1,12 @@
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, 
-    QComboBox, QSpinBox, QFileDialog, QVBoxLayout
+    QComboBox, QSpinBox, QFileDialog, QVBoxLayout, QTabWidget
 )
 from PySide6.QtCore import QThread, Signal
 from ui.agent_dialog import AgentDialog
 from ui.agent_details_dialog import AgentDetailsDialog
 from ui.reward_plot import RewardPlot
+from ui.loss_plot import LossPlot
 from ui.training_worker import TrainingWorker
 from utils.agent_factory import build_agent
 from environments.factory import create_environment
@@ -28,9 +29,19 @@ class TrainingSection(QWidget):
     def _build_training_section(self):
         layout = QVBoxLayout(self)
 
+        # --- Plots tabbed view ---
+        self.tabs = QTabWidget()
+        self.reward_plot = RewardPlot()
+        self.loss_plot = LossPlot()
+
+        self.tabs.addTab(self.reward_plot, "Training Curve")
+        self.tabs.addTab(self.loss_plot, "Loss Curve")
+
+        layout.addWidget(self.tabs)
+
         # Plot
-        self.plot = RewardPlot()
-        layout.addWidget(self.plot)
+        # self.plot = RewardPlot()
+        # layout.addWidget(self.plot)
 
         layout.addWidget(QLabel("Environment:"))
         self.env_box = QComboBox()
@@ -110,6 +121,10 @@ class TrainingSection(QWidget):
         render = self.render_box.currentText()
         episodes = self.episodes_box.value()
 
+        # Reset plots
+        self.reward_plot.reset(max_episodes=episodes)
+        self.loss_plot.reset(max_steps=episodes)
+
         self.env_name = self.env_box.currentText()
         env, state_dim, action_dim = create_environment(self.env_name, render)
 
@@ -169,7 +184,13 @@ class TrainingSection(QWidget):
         self.status_label.setText(
             f"Ep {ep+1}/{episodes} — R {ep_reward:.1f}, Avg20 {avg20:.1f}, Global {global_avg:.1f}, Average episode loss {average_loss:.2f}"
         )
-        self.plot.update_plot(rewards, episodes)
+        # self.plot.update_plot(rewards, episodes)
+
+        self.reward_plot.update_plot(rewards, episodes)
+
+        # Update the loss plot incrementally
+        self.loss_plot.add_point(ep + 1, average_loss)
+
     
     def _on_finished(self ):
         self.training_done = True

@@ -41,10 +41,10 @@
 - [ ] Add DDPG (Deep Deterministic Policy Gradient) agent for continuous environments;
 - [ ] Add target network update	every N steps ti AgentDialog in Training section;
 - [ ] Add 'Load hyperparams from config' button for agent in Training section;
-- [ ] Add loss graph;
 
 
 ## Done
+- [x] Add loss plot;
 - [x] Get rid of train_menu;
 - [x] After choosing agent there must be info about its parameters;
 - [x] Refactor reward_plot;
