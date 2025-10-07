@@ -1,4 +1,5 @@
 from __future__ import annotations
+from copy import deepcopy
 import math
 from dataclasses import dataclass
 from typing import Tuple, Dict, Any
@@ -189,7 +190,7 @@ class ASEACEAgent(BaseAgent):
         return self.core.step(phi_t, action, reward, phi_tp1, done)
 
     def get_checkpoint(self):
-        return self.checkpoint
+        return deepcopy(self.checkpoint)
     
     def update_target(self):
         pass
