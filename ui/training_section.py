@@ -189,11 +189,11 @@ class TrainingSection(QWidget):
         self.training_thread = None
         self.training_worker = None
 
-    def _on_progress(self, ep, episodes, ep_reward, rewards):
+    def _on_progress(self, ep, episodes, ep_reward, rewards, average_loss):
         avg20 = sum(rewards[-20:]) / min(len(rewards), 20)
         global_avg = sum(rewards) / len(rewards)
         self.status_label.setText(
-            f"Ep {ep+1}/{episodes} — R {ep_reward:.1f}, Avg20 {avg20:.1f}, Global {global_avg:.1f}"
+            f"Ep {ep+1}/{episodes} — R {ep_reward:.1f}, Avg20 {avg20:.1f}, Global {global_avg:.1f}, Average episode loss {average_loss:.2f}"
         )
         self.plot.update_plot(rewards, episodes)
     

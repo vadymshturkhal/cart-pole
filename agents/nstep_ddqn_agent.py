@@ -65,6 +65,9 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
         self.target_net.load_state_dict(self.q_net.state_dict())
         self.optimizer = optim.Adam(self.q_net.parameters(), lr=hyperparams["lr"])
 
+        # Loss
+        self.losses = []
+
     def select_action(self, state, greedy: bool = False):
         """
         Select an action from the state.
@@ -129,9 +132,12 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
         # Loss
         self.optimizer.zero_grad()
         loss = nn.MSELoss()(q_values, expected_q.detach())
+        # loss = nn.SmoothL1Loss()(q_values, expected_q.detach())
         loss.backward()
         torch.nn.utils.clip_grad_norm_(self.q_net.parameters(), 10)
         self.optimizer.step()
+
+        self.losses.append(loss.item())
 
     def update_target(self):
         """Update target network weights."""
@@ -187,3 +193,10 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
         # Re-create optimizer with correct learning rate
         self.optimizer = optim.Adam(self.q_net.parameters(), lr=hyperparams["lr"])
         self.q_net.eval()
+
+    @property
+    def get_losses(self):
+        return self.losses.copy()
+    
+    def clear_losses(self):
+        self.losses.clear()
