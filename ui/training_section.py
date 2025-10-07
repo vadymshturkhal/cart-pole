@@ -29,7 +29,7 @@ class TrainingSection(QWidget):
     def _build_training_section(self):
         layout = QVBoxLayout(self)
 
-        # --- Plots tabbed view ---
+        # Plots
         self.tabs = QTabWidget()
         self.reward_plot = RewardPlot()
         self.loss_plot = LossPlot()
