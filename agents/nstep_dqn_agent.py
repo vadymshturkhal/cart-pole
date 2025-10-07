@@ -1,3 +1,4 @@
+from copy import deepcopy
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -120,6 +121,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         self.optimizer.zero_grad()
         loss = nn.MSELoss()(q_values, expected_q.detach())
         loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.q_net.parameters(), 10)
         self.optimizer.step()
 
     def update_target(self):
@@ -133,7 +135,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         return self.hyperparams.copy()
     
     def get_checkpoint(self):
-        return self.checkpoint
+        return deepcopy(self.checkpoint)
 
     def save(self, path: str, extra: dict = None):
         self.checkpoint = {
