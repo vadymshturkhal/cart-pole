@@ -41,6 +41,7 @@
 - [ ] Add DDPG (Deep Deterministic Policy Gradient) agent for continuous environments;
 - [ ] Add target network update	every N steps ti AgentDialog in Training section;
 - [ ] Add 'Load hyperparams from config' button for agent in Training section;
+- [ ] Add setting NN button;
 
 
 ## Done
