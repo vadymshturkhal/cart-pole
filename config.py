@@ -22,7 +22,7 @@ DEFAULTS = {
 
     # Neural network architecture
     "HIDDEN_LAYERS": [256, 128],
-    "ACTIVATION": "relu",     # "relu" or "tanh"
+    "ACTIVATION": "relu",
     "DROPOUT": 0.2,
 
     # Training

@@ -2,13 +2,18 @@ import torch.nn as nn
 import config
 
 
-def get_activation(name):
-    if name.lower() == "relu":
-        return nn.ReLU()
-    elif name.lower() == "tanh":
-        return nn.Tanh()
-    else:
-        raise ValueError(f"Unsupported activation: {name}")
+_ACTIVATIONS = {
+    "relu": nn.ReLU,
+    "tanh": nn.Tanh,
+    "sigmoid": nn.Sigmoid,
+}
+
+def get_activation(activation_function: str) -> nn.Module:
+    if activation_function not in _ACTIVATIONS:
+        raise ValueError(f"Unsupported activation: {activation_function}, supported {list(_ACTIVATIONS)}")
+    
+    return _ACTIVATIONS[activation_function]()
+
 
 class QNetwork(nn.Module):
     def __init__(self, state_dim, action_dim):
@@ -30,6 +35,24 @@ class QNetwork(nn.Module):
         layers.append(nn.Linear(input_dim, action_dim))
         
         self.net = nn.Sequential(*layers)
-    
+
+        # Initialize weights after model is built
+        self._init_weights()
+
+    def _init_weights(self):
+        """Activation-aware initialization (He for ReLU, Xavier for tanh)."""
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                if config.ACTIVATION.lower() == "relu":
+                    nn.init.kaiming_uniform_(m.weight, nonlinearity="relu")
+                elif config.ACTIVATION.lower() == "tanh":
+                    nn.init.xavier_uniform_(m.weight)
+                else:
+                    # Fallback for other activations
+                    nn.init.uniform_(m.weight, -0.01, 0.01)
+
+                #  Biases to 0
+                nn.init.zeros_(m.bias)
+
     def forward(self, x):
         return self.net(x)
