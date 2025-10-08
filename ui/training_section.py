@@ -8,7 +8,7 @@ from ui.agent_details_dialog import AgentDetailsDialog
 from ui.reward_plot import RewardPlot
 from ui.loss_plot import LossPlot
 from ui.training_worker import TrainingWorker
-from utils.agent_factory import build_agent
+from utils.agent_factory import AGENTS, build_agent
 from environments.factory import create_environment
 import config
 
@@ -22,9 +22,15 @@ class TrainingSection(QWidget):
         self.training_thread = None
         self.training_worker = None
         self.training_done = False
-        self.agent_name = None
         self.hyperparams = None
+
+        # Default Agent
+        self.agent_name = config.DEFAULT_AGENT
+        AgentClass = AGENTS[self.agent_name]
+        self.hyperparams = AgentClass.get_default_hyperparams()
+
         self._build_training_section()
+
 
     def _build_training_section(self):
         layout = QVBoxLayout(self)
@@ -48,7 +54,7 @@ class TrainingSection(QWidget):
         layout.addWidget(self.env_box)
 
         layout.addWidget(QLabel("Agent:"))
-        self.agent_btn = QPushButton("Choose Agent")
+        self.agent_btn = QPushButton(f"{self.agent_name}")
         self.train_btn = QPushButton("Start Training")
         self.stop_btn = QPushButton("Stop Training")
         self.save_btn = QPushButton("Save Model")
@@ -61,7 +67,7 @@ class TrainingSection(QWidget):
 
         agent_row = QHBoxLayout()
         self.details_btn = QPushButton("Selected Agent Details")
-        self.details_btn.setVisible(False)
+        self.details_btn.setVisible(True)
         self.details_btn.setMinimumWidth(150)
         self.details_btn.clicked.connect(self._show_agent_details)
         agent_row.addWidget(self.details_btn)

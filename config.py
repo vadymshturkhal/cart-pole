@@ -36,6 +36,7 @@ DEFAULTS = {
     "BATCH_SIZE": 64,
     "N_STEP": 3,
     "SUTTON_BARTO_REWARD": False,
+    "DEFAULT_AGENT": "nstep_ddqn",
 
     # Exploration
     "EPSILON_START": 1.0,
