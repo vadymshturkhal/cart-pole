@@ -30,21 +30,20 @@
 - [ ] Create Experiments section with Barto, Sutton, and Anderson (1983) Cart Pole;
 - [ ] Set min training episodes for training;
 - [ ] Planning for resume/continue training (hyperparam overrides);
-- [ ] Add testing;
-- [ ] Add loss tracking;
+- [ ] Add unit testing;
 - [ ] Add Specific section with description to agent choosing in Training section;
-- [ ] Add date to trained model's data;
 - [ ] Add detailed description to agent after training, including optimizer, loss, nn layers;
 - [ ] Add CUDA tick to Training section;
 - [ ] Add continuous environment;
 - [ ] Hide discrete agents for continuous environments and vice versa;
-- [ ] Add DDPG (Deep Deterministic Policy Gradient) agent for continuous environments;
-- [ ] Add target network update	every N steps ti AgentDialog in Training section;
+- [ ] Add target network update	every N steps to AgentDialog in Training section;
 - [ ] Add 'Load hyperparams from config' button for agent in Training section;
-- [ ] Add setting NN button;
 
 
 ## Done
+- [x] Add date to trained model's data;
+- [x] Add DDPG (Deep Deterministic Policy Gradient) agent for continuous environments;
+- [x] Add setting NN button;
 - [x] Add loss plot;
 - [x] Get rid of train_menu;
 - [x] After choosing agent there must be info about its parameters;
