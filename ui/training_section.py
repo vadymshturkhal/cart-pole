@@ -8,6 +8,7 @@ from ui.agent_details_dialog import AgentDetailsDialog
 from ui.reward_plot import RewardPlot
 from ui.loss_plot import LossPlot
 from ui.training_worker import TrainingWorker
+from ui.nn_config_dialog import NNConfigDialog
 from utils.agent_factory import AGENTS, build_agent
 from environments.factory import create_environment
 import config
@@ -53,6 +54,7 @@ class TrainingSection(QWidget):
         self.env_box.setCurrentText(config.DEFAULT_ENVIRONMENT)
         layout.addWidget(self.env_box)
 
+        # Agent row
         layout.addWidget(QLabel("Agent:"))
         self.agent_btn = QPushButton(f"{self.agent_name}")
         self.train_btn = QPushButton("Start Training")
@@ -65,12 +67,18 @@ class TrainingSection(QWidget):
         row.addWidget(self.save_btn)
         layout.addLayout(row)
 
+        # Configure row
         agent_row = QHBoxLayout()
         self.details_btn = QPushButton(f"Configure {self.agent_name}")
         self.details_btn.setVisible(True)
         self.details_btn.setMinimumWidth(150)
         self.details_btn.clicked.connect(self._show_agent_details)
         agent_row.addWidget(self.details_btn)
+
+        self.nn_btn = QPushButton("Configure NN")
+        self.nn_btn.setMinimumWidth(150)
+        self.nn_btn.clicked.connect(self._show_nn_config)
+        agent_row.addWidget(self.nn_btn)
         layout.addLayout(agent_row)
 
         layout.addWidget(QLabel("Rendering Mode:"))
@@ -208,3 +216,16 @@ class TrainingSection(QWidget):
             # update internal hyperparams
             self.hyperparams = dlg.get_updated_params()
             self.status_label.setText("⚙️ Agent hyperparameters updated.")
+
+    def _show_nn_config(self):
+        dlg = NNConfigDialog(self)
+        if dlg.exec():
+            updates = dlg.get_updated_config()
+            # Update runtime config
+            config.HIDDEN_LAYERS = updates["HIDDEN_LAYERS"]
+            config.ACTIVATION = updates["ACTIVATION"]
+            config.DROPOUT = updates["DROPOUT"]
+            self.status_label.setText(
+                f"🧠 NN updated: layers={updates['HIDDEN_LAYERS']}, act={updates['ACTIVATION']}, dropout={updates['DROPOUT']:.2f}"
+            )
+            
