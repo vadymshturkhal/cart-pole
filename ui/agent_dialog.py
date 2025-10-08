@@ -1,9 +1,10 @@
 from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QListWidget, QFormLayout,
-    QDoubleSpinBox, QSpinBox, QCheckBox, QPushButton, QWidget
+    QDialog, QVBoxLayout, QListWidget, QWidget,
+    QDoubleSpinBox, QSpinBox, QCheckBox, QPushButton,
 )
-from utils.agent_specs import AGENT_SPECS   # still needed for UI spec (sliders, ranges)
+from utils.agent_specs import AGENT_SPECS
 from utils.agent_factory import AGENTS
+import config
 
 
 class AgentDialog(QDialog):
@@ -12,20 +13,20 @@ class AgentDialog(QDialog):
         self.setWindowTitle("Select Agent & Hyperparameters")
         self.resize(420, 520)
 
-        # cache for per-agent hyperparams
+        # cCache for per-agent hyperparams
         self._cache: dict[str, dict] = {}
         self.params_widgets: dict[str, QWidget] = {}
 
-        # pick initial agent
+        # Pick initial agent
         if current_agent is None:
-            current_agent = list(AGENTS.keys())[0]
+            current_agent = config.DEFAULT_AGENT
+
         self.agent_name = current_agent
 
-        # load default params from Agent class
+        # Load default params from Agent class
         AgentClass = AGENTS[self.agent_name]
         self._cache[self.agent_name] = AgentClass.get_default_hyperparams()
 
-        # === UI layout ===
         layout = QVBoxLayout(self)
 
         # Agent list
