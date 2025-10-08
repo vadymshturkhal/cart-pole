@@ -221,11 +221,18 @@ class TrainingSection(QWidget):
         dlg = NNConfigDialog(self)
         if dlg.exec():
             updates = dlg.get_updated_config()
+
             # Update runtime config
             config.HIDDEN_LAYERS = updates["HIDDEN_LAYERS"]
             config.ACTIVATION = updates["ACTIVATION"]
             config.DROPOUT = updates["DROPOUT"]
+            config.DEVICE = config.torch.device(updates["DEVICE"])
             self.status_label.setText(
-                f"🧠 NN updated: layers={updates['HIDDEN_LAYERS']}, act={updates['ACTIVATION']}, dropout={updates['DROPOUT']:.2f}"
+                f"🧠 NN updated: \
+                    layers={updates['HIDDEN_LAYERS']} \
+                    activation={updates['ACTIVATION']} \
+                    dropout={updates['DROPOUT']:.2f} \
+                    device={config.DEVICE} \
+                    "
             )
             

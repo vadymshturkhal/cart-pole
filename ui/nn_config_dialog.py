@@ -16,6 +16,7 @@ class NNConfigDialog(QDialog):
             "HIDDEN_LAYERS": config.HIDDEN_LAYERS.copy(),
             "ACTIVATION": config.ACTIVATION,
             "DROPOUT": config.DROPOUT,
+            "DEVICE": str(config.DEVICE),
         }
 
         layout = QVBoxLayout(self)
@@ -49,6 +50,14 @@ class NNConfigDialog(QDialog):
         self.dropout_spin.setValue(config.DROPOUT)
         form.addRow("Dropout Rate:", self.dropout_spin)
 
+        # Device Selection
+        self.device_box = QComboBox()
+        self.device_box.addItems(["auto", "cpu", "cuda"])
+        # Match current device
+        current_device = "cuda" if "cuda" in str(config.DEVICE) else "cpu"
+        self.device_box.setCurrentText(current_device)
+        form.addRow("Computation Device:", self.device_box)
+
         # Buttons
         save_btn = QPushButton("Apply")
         save_btn.clicked.connect(self._on_apply)
@@ -69,9 +78,17 @@ class NNConfigDialog(QDialog):
         self.updated_config["ACTIVATION"] = self.activation_box.currentText()
         self.updated_config["DROPOUT"] = self.dropout_spin.value()
 
+        # Device
+        dev_choice = self.device_box.currentText()
+        if dev_choice == "auto":
+            self.updated_config["DEVICE"] = "cuda" if config.torch.cuda.is_available() else "cpu"
+        else:
+            self.updated_config["DEVICE"] = dev_choice
+
+    # Runtime apply
     def _on_apply(self):
         self._collect_updates()
-        self.accept()  # runtime apply
+        self.accept()
 
     def _on_save_default(self):
         self._collect_updates()
