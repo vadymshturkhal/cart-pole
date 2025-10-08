@@ -10,7 +10,7 @@ class AgentDetailsDialog(QDialog):
 
     def __init__(self, agent_name: str, hyperparams: dict, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(f"Edit Agent Hyperparameters — {agent_name}")
+        self.setWindowTitle(f"Configure Agent — {agent_name}")
         self.resize(420, 520)
         self.agent_name = agent_name
         self._original_params = hyperparams

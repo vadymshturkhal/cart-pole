@@ -66,7 +66,7 @@ class TrainingSection(QWidget):
         layout.addLayout(row)
 
         agent_row = QHBoxLayout()
-        self.details_btn = QPushButton("Selected Agent Details")
+        self.details_btn = QPushButton(f"Configure {self.agent_name}")
         self.details_btn.setVisible(True)
         self.details_btn.setMinimumWidth(150)
         self.details_btn.clicked.connect(self._show_agent_details)
@@ -111,6 +111,7 @@ class TrainingSection(QWidget):
             self.hyperparams = AgentClass.get_default_hyperparams()
             self.agent_btn.setText(agent_name)
             self.details_btn.setVisible(True)
+            self.details_btn.setText(f"Configure {self.agent_name}")
             self.status_label.setText(f"✅ Selected {self.agent_name} agent")
 
     def _start_training(self):
