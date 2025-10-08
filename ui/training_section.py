@@ -201,5 +201,9 @@ class TrainingSection(QWidget):
     def _show_agent_details(self):
         if not hasattr(self, "hyperparams") or not self.hyperparams:
             return
-        dlg = AgentDetailsDialog(self.agent_name, self.hyperparams, self)
-        dlg.exec()
+
+        dlg = AgentDetailsDialog(self.agent_name, self.hyperparams.copy(), self)
+        if dlg.exec():
+            # update internal hyperparams
+            self.hyperparams = dlg.get_updated_params()
+            self.status_label.setText("⚙️ Agent hyperparameters updated.")
