@@ -105,13 +105,13 @@ class TrainingSection(QWidget):
     def _choose_agent(self):
         dlg = AgentDialog(self, current_agent=self.agent_name)
         if dlg.exec():
-            agent_name, hyperparams = dlg.get_selection()
+            agent_name = dlg.get_selection()
             self.agent_name = agent_name
-            self.hyperparams = hyperparams
+            AgentClass = AGENTS[self.agent_name]
+            self.hyperparams = AgentClass.get_default_hyperparams()
             self.agent_btn.setText(agent_name)
-
-            # reveal the already-placed button
             self.details_btn.setVisible(True)
+            self.status_label.setText(f"✅ Selected {self.agent_name} agent")
 
     def _start_training(self):
         if self.training_thread and self.training_thread.isRunning():

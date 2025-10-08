@@ -35,61 +35,17 @@ class AgentDialog(QDialog):
         self.agent_list.currentTextChanged.connect(self._on_agent_changed)
         layout.addWidget(self.agent_list)
 
-        # Form area
-        self.form = QFormLayout()
-        layout.addLayout(self.form)
-
         # Buttons
         ok_btn = QPushButton("OK")
         ok_btn.clicked.connect(self.accept)
         layout.addWidget(ok_btn)
 
-        # build form for initial agent
-        self._rebuild_form(current_agent)
-
-    # ---- internals ----
     def _on_agent_changed(self, name: str):
-        # cache current edits
         self._cache[self.agent_name] = self._collect_values()
         self.agent_name = name
         if name not in self._cache:
             AgentClass = AGENTS[name]
             self._cache[name] = AgentClass.get_default_hyperparams()
-        self._rebuild_form(name)
-
-    def _clear_form(self):
-        while self.form.count():
-            item = self.form.takeAt(0)
-            w = item.widget()
-            if w:
-                w.deleteLater()
-        self.params_widgets.clear()
-
-    def _rebuild_form(self, agent_name: str):
-        self._clear_form()
-        spec = AGENT_SPECS[agent_name]
-        values = self._cache[agent_name]
-        for key, desc in spec.items():
-            kind = desc[0]
-            if kind == "bool":
-                w = QCheckBox(); w.setChecked(bool(values.get(key, False)))
-            elif kind == "int":
-                _, lo, hi, step, default = desc
-                w = QSpinBox()
-                w.setRange(int(lo), int(hi))
-                w.setSingleStep(int(step))
-                w.setValue(int(values.get(key, default)))
-            elif kind == "float":
-                _, lo, hi, step, default = desc
-                w = QDoubleSpinBox()
-                w.setRange(float(lo), float(hi))
-                w.setSingleStep(float(step))
-                w.setDecimals(6)
-                w.setValue(float(values.get(key, default)))
-            else:
-                continue
-            self.params_widgets[key] = w
-            self.form.addRow(f"{key}:", w)
 
     def _collect_values(self) -> dict:
         out = {}
@@ -100,7 +56,6 @@ class AgentDialog(QDialog):
                 out[k] = w.value()
         return out
 
-    # ---- public API ----
-    def get_selection(self) -> tuple[str, dict]:
+    def get_selection(self) -> str:
         self._cache[self.agent_name] = self._collect_values()
-        return self.agent_name, self._cache[self.agent_name].copy()
+        return self.agent_name
