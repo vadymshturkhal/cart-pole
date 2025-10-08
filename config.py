@@ -20,28 +20,26 @@ DEFAULTS = {
     "TRAINED_MODELS_FOLDER": "trained_models",
     "N_STEP_DQN": "nstep_dqn_qnet.pth",
 
+    # Agent
+    "DEFAULT_AGENT": "nstep_ddqn",
+    "GAMMA": 0.99,
+    "BUFFER_SIZE": 10000,
+    "BATCH_SIZE": 64,
+    "N_STEP": 3,
+    "EPSILON_START": 1.0,
+    "EPSILON_END": 0.05,
+    "EPSILON_DECAY": 10000,
+
     # Neural network architecture
     "HIDDEN_LAYERS": [256, 128],
     "ACTIVATION": "relu",
     "DROPOUT": 0.2,
+    "LR": 1e-3,
 
     # Training
     "EPISODES": 500,
     "TARGET_UPDATE_FREQ": 20,
-
-    # Agent
-    "GAMMA": 0.99,
-    "LR": 1e-3,
-    "BUFFER_SIZE": 10000,
-    "BATCH_SIZE": 64,
-    "N_STEP": 3,
     "SUTTON_BARTO_REWARD": False,
-    "DEFAULT_AGENT": "nstep_ddqn",
-
-    # Exploration
-    "EPSILON_START": 1.0,
-    "EPSILON_END": 0.05,
-    "EPSILON_DECAY": 10000,
 
     # Logs
     "LOG_AFTER_EPISODES": 20,
