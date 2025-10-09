@@ -34,6 +34,7 @@ class DDPGAgent(BaseAgent):
     Deterministic Policy Gradient for continuous actions.
     Conforms to BaseAgent.
     """
+
     DEFAULT_PARAMS = {
         # Core
         "gamma": config.GAMMA,

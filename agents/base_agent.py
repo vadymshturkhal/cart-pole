@@ -3,8 +3,8 @@ from abc import ABC, abstractmethod
 
 class BaseAgent(ABC):
     """
-        Abstract base class for all RL agents.
-        Defines the required interface for training, action selection, and saving.
+    Abstract base class for all RL agents.
+    Defines the required interface for training, action selection, and saving.
     """
 
     def __init__(self, state_dim, action_dim):

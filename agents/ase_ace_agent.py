@@ -108,10 +108,10 @@ class ActorCriticASEACE:
 
 class ASEACEAgent(BaseAgent):
     """
-        NumPy-based Actor–Critic with eligibility traces, using a 162-dim one-hot
-        discretization of CartPole state. 
-        Conforms to BaseAgent for GUI integration.
-        Agent is from Barto, Sutton, and Anderson (1983) for solving pole-balancing problem.
+    NumPy-based Actor–Critic with eligibility traces, using a 162-dim one-hot
+    discretization of CartPole state. 
+    Conforms to BaseAgent for GUI integration.
+    Agent is from Barto, Sutton, and Anderson (1983) for solving pole-balancing problem.
     """
 
     DEFAULT_PARAMS = {

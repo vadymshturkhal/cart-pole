@@ -16,7 +16,11 @@ def get_activation(activation_function: str) -> nn.Module:
 
 
 class QNetwork(nn.Module):
-    """Feedforward neural network (FNN) for approximating Q-values."""
+    """
+    Feedforward neural network (FNN) for approximating Q-values in discrete-action RL.
+    This network maps environment states to estimated Q-values for each possible action.
+    Architecture (hidden layers, activations, dropout) can be set from GUI.
+    """
 
     def __init__(self, state_dim, action_dim):
         super(QNetwork, self).__init__()
