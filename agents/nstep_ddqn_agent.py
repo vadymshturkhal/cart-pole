@@ -132,7 +132,6 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
         # Loss
         self.optimizer.zero_grad()
         loss = nn.MSELoss()(q_values, expected_q.detach())
-        # loss = nn.SmoothL1Loss()(q_values, expected_q.detach())
         loss.backward()
         torch.nn.utils.clip_grad_norm_(self.q_net.parameters(), 10)
         self.optimizer.step()
