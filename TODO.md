@@ -38,6 +38,7 @@
 - [ ] Hide discrete agents for continuous environments and vice versa;
 - [ ] Add target network update	every N steps to AgentDialog in Training section;
 - [ ] Add 'Load hyperparams from config' button for agent in Training section;
+- [ ] Save Reward and Loss plots after training;
 
 
 ## Done
