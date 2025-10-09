@@ -42,6 +42,7 @@
 - [ ] Zoom in for plots;
 - [ ] Sort models int Testing section;
 - [ ] Selectable params in Testing section;
+- [ ] Zero must be lined at Reward Plot;
 
 
 ## Done
