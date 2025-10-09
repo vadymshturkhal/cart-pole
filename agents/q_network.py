@@ -16,6 +16,8 @@ def get_activation(activation_function: str) -> nn.Module:
 
 
 class QNetwork(nn.Module):
+    """Feedforward neural network (FNN) for approximating Q-values."""
+
     def __init__(self, state_dim, action_dim):
         super(QNetwork, self).__init__()
         
