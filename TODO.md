@@ -43,6 +43,7 @@
 - [ ] Sort models int Testing section;
 - [ ] Selectable params in Testing section;
 - [ ] Zero must be lined at Reward Plot;
+- [ ] Add Episodes quantity to Testing section;
 
 
 ## Done
