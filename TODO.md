@@ -41,6 +41,7 @@
 - [ ] Save Reward and Loss plots after training;
 - [ ] Zoom in for plots;
 - [ ] Sort models int Testing section;
+- [ ] Selectable params in Testing section;
 
 
 ## Done
