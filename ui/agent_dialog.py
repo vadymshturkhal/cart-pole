@@ -10,7 +10,7 @@ import config
 class AgentDialog(QDialog):
     def __init__(self, parent=None, current_agent=None):
         super().__init__(parent)
-        self.setWindowTitle("Select Agent & Hyperparameters")
+        self.setWindowTitle("Select Agent")
         self.resize(420, 520)
 
         # cCache for per-agent hyperparams
