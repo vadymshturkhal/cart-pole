@@ -34,7 +34,10 @@ DEFAULTS = {
     "HIDDEN_LAYERS": [256, 128],
     "ACTIVATION": "relu",
     "DROPOUT": 0.2,
+
+    # Neural network optimization
     "LR": 1e-3,
+    "OPTIMIZER": "adam",
 
     # Training
     "EPISODES": 500,

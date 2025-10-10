@@ -9,12 +9,10 @@ AGENTS = {
     "ase_ace": ASEACEAgent,
 }
 
-
 def build_agent(agent_name: str, state_dim: int, action_dim: int, hyperparams: dict):
     AgentClass = AGENTS.get(agent_name)
     
     if AgentClass is None:
         raise ValueError(f"❌ Unknown agent name: '{agent_name}'. Available: {list(AGENTS)}")
     
-    agent = AgentClass(state_dim, action_dim, **hyperparams)
-    return agent
+    return AgentClass(state_dim, action_dim, **hyperparams)
