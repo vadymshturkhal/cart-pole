@@ -48,6 +48,7 @@
 
 
 ## Done
+- [x] In Testing section maked some buttons unavailable;
 - [x] Add detailed description to agent after training, including optimizer, loss, nn layers;
 - [x] Add date to trained model's data;
 - [x] Add DDPG (Deep Deterministic Policy Gradient) agent for continuous environments;

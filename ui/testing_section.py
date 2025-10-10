@@ -22,17 +22,33 @@ class TestingSection(QWidget):
         self.top_row = QHBoxLayout()
         self.root_layout.addLayout(self.top_row)
 
-        # Left panel: model info
-        self.env_label = QLabel("Environment: (not loaded)")
-        self.env_label.setWordWrap(True)
-        self.env_label.setMinimumWidth(400)
-        self.top_row.addWidget(self.env_label, 1)  # stretch 1
+        # LEFT: model info + status stacked
+        left_col = QVBoxLayout()
+        self.info_label = QLabel("No model loaded.")
+        self.info_label.setWordWrap(True)
+        self.info_label.setMinimumWidth(400)
 
-        # Right panel placeholder for environment viewer
+        self.status_label = QLabel("")  # ← ephemeral run status
+        self.status_label.setStyleSheet("color:#555; margin-top:6px;")
+
+        left_col.addWidget(self.info_label)
+        left_col.addWidget(self.status_label)
+        left_wrap = QWidget(); left_wrap.setLayout(left_col)
+        left_wrap.setStyleSheet("background:#f6f6f6; border:1px solid #ccc; padding:8px;")
+        self.top_row.addWidget(left_wrap, 1)
+
+        # RIGHT: viewer container
         self.viewer_container = QWidget()
         self.viewer_layout = QVBoxLayout(self.viewer_container)
         self.viewer_layout.setContentsMargins(0, 0, 0, 0)
-        self.top_row.addWidget(self.viewer_container, 2)  # stretch 2 for more space
+        self.viewer_container.setStyleSheet("background:#fff; border:1px solid #ddd;")
+        self.top_row.addWidget(self.viewer_container, 2)
+
+        # Keep references
+        self.viewer = None
+        self.selected_model_file = None
+        self.selected_checkpoint = None
+        self._meta = {"env": None, "agent": None}
 
         # --- Buttons row ---
         button_row = QHBoxLayout()
@@ -57,17 +73,8 @@ class TestingSection(QWidget):
         self.start_testing_btn.clicked.connect(self._start_testing_model)
         self.stop_testing_btn.clicked.connect(self._stop_testing_model)
 
-        # Visual border between info and the viewer
-        self.env_label.setStyleSheet("""
-            background-color: #f6f6f6;
-            border: 1px solid #ccc;
-            padding: 8px;
-        """)
-
-        self.viewer_container.setStyleSheet("""
-            background-color: #ffffff;
-            border: 1px solid #ddd;
-        """)
+        self.start_testing_btn.setEnabled(True)
+        self.stop_testing_btn.setEnabled(False)
 
         # Internal viewer ref
         self.viewer = None
@@ -128,42 +135,58 @@ class TestingSection(QWidget):
                     f"<b>Created:</b> {timestamp}<br>"
                 )
 
-                self.env_label.setText(info_html)
+                self.info_label.setText(info_html)
+                self.status_label.setText("")  # clear old status
                 self.selected_checkpoint = checkpoint
-            else:
-                self.selected_model_file = None
-                self.selected_checkpoint = None
-                self.env_label.setText("⚠ No model selected")
-                self.choose_model_btn.setText("Choose Model")
+                self._meta["env"] = env_name
+                self._meta["agent"] = agent_name
 
 
     def _start_testing_model(self):
-        if not hasattr(self, "selected_checkpoint") or self.selected_checkpoint is None:
-            self.env_label.setText("⚠ Please choose a model first")
+        if not self.selected_checkpoint:
+            self.status_label.setText("⚠ Please choose a model first.")
             return
 
-        checkpoint = self.selected_checkpoint
-        env_name = checkpoint.get("environment", config.DEFAULT_ENVIRONMENT)
-        agent_name = checkpoint.get("agent_name", "nstep_dqn")
-        hyperparams = checkpoint.get("hyperparams", {})
+        ckpt = self.selected_checkpoint
+        env_name = ckpt.get("environment", config.DEFAULT_ENVIRONMENT)
+        agent_name = ckpt.get("agent_name", "nstep_dqn")
+        hps = ckpt.get("hyperparams", {})
 
         env, state_dim, action_dim = create_environment(env_name, render="rgb_array")
-
-        agent = build_agent(agent_name, state_dim, action_dim, hyperparams)
+        agent = build_agent(agent_name, state_dim, action_dim, hps)
         agent.load(self.selected_model_file)
 
-        # Remove old viewer if exists
+        # remove old viewer
         if self.viewer:
             self.viewer_layout.removeWidget(self.viewer)
             self.viewer.deleteLater()
             self.viewer = None
 
-        # Create new viewer
+        # add viewer
         self.viewer = EnvViewer(env, agent, episodes=5, fps=30)
         self.viewer_layout.addWidget(self.viewer)
         self.viewer.start()
 
+        # UI state + status
+        self._meta["env"] = env_name
+        self._meta["agent"] = agent_name
+        self.status_label.setText(f"▶ Running {agent_name} on {env_name} …")
+        self.start_testing_btn.setEnabled(False)
+        self.choose_model_btn.setEnabled(False)
+        self.stop_testing_btn.setEnabled(True)
+
+
     def _stop_testing_model(self):
-        if hasattr(self, "viewer") and self.viewer:
+        if self.viewer:
             self.viewer.stop()
-            self.env_label.setText("Environment: (stopped)")
+            self.viewer_layout.removeWidget(self.viewer)
+            self.viewer.deleteLater()
+            self.viewer = None
+
+        # Preserve info_label; only update status + buttons
+        agent_name = self._meta.get("agent") or "agent"
+        env_name = self._meta.get("env") or "env"
+        self.status_label.setText(f"⏹ Stopped {agent_name} on {env_name}.")
+        self.start_testing_btn.setEnabled(True)
+        self.choose_model_btn.setEnabled(True)
+        self.stop_testing_btn.setEnabled(False)
