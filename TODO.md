@@ -44,6 +44,7 @@
 - [ ] Selectable params in Testing section;
 - [ ] Zero must be lined at Reward Plot;
 - [ ] Add Episodes quantity to Testing section;
+- [ ] Adaptive learning rate as option;
 
 
 ## Done
