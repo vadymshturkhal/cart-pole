@@ -153,9 +153,17 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
     
     def save(self, path: str, extra: dict = None):
         self.checkpoint = {
-            "agent_name": "nstep_ddqn",
+            "agent_name": "nstep_dqn",
             "model_state": self.q_net.state_dict(),
             "hyperparams": self.hyperparams,
+            "nn_config": {  # Save full NN architecture & optimizer info
+                "hidden_layers": config.HIDDEN_LAYERS,
+                "activation": config.ACTIVATION,
+                "dropout": config.DROPOUT,
+                "lr": config.LR,
+                "optimizer": config.OPTIMIZER,
+                "device": str(config.DEVICE),
+            },
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
 
@@ -166,30 +174,48 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
 
     def load(self, path: str):
         """
-        Load model weights and hyperparameters from a checkpoint file.
-
-        Args:
-            path (str): path to checkpoint file
+        Load model weights, optimizer, and NN configuration from a checkpoint file.
         """
         checkpoint = torch.load(path, map_location=config.DEVICE)
 
-        # Restore hyperparams (merge defaults + checkpoint)
+        # === Restore agent hyperparameters ===
         hyperparams = self.DEFAULT_PARAMS.copy()
         hyperparams.update(checkpoint.get("hyperparams", {}))
         self.hyperparams = hyperparams
 
-        # Restore exploration settings
         self.eps_start = hyperparams["eps_start"]
         self.eps_end = hyperparams["eps_end"]
         self.eps_decay = hyperparams["eps_decay"]
 
-        # Load model weights
+        # === Restore NN configuration (if present) ===
+        nn_cfg = checkpoint.get("nn_config", {})
+        hidden_layers = nn_cfg.get("hidden_layers", config.HIDDEN_LAYERS)
+        activation = nn_cfg.get("activation", config.ACTIVATION)
+        dropout = nn_cfg.get("dropout", config.DROPOUT)
+        lr = nn_cfg.get("lr", config.LR)
+        optimizer_name = nn_cfg.get("optimizer", config.OPTIMIZER)
+        device_name = nn_cfg.get("device", str(config.DEVICE))
+
+        # Update global config (runtime consistency)
+        config.HIDDEN_LAYERS = hidden_layers
+        config.ACTIVATION = activation
+        config.DROPOUT = dropout
+        config.LR = lr
+        config.OPTIMIZER = optimizer_name
+        config.DEVICE = torch.device(device_name)
+
+        # === Recreate networks ===
+        self.q_net = QNetwork(self.q_net.net[0].in_features, self.action_dim).to(config.DEVICE)
+        self.target_net = QNetwork(self.q_net.net[0].in_features, self.action_dim).to(config.DEVICE)
+        self.target_net.load_state_dict(self.q_net.state_dict())
+
+        # === Restore model weights ===
         if "model_state" in checkpoint:
             self.q_net.load_state_dict(checkpoint["model_state"])
             self.target_net.load_state_dict(self.q_net.state_dict())
 
-        # Re-create optimizer with correct learning rate
-        self.optimizer = optim.Adam(self.q_net.parameters(), lr=hyperparams["lr"])
+        # === Recreate optimizer with correct type and LR ===
+        self.optimizer = build_optimizer(optimizer_name, self.q_net.parameters(), lr=lr)
         self.q_net.eval()
 
     @property
