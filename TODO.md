@@ -40,7 +40,7 @@
 - [ ] Add 'Load hyperparams from config' button for agent in Training section;
 - [ ] Save Reward and Loss plots after training;
 - [ ] Zoom in for plots;
-- [ ] Sort models int Testing section;
+- [ ] Sort models in Testing section;
 - [ ] Selectable params in Testing section;
 - [ ] Zero must be lined at Reward Plot;
 - [ ] Add Episodes quantity to Testing section;
