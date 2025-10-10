@@ -14,6 +14,7 @@ class NNConfigDialog(QDialog):
 
         self.updated_config = {
             "HIDDEN_LAYERS": config.HIDDEN_LAYERS.copy(),
+            "LR": config.LR,
             "ACTIVATION": config.ACTIVATION,
             "DROPOUT": config.DROPOUT,
             "DEVICE": str(config.DEVICE),
@@ -35,6 +36,14 @@ class NNConfigDialog(QDialog):
         if current in presets:
             self.hidden_layers_input.setCurrentText(current)
         form.addRow("Hidden Layers:", self.hidden_layers_input)
+
+        # Learning Rate
+        self.lr_spin = QDoubleSpinBox()
+        self.lr_spin.setDecimals(6)
+        self.lr_spin.setRange(1e-6, 1.0)
+        self.lr_spin.setSingleStep(1e-4)
+        self.lr_spin.setValue(config.LR)
+        form.addRow("Learning Rate:", self.lr_spin)
 
         # Activation
         self.activation_box = QComboBox()
@@ -75,6 +84,7 @@ class NNConfigDialog(QDialog):
     def _collect_updates(self):
         """Gather values from form widgets."""
         self.updated_config["HIDDEN_LAYERS"] = eval(self.hidden_layers_input.currentText())
+        self.updated_config["LR"] = self.lr_spin.value()
         self.updated_config["ACTIVATION"] = self.activation_box.currentText()
         self.updated_config["DROPOUT"] = self.dropout_spin.value()
 

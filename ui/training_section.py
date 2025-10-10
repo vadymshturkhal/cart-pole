@@ -224,6 +224,7 @@ class TrainingSection(QWidget):
 
             # Update runtime config
             config.HIDDEN_LAYERS = updates["HIDDEN_LAYERS"]
+            config.LR = updates["LR"]
             config.ACTIVATION = updates["ACTIVATION"]
             config.DROPOUT = updates["DROPOUT"]
             config.DEVICE = config.torch.device(updates["DEVICE"])
