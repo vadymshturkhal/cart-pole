@@ -72,6 +72,12 @@ class NNConfigDialog(QDialog):
         self.lr_spin.setValue(config.LR)
         form.addRow("Learning Rate:", self.lr_spin)
 
+        # Optimizer
+        self.optimizer_box = QComboBox()
+        self.optimizer_box.addItems(["adam", "rmsprop", "sgd"])
+        self.optimizer_box.setCurrentText(getattr(config, "OPTIMIZER", "adam"))
+        form.addRow("Optimizer:", self.optimizer_box)
+
         # Device Selection
         self.device_box = QComboBox()
         self.device_box.addItems(["auto", "cpu", "cuda"])
@@ -95,11 +101,15 @@ class NNConfigDialog(QDialog):
         layout.addWidget(cancel_btn)
 
     def _collect_updates(self):
-        """Gather values from form widgets."""
+        """Gather values from form widgets"""
+        # Architecture
         self.updated_config["HIDDEN_LAYERS"] = eval(self.hidden_layers_input.currentText())
-        self.updated_config["LR"] = self.lr_spin.value()
         self.updated_config["ACTIVATION"] = self.activation_box.currentText()
         self.updated_config["DROPOUT"] = self.dropout_spin.value()
+
+        # Optimization
+        self.updated_config["LR"] = self.lr_spin.value()
+        self.updated_config["OPTIMIZER"] = self.optimizer_box.currentText()
 
         # Device
         dev_choice = self.device_box.currentText()

@@ -9,6 +9,7 @@ from .q_network import QNetwork
 from memory.replay_buffer import NStepReplayBuffer
 import config
 from datetime import datetime
+from utils.optim_factory import build_optimizer
 
 
 class NStepDeepQLearningAgent(BaseAgent):
@@ -61,7 +62,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         self.q_net = QNetwork(state_dim, action_dim).to(config.DEVICE)
         self.target_net = QNetwork(state_dim, action_dim).to(config.DEVICE)
         self.target_net.load_state_dict(self.q_net.state_dict())
-        self.optimizer = optim.Adam(self.q_net.parameters(), lr=config.LR)
+        self.optimizer = build_optimizer(config.OPTIMIZER, self.q_net.parameters(), lr=config.LR)
 
         #Loss
         self.losses_ = []
