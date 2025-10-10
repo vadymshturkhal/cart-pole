@@ -21,29 +21,26 @@ class NNConfigDialog(QDialog):
         }
 
         layout = QVBoxLayout(self)
-        header = QLabel("<b>Neural Network Architecture</b>")
+        header = QLabel("<b>Neural Network Configuration</b>")
         header.setAlignment(Qt.AlignCenter)
         layout.addWidget(header)
+
+        # Architecture section
+        arch_label = QLabel("<b>🧩 Architecture</b>")
+        arch_label.setAlignment(Qt.AlignLeft)
+        layout.addWidget(arch_label)
 
         form = QFormLayout()
         layout.addLayout(form)
 
         # Hidden Layers
         self.hidden_layers_input = QComboBox()
-        presets = ["[64, 64]", "[128, 128]", "[256, 128]", "[256, 256, 128]"]
+        presets = ["[64, 64]", "[128, 128]", "[256, 128]", "[256, 256]"]
         self.hidden_layers_input.addItems(presets)
         current = str(config.HIDDEN_LAYERS)
         if current in presets:
             self.hidden_layers_input.setCurrentText(current)
         form.addRow("Hidden Layers:", self.hidden_layers_input)
-
-        # Learning Rate
-        self.lr_spin = QDoubleSpinBox()
-        self.lr_spin.setDecimals(6)
-        self.lr_spin.setRange(1e-6, 1.0)
-        self.lr_spin.setSingleStep(1e-4)
-        self.lr_spin.setValue(config.LR)
-        form.addRow("Learning Rate:", self.lr_spin)
 
         # Activation
         self.activation_box = QComboBox()
@@ -58,6 +55,22 @@ class NNConfigDialog(QDialog):
         self.dropout_spin.setDecimals(2)
         self.dropout_spin.setValue(config.DROPOUT)
         form.addRow("Dropout Rate:", self.dropout_spin)
+
+        # Optimization section
+        opt_label = QLabel("<b>⚙️ Optimization</b>")
+        opt_label.setAlignment(Qt.AlignLeft)
+        layout.addWidget(opt_label)
+
+        form = QFormLayout()
+        layout.addLayout(form)
+
+        # Learning Rate
+        self.lr_spin = QDoubleSpinBox()
+        self.lr_spin.setDecimals(6)
+        self.lr_spin.setRange(1e-6, 1.0)
+        self.lr_spin.setSingleStep(1e-4)
+        self.lr_spin.setValue(config.LR)
+        form.addRow("Learning Rate:", self.lr_spin)
 
         # Device Selection
         self.device_box = QComboBox()
