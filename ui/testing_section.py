@@ -16,33 +16,61 @@ class TestingSection(QWidget):
         self._build()
 
     def _build(self):
-        layout = QVBoxLayout(self)
+        self.root_layout = QVBoxLayout(self)
 
-        # Show environment name
+        # --- Top row (info + environment) ---
+        self.top_row = QHBoxLayout()
+        self.root_layout.addLayout(self.top_row)
+
+        # Left panel: model info
         self.env_label = QLabel("Environment: (not loaded)")
-        layout.addWidget(self.env_label)
-    
-        # Buttons row
-        row = QHBoxLayout()
+        self.env_label.setWordWrap(True)
+        self.env_label.setMinimumWidth(400)
+        self.top_row.addWidget(self.env_label, 1)  # stretch 1
+
+        # Right panel placeholder for environment viewer
+        self.viewer_container = QWidget()
+        self.viewer_layout = QVBoxLayout(self.viewer_container)
+        self.viewer_layout.setContentsMargins(0, 0, 0, 0)
+        self.top_row.addWidget(self.viewer_container, 2)  # stretch 2 for more space
+
+        # --- Buttons row ---
+        button_row = QHBoxLayout()
         self.choose_model_btn = QPushButton("Choose Model")
         self.start_testing_btn = QPushButton("Start Testing")
         self.stop_testing_btn = QPushButton("Stop Testing")
-        row.addWidget(self.choose_model_btn)
-        row.addWidget(self.start_testing_btn)
-        row.addWidget(self.stop_testing_btn)
-        layout.addLayout(row)
 
+        button_row.addWidget(self.choose_model_btn)
+        button_row.addWidget(self.start_testing_btn)
+        button_row.addWidget(self.stop_testing_btn)
+        self.root_layout.addLayout(button_row)
+
+        # --- Back button ---
+        back_btn = QPushButton("⬅ Back to Main Menu")
+        back_btn.setMinimumHeight(40)
+        back_btn.setStyleSheet("font-size: 16px;")
+        back_btn.clicked.connect(self.back_to_main.emit)
+        self.root_layout.addWidget(back_btn)
+
+        # --- Signals ---
         self.choose_model_btn.clicked.connect(self._choose_model)
         self.start_testing_btn.clicked.connect(self._start_testing_model)
         self.stop_testing_btn.clicked.connect(self._stop_testing_model)
 
-        # Back button
-        back_btn = QPushButton("⬅ Back to Main Menu")
-        back_btn.setMinimumHeight(40)
-        back_btn.setStyleSheet("font-size: 16px;")
-        # Emit Signal
-        back_btn.clicked.connect(self.back_to_main.emit)
-        layout.addWidget(back_btn)
+        # Visual border between info and the viewer
+        self.env_label.setStyleSheet("""
+            background-color: #f6f6f6;
+            border: 1px solid #ccc;
+            padding: 8px;
+        """)
+
+        self.viewer_container.setStyleSheet("""
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+        """)
+
+        # Internal viewer ref
+        self.viewer = None
 
     def _choose_model(self):
         dlg = TestModelDialog("trained_models")
@@ -124,15 +152,15 @@ class TestingSection(QWidget):
         agent = build_agent(agent_name, state_dim, action_dim, hyperparams)
         agent.load(self.selected_model_file)
 
-        # Remove old viewer
-        if hasattr(self, "viewer") and self.viewer:
-            self.layout().removeWidget(self.viewer)
+        # Remove old viewer if exists
+        if self.viewer:
+            self.viewer_layout.removeWidget(self.viewer)
             self.viewer.deleteLater()
             self.viewer = None
 
-        # Add new viewer
+        # Create new viewer
         self.viewer = EnvViewer(env, agent, episodes=5, fps=30)
-        self.layout().insertWidget(1, self.viewer)  # right under env_label
+        self.viewer_layout.addWidget(self.viewer)
         self.viewer.start()
 
     def _stop_testing_model(self):
