@@ -44,6 +44,7 @@
 - [ ] Zero must be lined at Reward Plot;
 - [ ] Add Episodes quantity to Testing section;
 - [ ] Adaptive learning rate as option;
+- [ ] Integrate Stable Baselines3 agents;
 
 
 ## Done
