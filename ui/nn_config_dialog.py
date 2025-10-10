@@ -121,13 +121,25 @@ class NNConfigDialog(QDialog):
     # Runtime apply
     def _on_apply(self):
         self._collect_updates()
+        self._apply_to_runtime_config()
         self.accept()
 
     def _on_save_default(self):
         self._collect_updates()
+        self._apply_to_runtime_config()
         config.save_user_config(self.updated_config)
         QMessageBox.information(self, "Saved", "✅ Neural network configuration saved as default.")
         self.accept()
 
     def get_updated_config(self):
         return self.updated_config
+    
+    def _apply_to_runtime_config(self):
+        """Apply updated values to the runtime config module."""
+        for key, value in self.updated_config.items():
+            setattr(config, key, value)
+
+        # Rebuild DEVICE as torch.device (so PyTorch actually uses it)
+        if "DEVICE" in self.updated_config:
+            config.DEVICE = config.torch.device(self.updated_config["DEVICE"])
+            
