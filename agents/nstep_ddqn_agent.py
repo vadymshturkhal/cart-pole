@@ -14,7 +14,6 @@ from datetime import datetime
 class NStepDoubleDeepQLearningAgent(BaseAgent):
     DEFAULT_PARAMS = {
         "gamma": config.GAMMA,
-        "lr": config.LR,
         "buffer_size": config.BUFFER_SIZE,
         "batch_size": config.BATCH_SIZE,
         "n_step": config.N_STEP,
@@ -31,7 +30,6 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
             state_dim (int): dimension of state space
             action_dim (int): dimension of action space
             gamma (float): discount factor
-            lr (float): learning rate
             buffer_size (int): replay buffer capacity
             batch_size (int): minibatch size
             n_step (int): N-step horizon
@@ -63,7 +61,7 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
         self.q_net = QNetwork(state_dim, action_dim).to(config.DEVICE)
         self.target_net = QNetwork(state_dim, action_dim).to(config.DEVICE)
         self.target_net.load_state_dict(self.q_net.state_dict())
-        self.optimizer = optim.Adam(self.q_net.parameters(), lr=hyperparams["lr"])
+        self.optimizer = optim.Adam(self.q_net.parameters(), lr=config.LR)
 
         # Loss
         self.losses_ = []
