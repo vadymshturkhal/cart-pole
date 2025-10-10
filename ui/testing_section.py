@@ -49,8 +49,7 @@ class TestingSection(QWidget):
         if dlg.exec():
             model_file = dlg.get_selected()
             if model_file:
-                # ✅ set button text to model name
-                self.choose_model_btn.setText(model_file.split("/")[-1])  
+                self.choose_model_btn.setText(model_file.split("/")[-1])
 
                 self.selected_model_file = model_file
                 checkpoint = torch.load(model_file, map_location=config.DEVICE)
@@ -60,26 +59,55 @@ class TestingSection(QWidget):
                 episodes_trained = checkpoint.get("episodes_trained", "N/A")
                 episodes_total = checkpoint.get("episodes_total", "N/A")
                 hps = checkpoint.get("hyperparams", {})
-                hps_html = "<ul>" + "".join(f"<li>{k}: {v}</li>" for k, v in hps.items()) + "</ul>"
                 timestamp = checkpoint.get("timestamp", "Unknown")
 
+                # --- Hyperparameters (existing) ---
+                hps_html = "<ul>" + "".join(
+                    f"<li>{k}: {v}</li>" for k, v in sorted(hps.items())
+                ) + "</ul>"
+
+                # --- NN section (new) ---
+                nn_cfg = checkpoint.get("nn_config", None)
+                if nn_cfg:
+                    # normalize keys / fallbacks
+                    layers   = nn_cfg.get("hidden_layers", "n/a")
+                    act      = nn_cfg.get("activation", "n/a")
+                    drop     = nn_cfg.get("dropout", "n/a")
+                    lr       = nn_cfg.get("lr", "n/a")
+                    opt      = nn_cfg.get("optimizer", "n/a")
+                    device   = nn_cfg.get("device", "n/a")
+
+                    nn_html = (
+                        "<ul>"
+                        f"<li>hidden_layers: {layers}</li>"
+                        f"<li>activation: {act}</li>"
+                        f"<li>dropout: {drop}</li>"
+                        f"<li>optimizer: {opt}</li>"
+                        f"<li>learning_rate: {lr}</li>"
+                        f"<li>device: {device}</li>"
+                        "</ul>"
+                    )
+                else:
+                    nn_html = "<i>not saved in this checkpoint</i>"
+
+                # --- Compose info block with two sections ---
                 info_html = (
                     f"<b>Environment:</b> {env_name}<br>"
                     f"<b>Agent:</b> {agent_name}<br>"
-                    f"<b>Episodes:</b> {episodes_trained}/{episodes_total}<br>"
+                    f"<b>Episodes:</b> {episodes_trained}/{episodes_total}<br><br>"
                     f"<b>Hyperparameters:</b>{hps_html}"
+                    f"<b>Neural Network:</b> {nn_html if isinstance(nn_cfg, dict) else nn_html}<br>"
                     f"<b>Created:</b> {timestamp}<br>"
                 )
 
                 self.env_label.setText(info_html)
-
                 self.selected_checkpoint = checkpoint
             else:
                 self.selected_model_file = None
                 self.selected_checkpoint = None
                 self.env_label.setText("⚠ No model selected")
-                # reset button text
                 self.choose_model_btn.setText("Choose Model")
+
 
     def _start_testing_model(self):
         if not hasattr(self, "selected_checkpoint") or self.selected_checkpoint is None:

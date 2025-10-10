@@ -32,7 +32,6 @@
 - [ ] Planning for resume/continue training (hyperparam overrides);
 - [ ] Add unit testing;
 - [ ] Add Specific section with description to agent choosing in Training section;
-- [ ] Add detailed description to agent after training, including optimizer, loss, nn layers;
 - [ ] Add CUDA tick to Training section;
 - [ ] Add continuous environment;
 - [ ] Hide discrete agents for continuous environments and vice versa;
@@ -48,6 +47,7 @@
 
 
 ## Done
+- [x] Add detailed description to agent after training, including optimizer, loss, nn layers;
 - [x] Add date to trained model's data;
 - [x] Add DDPG (Deep Deterministic Policy Gradient) agent for continuous environments;
 - [x] Add setting NN button;
