@@ -32,7 +32,8 @@ DEFAULTS = {
 
     # Neural network architecture
     "HIDDEN_LAYERS": [256, 128],
-    "ACTIVATION": "relu",
+    "HIDDEN_ACTIVATIONS": ["relu", "leaky_relu", "sigmoid", "softmax", "tanh", "gelu"],
+    "HIDDEN_ACTIVATION": "relu",
     "DROPOUT": 0.2,
 
     # Neural network optimization

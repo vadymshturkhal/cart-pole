@@ -42,11 +42,11 @@ class NNConfigDialog(QDialog):
             self.hidden_layers_input.setCurrentText(current)
         form.addRow("Hidden Layers:", self.hidden_layers_input)
 
-        # Activation
-        self.activation_box = QComboBox()
-        self.activation_box.addItems(["relu", "tanh", "sigmoid"])
-        self.activation_box.setCurrentText(config.ACTIVATION)
-        form.addRow("Activation Function:", self.activation_box)
+        # Hidden layers activation
+        self.hidden_activation_box = QComboBox()
+        self.hidden_activation_box.addItems(config.HIDDEN_ACTIVATIONS)
+        self.hidden_activation_box.setCurrentText(config.HIDDEN_ACTIVATION)
+        form.addRow("Hidden Activation Function:", self.hidden_activation_box)
 
         # Dropout
         self.dropout_spin = QDoubleSpinBox()
@@ -104,7 +104,7 @@ class NNConfigDialog(QDialog):
         """Gather values from form widgets"""
         # Architecture
         self.updated_config["HIDDEN_LAYERS"] = eval(self.hidden_layers_input.currentText())
-        self.updated_config["ACTIVATION"] = self.activation_box.currentText()
+        self.updated_config["HIDDEN_ACTIVATION"] = self.hidden_activation_box.currentText()
         self.updated_config["DROPOUT"] = self.dropout_spin.value()
 
         # Optimization

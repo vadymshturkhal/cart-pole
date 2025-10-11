@@ -4,8 +4,11 @@ import config
 
 _ACTIVATIONS = {
     "relu": nn.ReLU,
-    "tanh": nn.Tanh,
+    "leaky_relu": nn.LeakyReLU,
     "sigmoid": nn.Sigmoid,
+    "softmax": nn.Softmax,
+    "tanh": nn.Tanh,
+    "gelu": nn.GELU,
 }
 
 def get_activation(activation_function: str) -> nn.Module:
@@ -31,7 +34,8 @@ class QNetwork(nn.Module):
         # Hidden layers from config
         for hidden_dim in config.HIDDEN_LAYERS:
             layers.append(nn.Linear(input_dim, hidden_dim))
-            activation = get_activation(config.ACTIVATION)
+            activation = get_activation(config.HIDDEN_ACTIVATION)
+            print(activation)
             
             # Fresh activation for each layer
             layers.append(activation)
