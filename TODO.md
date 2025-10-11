@@ -46,6 +46,7 @@
 - [ ] Adaptive learning rate as option;
 - [ ] Integrate Stable Baselines3 agents;
 - [ ] Testing Section: Make status line smarter — e.g., show step count, FPS, or a small green “live” dot while testing runs;
+- [ ] Add separate activations to hidden and output layers;
 
 
 ## Done
