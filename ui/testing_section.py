@@ -141,7 +141,6 @@ class TestingSection(QWidget):
                 self._meta["env"] = env_name
                 self._meta["agent"] = agent_name
 
-
     def _start_testing_model(self):
         if not self.selected_checkpoint:
             self.status_label.setText("⚠ Please choose a model first.")
@@ -175,18 +174,24 @@ class TestingSection(QWidget):
         self.choose_model_btn.setEnabled(False)
         self.stop_testing_btn.setEnabled(True)
 
+        # Connect callback to viewer 
+        self.viewer.finished.connect(self._on_testing_finished)
 
     def _stop_testing_model(self):
+        """Handle manual user stop during testing."""
+        self._update_testing_state("Stopped", "⏹")
+
+    def _on_testing_finished(self):
+        """Handle natural completion of all test episodes."""
+        self._update_testing_state("Testing ended for", "✅")
+
+    def _update_testing_state(self, msg, icon):
         if self.viewer:
             self.viewer.stop()
-            self.viewer_layout.removeWidget(self.viewer)
-            self.viewer.deleteLater()
-            self.viewer = None
-
-        # Preserve info_label; only update status + buttons
+    
         agent_name = self._meta.get("agent") or "agent"
         env_name = self._meta.get("env") or "env"
-        self.status_label.setText(f"⏹ Stopped {agent_name} on {env_name}.")
+        self.status_label.setText(f"{icon} {msg} {agent_name} on {env_name}.")
         self.start_testing_btn.setEnabled(True)
         self.choose_model_btn.setEnabled(True)
         self.stop_testing_btn.setEnabled(False)
