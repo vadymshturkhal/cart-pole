@@ -27,14 +27,19 @@ class QNetwork(nn.Module):
         
         layers = []
         input_dim = state_dim
-        activation = get_activation(config.ACTIVATION)
         
         # Hidden layers from config
         for hidden_dim in config.HIDDEN_LAYERS:
             layers.append(nn.Linear(input_dim, hidden_dim))
+            activation = get_activation(config.ACTIVATION)
+            
+            # Fresh activation for each layer
             layers.append(activation)
-            if config.DROPOUT > 0:   # ✅ Add dropout if enabled
+
+            #  Dropout after activation
+            if config.DROPOUT > 0:
                 layers.append(nn.Dropout(p=config.DROPOUT))
+
             input_dim = hidden_dim
         
         # Output layer
