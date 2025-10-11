@@ -66,13 +66,12 @@ class EnvViewer(QLabel):
 
         # Set total rewards to 0
         self.total_rewards_in_episode = 0
+        self.obs, _ = self.env.reset()
 
         # All episodes done → emit signal & stop
         if self.current_episode >= self.episodes:
             self.timer.stop()
-            self.obs, _ = self.env.reset()
             self.finished.emit()
             return
 
-        self.obs, _ = self.env.reset()
         self.done = False
