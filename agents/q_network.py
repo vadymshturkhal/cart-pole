@@ -35,7 +35,6 @@ class QNetwork(nn.Module):
         for hidden_dim in config.HIDDEN_LAYERS:
             layers.append(nn.Linear(input_dim, hidden_dim))
             activation = get_activation(config.HIDDEN_ACTIVATION)
-            print(activation)
             
             # Fresh activation for each layer
             layers.append(activation)
