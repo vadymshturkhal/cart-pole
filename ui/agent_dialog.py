@@ -13,7 +13,7 @@ class AgentDialog(QDialog):
         self.setWindowTitle("Select Agent")
         self.resize(420, 520)
 
-        # cCache for per-agent hyperparams
+        # Cache for per-agent hyperparams
         self._cache: dict[str, dict] = {}
         self.params_widgets: dict[str, QWidget] = {}
 
