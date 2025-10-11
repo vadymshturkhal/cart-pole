@@ -39,18 +39,18 @@
 - [ ] Add 'Load hyperparams from config' button for agent in Training section;
 - [ ] Save Reward and Loss plots after training;
 - [ ] Zoom in for plots;
-- [ ] Sort models in Testing section;
 - [ ] Selectable params in Testing section;
 - [ ] Zero must be lined at Reward Plot;
 - [ ] Add Episodes quantity to Testing section;
 - [ ] Adaptive learning rate as option;
 - [ ] Integrate Stable Baselines3 agents;
 - [ ] Testing Section: Make status line smarter — e.g., show step count, FPS, or a small green “live” dot while testing runs;
-- [ ] Add separate activations to hidden and output layers;
 - [ ] Add FPS to env viewer;
 
 
 ## Done
+- [x] Sort models in Testing section;
+- [x] Add some activations to hidden layer;
 - [x] In Testing section maked some buttons unavailable;
 - [x] Add detailed description to agent after training, including optimizer, loss, nn layers;
 - [x] Add date to trained model's data;
