@@ -6,7 +6,13 @@ from ui.env_viewer import EnvViewer
 from utils.agent_factory import build_agent
 from environments.factory import create_environment
 import config
+from enum import Enum
 
+
+class TestState(Enum):
+    FINISHED = ("Testing ended for", "✅")
+    STOPPED = ("Stopped", "⏹")
+    
 
 class TestingSection(QWidget):
     back_to_main = Signal()
@@ -179,16 +185,17 @@ class TestingSection(QWidget):
 
     def _stop_testing_model(self):
         """Handle manual user stop during testing."""
-        self._update_testing_state("Stopped", "⏹")
+        self._update_testing_state(TestState.STOPPED)
 
     def _on_testing_finished(self):
         """Handle natural completion of all test episodes."""
-        self._update_testing_state("Testing ended for", "✅")
+        self._update_testing_state(TestState.FINISHED)
 
-    def _update_testing_state(self, msg, icon):
+    def _update_testing_state(self, state: TestState):
         if self.viewer:
             self.viewer.stop()
-    
+
+        msg, icon = state.value
         agent_name = self._meta.get("agent") or "agent"
         env_name = self._meta.get("env") or "env"
         self.status_label.setText(f"{icon} {msg} {agent_name} on {env_name}.")
