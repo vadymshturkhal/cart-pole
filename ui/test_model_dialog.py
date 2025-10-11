@@ -14,6 +14,7 @@ class TestModelDialog(QDialog):
 
         self.list_widget = QListWidget()
         self.models = [f for f in os.listdir(folder) if f.endswith(".pth")]
+        self.models.sort()
 
         for m in self.models:
             self.list_widget.addItem(m)
