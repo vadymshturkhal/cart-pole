@@ -28,13 +28,14 @@ class EnvViewer(QLabel):
         self.done = False
         self.current_episode = 0
         self.running = False
+        self.total_rewards_in_episode = 0
 
     def start(self):
         """Begin stepping through the environment automatically."""
         if not self.running:
             self.running = True
             self.timer.start(int(1000 / self.fps))
-
+        
     def stop(self):
         """Stop stepping and reset viewer state."""
         if self.timer.isActive():
@@ -43,22 +44,14 @@ class EnvViewer(QLabel):
 
     def step_env(self):
         if self.done:
-            self.current_episode += 1
-    
-            # All episodes done → emit signal & stop
-            if self.current_episode >= self.episodes:
-                self.timer.stop()
-                self.finished.emit()
-                return
-    
-            self.obs, _ = self.env.reset()
-            self.done = False
+            self._on_done()
 
         # Agent selects an action
         action = self.agent.select_action(self.obs, greedy=True)
 
         # Step environment
-        self.obs, _, terminated, truncated, _ = self.env.step(action)
+        self.obs, reward, terminated, truncated, _ = self.env.step(action)
+        self.total_rewards_in_episode += reward
         self.done = terminated or truncated
 
         # Render frame
@@ -67,3 +60,19 @@ class EnvViewer(QLabel):
             h, w, _ = frame.shape
             qimg = QImage(frame.data, w, h, 3 * w, QImage.Format_RGB888)
             self.setPixmap(QPixmap.fromImage(qimg))
+
+    def _on_done(self):
+        self.current_episode += 1
+
+        # Set total rewards to 0
+        self.total_rewards_in_episode = 0
+
+        # All episodes done → emit signal & stop
+        if self.current_episode >= self.episodes:
+            self.timer.stop()
+            self.obs, _ = self.env.reset()
+            self.finished.emit()
+            return
+
+        self.obs, _ = self.env.reset()
+        self.done = False
