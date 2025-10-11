@@ -46,7 +46,7 @@ class NNConfigDialog(QDialog):
         self.hidden_activation_box = QComboBox()
         self.hidden_activation_box.addItems(config.HIDDEN_ACTIVATIONS)
         self.hidden_activation_box.setCurrentText(config.HIDDEN_ACTIVATION)
-        form.addRow("Hidden Activation Function:", self.hidden_activation_box)
+        form.addRow("Hidden Activation:", self.hidden_activation_box)
 
         # Dropout
         self.dropout_spin = QDoubleSpinBox()
