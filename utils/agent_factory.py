@@ -1,11 +1,13 @@
 from agents.nstep_dqn_agent import NStepDeepQLearningAgent
 from agents.nstep_ddqn_agent import NStepDoubleDeepQLearningAgent
+from agents.rainbow_agent import RainbowAgent
 from agents.ase_ace_agent import ASEACEAgent
 
 
 AGENTS = {
     "nstep_dqn": NStepDeepQLearningAgent, 
     "nstep_ddqn": NStepDoubleDeepQLearningAgent,
+    "rainbow": RainbowAgent,
     "ase_ace": ASEACEAgent,
 }
 
