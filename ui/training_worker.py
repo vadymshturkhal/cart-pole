@@ -1,5 +1,5 @@
 from PySide6.QtCore import QObject, Signal, Slot
-import torch, os
+import os
 import config
 from utils.training import train
 
