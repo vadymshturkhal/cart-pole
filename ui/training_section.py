@@ -13,8 +13,7 @@ from utils.agent_factory import AGENTS, build_agent
 from environments.factory import create_environment
 import config
 import os
-import datetime
-import json
+from utils.run_logger import RunLogger
 
 
 class TrainingSection(QWidget):
@@ -146,16 +145,11 @@ class TrainingSection(QWidget):
 
         self.agent = build_agent(self.agent_name, state_dim, action_dim, self.hyperparams)
 
-        model_path = f"{config.TRAINED_MODELS_FOLDER}/{self.env_name}_{self.agent_name}.pth"
+        # Saving model's data
+        self.run_logger = RunLogger(config.TRAINED_MODELS_FOLDER, self.env_name, self.agent_name)
+        model_path = os.path.join(self.run_logger.run_dir, "model.pth")
 
-        # For saving
-        timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        run_dir = os.path.join(config.TRAINED_MODELS_FOLDER, f"{self.env_name}_{self.agent_name}_{timestamp}")
-        os.makedirs(run_dir, exist_ok=True)
-        self.run_dir = run_dir
-        model_path = os.path.join(run_dir, "model.pth")
-
-        # === Create Worker & Thread ===
+        # Create Worker & Thread
         self.training_thread = QThread()
         self.training_worker = TrainingWorker(self.env_name, env, self.agent_name, self.agent, episodes, 
                                               model_path, hyperparams=self.hyperparams, render=(render == "human"))
@@ -186,15 +180,18 @@ class TrainingSection(QWidget):
         self._export_training_data()
 
     def _save_agent_as(self):
-        """Manual save: user chooses a custom file name for the trained agent."""
+        """Manual save: lets the user export the trained agent and optional artifacts."""
         if not self.training_done or not hasattr(self, "agent"):
             self.status_label.setText("⚠ No trained agent available to save.")
             return
 
-        # Suggest default filename based on last run
+        if not hasattr(self, "run_logger"):
+            # Fallback if no logger exists (e.g. manually loaded model)
+            self.run_logger = RunLogger(config.TRAINED_MODELS_FOLDER, self.env_name, self.agent_name)
+
+        # Suggest default filename based on latest run
         default_name = f"{self.env_name}_{self.agent_name}.pth"
-        default_dir = getattr(self, "run_dir", config.TRAINED_MODELS_FOLDER)
-        default_path = os.path.join(default_dir, default_name)
+        default_path = os.path.join(self.run_logger.run_dir, default_name)
 
         path, _ = QFileDialog.getSaveFileName(
             self,
@@ -208,12 +205,23 @@ class TrainingSection(QWidget):
             return
 
         try:
+            # Save the agent model itself
             self.agent.save(path, self.agent.get_checkpoint())
-            self.status_label.setText(f"✅ Agent saved successfully at {path}")
+
+            # If user saved outside the default run folder, offer to export artifacts too
+            user_dir = os.path.dirname(path)
+            if os.path.abspath(user_dir) != os.path.abspath(self.run_logger.run_dir):
+                self.run_logger.save_plots(self.reward_plot, self.loss_plot)
+                self.run_logger.save_config(self.hyperparams)
+                self.status_label.setText(
+                    f"✅ Agent and related artifacts saved to:\n{user_dir}"
+                )
+            else:
+                self.status_label.setText(f"✅ Agent saved successfully at {path}")
+
         except Exception as e:
             self.status_label.setText(f"❌ Failed to save agent: {e}")
             print(f"[TrainingSection] Save error: {e}")
-
 
     def _reset_training_refs(self):
         self.training_thread = None
@@ -267,43 +275,18 @@ class TrainingSection(QWidget):
             )
             
     def _export_training_data(self):
-        """Save all training artifacts (model, plots, metrics, config) into run_dir."""
-        if not hasattr(self, "run_dir"):
-            self.status_label.setText("⚠ No run directory defined for export.")
-            return
-        if not hasattr(self, "agent"):
-            self.status_label.setText("⚠ No agent found to export.")
+        """Export all run data using RunLogger."""
+        if not hasattr(self, "run_logger") or not hasattr(self, "agent"):
+            self.status_label.setText("⚠ Nothing to export — missing logger or agent.")
             return
 
         try:
-            # --- Export rewards and loss curves ---
-            rewards_csv = os.path.join(self.run_dir, "rewards.csv")
-            rewards_png = os.path.join(self.run_dir, "rewards.png")
-            losses_png = os.path.join(self.run_dir, "loss_curve.png")
+            self.run_logger.save_model(self.agent)
+            self.run_logger.save_plots(self.reward_plot)
+            self.run_logger.save_config(self.hyperparams)
 
-            self.reward_plot.export_csv(rewards_csv)
-            self.reward_plot.export_png(rewards_png)
-            # self.loss_plot.export_png(losses_png)
-
-            # --- Export model ---
-            model_path = os.path.join(self.run_dir, "model.pth")
-            self.agent.save(model_path, self.agent.get_checkpoint())
-
-            # --- Export hyperparameters/config ---
-            config_path = os.path.join(self.run_dir, "config.json")
-            config_data = {
-                "environment": self.env_name,
-                "agent": self.agent_name,
-                "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "hyperparameters": self.hyperparams,
-            }
-            with open(config_path, "w") as f:
-                json.dump(config_data, f, indent=4)
-
-            self.status_label.setText(f"💾 Training data exported to {self.run_dir}")
-
+            self.status_label.setText(f"💾 Training data exported to {self.run_logger.run_dir}")
         except Exception as e:
             self.status_label.setText(f"❌ Export failed: {e}")
             print(f"[TrainingSection] Export error: {e}")
-
-    
+        
