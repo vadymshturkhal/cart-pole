@@ -1,7 +1,6 @@
 from copy import deepcopy
 import torch
 import torch.nn as nn
-import torch.optim as optim
 import numpy as np
 import random
 from agents.base_agent import BaseAgent
