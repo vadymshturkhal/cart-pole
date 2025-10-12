@@ -50,6 +50,7 @@
 - [ ] Add max_step_per_episode to Training section;
 - [ ] Add loss to NN optimization in Training section;
 - [ ] Add networks to NN optimization in Training section;
+- [ ] Add Configure Environment button in Training section;
 
 
 ## Done
