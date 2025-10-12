@@ -49,6 +49,7 @@
 - [ ] Add episode/total_episodes to Training Logger;
 - [ ] Add max_step_per_episode to Training section;
 - [ ] Add loss to NN optimization in Training section;
+- [ ] Add networks to NN optimization in Training section;
 
 
 ## Done
