@@ -12,6 +12,9 @@ from ui.nn_config_dialog import NNConfigDialog
 from utils.agent_factory import AGENTS, build_agent
 from environments.factory import create_environment
 import config
+import os
+import datetime
+import json
 
 
 class TrainingSection(QWidget):
@@ -143,8 +146,14 @@ class TrainingSection(QWidget):
 
         self.agent = build_agent(self.agent_name, state_dim, action_dim, self.hyperparams)
 
-        # timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         model_path = f"{config.TRAINED_MODELS_FOLDER}/{self.env_name}_{self.agent_name}.pth"
+
+        # For saving
+        timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        run_dir = os.path.join(config.TRAINED_MODELS_FOLDER, f"{self.env_name}_{self.agent_name}_{timestamp}")
+        os.makedirs(run_dir, exist_ok=True)
+        self.run_dir = run_dir
+        model_path = os.path.join(run_dir, "model.pth")
 
         # === Create Worker & Thread ===
         self.training_thread = QThread()
@@ -174,18 +183,37 @@ class TrainingSection(QWidget):
         else:
             self.status_label.setText("⚠ No training is running")
 
+        self._export_training_data()
+
     def _save_agent_as(self):
-        if not self.training_done:
-            self.status_label.setText("⚠ No trained agent to save")
+        """Manual save: user chooses a custom file name for the trained agent."""
+        if not self.training_done or not hasattr(self, "agent"):
+            self.status_label.setText("⚠ No trained agent available to save.")
             return
 
-        # Suggest default filename with timestamp
+        # Suggest default filename based on last run
         default_name = f"{self.env_name}_{self.agent_name}.pth"
-        path, _ = QFileDialog.getSaveFileName(self, "Save Agent", f"trained_models/{default_name}", "Model Files (*.pth)")
+        default_dir = getattr(self, "run_dir", config.TRAINED_MODELS_FOLDER)
+        default_path = os.path.join(default_dir, default_name)
 
-        if path:
+        path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save Agent As",
+            default_path,
+            "Model Files (*.pth)"
+        )
+
+        if not path:
+            self.status_label.setText("💡 Save canceled by user.")
+            return
+
+        try:
             self.agent.save(path, self.agent.get_checkpoint())
-            self.status_label.setText(f"✅ Agent saved as {path}")
+            self.status_label.setText(f"✅ Agent saved successfully at {path}")
+        except Exception as e:
+            self.status_label.setText(f"❌ Failed to save agent: {e}")
+            print(f"[TrainingSection] Save error: {e}")
+
 
     def _reset_training_refs(self):
         self.training_thread = None
@@ -206,6 +234,7 @@ class TrainingSection(QWidget):
         self.training_done = True
         self.status_label.setText("✅ Training finished!")
         self.save_btn.setEnabled(True)
+        self._export_training_data()
 
     def _show_agent_details(self):
         if not hasattr(self, "hyperparams") or not self.hyperparams:
@@ -237,3 +266,44 @@ class TrainingSection(QWidget):
                     "
             )
             
+    def _export_training_data(self):
+        """Save all training artifacts (model, plots, metrics, config) into run_dir."""
+        if not hasattr(self, "run_dir"):
+            self.status_label.setText("⚠ No run directory defined for export.")
+            return
+        if not hasattr(self, "agent"):
+            self.status_label.setText("⚠ No agent found to export.")
+            return
+
+        try:
+            # --- Export rewards and loss curves ---
+            rewards_csv = os.path.join(self.run_dir, "rewards.csv")
+            rewards_png = os.path.join(self.run_dir, "rewards.png")
+            losses_png = os.path.join(self.run_dir, "loss_curve.png")
+
+            self.reward_plot.export_csv(rewards_csv)
+            self.reward_plot.export_png(rewards_png)
+            # self.loss_plot.export_png(losses_png)
+
+            # --- Export model ---
+            model_path = os.path.join(self.run_dir, "model.pth")
+            self.agent.save(model_path, self.agent.get_checkpoint())
+
+            # --- Export hyperparameters/config ---
+            config_path = os.path.join(self.run_dir, "config.json")
+            config_data = {
+                "environment": self.env_name,
+                "agent": self.agent_name,
+                "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "hyperparameters": self.hyperparams,
+            }
+            with open(config_path, "w") as f:
+                json.dump(config_data, f, indent=4)
+
+            self.status_label.setText(f"💾 Training data exported to {self.run_dir}")
+
+        except Exception as e:
+            self.status_label.setText(f"❌ Export failed: {e}")
+            print(f"[TrainingSection] Export error: {e}")
+
+    
