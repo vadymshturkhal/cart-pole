@@ -4,4 +4,3 @@ runs
 ex*
 trained_models/autosave
 user_config.json
-rewards.csv
