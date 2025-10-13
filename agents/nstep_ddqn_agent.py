@@ -152,7 +152,7 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
     
     def save(self, path: str, extra: dict = None):
         self.checkpoint = {
-            "agent_name": "nstep_dqn",
+            "agent_name": "nstep_ddqn",
             "model_state": self.q_net.state_dict(),
             "hyperparams": self.hyperparams,
             "nn_config": {  # Save full NN architecture & optimizer info
