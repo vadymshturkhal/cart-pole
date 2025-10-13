@@ -36,14 +36,13 @@ class TrainingWorker(QObject):
         self.env.close()
 
     def _save_checkpoint(self, episodes, rewards):
-        path = f"trained_models/{self.env_name}_{self.agent_name}.pth"
         self.extra = {
             "environment": self.env_name,
             "episodes_trained": len(rewards),
             "episodes_total": episodes,
         }
 
-        self.agent.save(path, extra=self.extra)
+        self.agent.update_checkpoint(extra=self.extra)
 
     def _progress_cb(self, ep, episodes, ep_reward, rewards, average_loss):
         self.progress.emit(ep, episodes, ep_reward, rewards, average_loss)

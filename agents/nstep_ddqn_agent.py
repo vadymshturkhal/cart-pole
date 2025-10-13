@@ -151,6 +151,9 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
     def get_checkpoint(self):
         return deepcopy(self.checkpoint)
     
+    def update_checkpoint(self, extra):
+        self.checkpoint.update(extra)
+    
     def save(self, path: str, extra: dict = None):
         self.checkpoint = {
             "agent_name": "nstep_ddqn",
