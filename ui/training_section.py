@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, 
+    QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QMessageBox,
     QComboBox, QSpinBox, QFileDialog, QVBoxLayout, QTabWidget
 )
 from PySide6.QtCore import QThread, Signal
@@ -176,7 +176,36 @@ class TrainingSection(QWidget):
         self._autosave_model()
 
     def _save_agent_as(self):
-        pass
+        """Create RunLogger and save model data to chosen folder."""
+        if not hasattr(self, "agent"):
+            self.status_label.setText("⚠ No trained agent to save.")
+            return
+
+        default_dir = os.path.join(config.TRAINED_MODELS_FOLDER)
+        user_dir, _ = QFileDialog.getSaveFileName(self, "Save Agent As", default_dir)
+
+        if not user_dir:
+            self.status_label.setText("💡 Save canceled by user.")
+            return
+
+        try:
+            self.run_logger = RunLogger(self.env_name, self.agent, self.reward_plot, self.loss_plot)
+
+            # Save model data
+            self.run_logger.save_model(user_dir)
+            self.status_label.setText(f"✅ Model and artifacts saved to:\n{os.path.dirname(user_dir)}")
+
+            # Success popup
+            QMessageBox.information(
+                self,
+                "Model Saved",
+                f"Agent and training data successfully saved to:\n{os.path.dirname(user_dir)}",
+            )
+
+        except Exception as e:
+            self.status_label.setText(f"❌ Failed to save agent: {e}")
+            QMessageBox.critical(self, "Save Error", f"Could not save agent:\n{e}")
+            print(f"[TrainingSection] Save error: {e}")
 
     def _reset_training_refs(self):
         self.training_thread = None

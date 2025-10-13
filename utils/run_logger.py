@@ -31,18 +31,20 @@ class RunLogger:
         if not hasattr(self.agent, "save"):
             raise AttributeError("Agent must have a .save() method")
 
-        save_to = f"{userdir}/{self.env_name}_{self.agent_name}"
-        os.makedirs(save_to, exist_ok=True)
-        model_path = os.path.join(save_to, f"{self.env_name}_{self.agent_name}_{self.timestamp}.pth")
-        self.agent.save(model_path, self.agent.get_checkpoint())
-        return model_path
-    
+        os.makedirs(userdir, exist_ok=True)
+        save_model_path = os.path.join(userdir, f"{self.env_name}_{self.agent_name}.pth")
+        self.agent.save(save_model_path, self.agent.get_checkpoint())
+
+        # Save plots and config
+        self._save_plots(userdir)
+        self._save_config(userdir)
+
     def autosave_model(self):
         """Save model checkpoint to run_dir/self.autosave_dir"""
         if not hasattr(self.agent, "save"):
             raise AttributeError("Agent must have a .save() method")
+
         autosave_model_path = os.path.join(self.autosave_dir, f"{self.env_name}_{self.agent_name}.pth")
-        # print(autosave_model_path)
         self.agent.save(autosave_model_path, self.agent.get_checkpoint())
         
         # Save plots and config
