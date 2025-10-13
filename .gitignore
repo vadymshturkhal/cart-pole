@@ -2,6 +2,6 @@ __pycache__
 env
 runs
 ex*
-trained_models/
+trained_models/autosave
 user_config.json
 rewards.csv
