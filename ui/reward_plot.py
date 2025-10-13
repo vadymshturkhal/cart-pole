@@ -4,6 +4,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import numpy as np
 import config
+import csv
 
 
 class RewardPlot(FigureCanvas):
@@ -169,7 +170,6 @@ class RewardPlot(FigureCanvas):
         self.fig.savefig(path, dpi=160)
 
     def export_csv(self, path: str):
-        import csv
         with open(path, "w", newline="") as f:
             w = csv.writer(f)
             w.writerow(["episode", "reward", f"ma_{self._ma_window}"])

@@ -36,7 +36,7 @@ class LossPlot(FigureCanvas):
         (self.raw_line,) = self.ax.plot([], [], color=(0.6, 0.1, 0.8, 0.5), lw=1.5, label="Loss")
         (self.ma_line,) = self.ax.plot([], [], color=(0.6, 0.1, 0.8, 0.9), lw=2.0, label=f"MA({ma_window})")
 
-        self.ax.legend(loc="upper right", frameon=False, fontsize=8)
+        self.ax.legend(loc="upper left", frameon=False, fontsize=8)
 
         # Internal buffers
         self._losses: list[float] = []
