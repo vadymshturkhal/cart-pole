@@ -37,7 +37,6 @@
 - [ ] Hide discrete agents for continuous environments and vice versa;
 - [ ] Add target network update	every N steps to AgentDialog in Training section;
 - [ ] Add 'Load hyperparams from config' button for agent in Training section;
-- [ ] Save Loss plot after training;
 - [ ] Zoom in for plots;
 - [ ] Selectable params in Testing section;
 - [ ] Zero must be lined at Reward Plot;
@@ -54,6 +53,7 @@
 
 
 ## Done
+- [x] Save Loss plot after training;
 - [x] Save Reward plot, reward.csv, model.pth and json data after training;
 - [x] Sort models in Testing section;
 - [x] Add some activations to hidden layer;
