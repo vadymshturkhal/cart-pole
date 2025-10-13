@@ -30,12 +30,11 @@ class TrainingWorker(QObject):
         )
 
         # Save model and close environment
-        os.makedirs(config.TRAINED_MODELS_FOLDER, exist_ok=True)
-        self._save_checkpoint(self.episodes, rewards)
+        self._update_model_checkpoint(self.episodes, rewards)
         self.finished.emit()
         self.env.close()
 
-    def _save_checkpoint(self, episodes, rewards):
+    def _update_model_checkpoint(self, episodes, rewards):
         self.extra = {
             "environment": self.env_name,
             "episodes_trained": len(rewards),

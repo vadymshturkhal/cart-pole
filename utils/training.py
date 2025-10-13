@@ -51,11 +51,6 @@ def train(env, agent, episodes=config.EPISODES,
         if ep % config.LOG_AFTER_EPISODES == 0:
             print(f"Episode {ep}, Reward: {total_reward}")
 
-    # ✅ Save rewards to CSV
-    df = pd.DataFrame({"episode": range(len(rewards)), "reward": rewards})
-    df.to_csv(rewards_file, index=False)
-    print(f"✅ Rewards saved to {rewards_file}")
-
     return rewards
 
 

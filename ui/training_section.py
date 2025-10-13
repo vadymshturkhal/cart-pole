@@ -34,7 +34,6 @@ class TrainingSection(QWidget):
 
         self._build_training_section()
 
-
     def _build_training_section(self):
         layout = QVBoxLayout(self)
 
