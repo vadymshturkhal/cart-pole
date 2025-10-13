@@ -145,14 +145,10 @@ class TrainingSection(QWidget):
 
         self.agent = build_agent(self.agent_name, state_dim, action_dim, self.hyperparams)
 
-        # Saving model's data
-        self.run_logger = RunLogger(config.TRAINED_MODELS_FOLDER, self.env_name, self.agent)
-        model_path = os.path.join(self.run_logger.run_dir, "model.pth")
-
         # Create Worker & Thread
         self.training_thread = QThread()
         self.training_worker = TrainingWorker(self.env_name, env, self.agent_name, self.agent, episodes, 
-                                              model_path, hyperparams=self.hyperparams, render=(render == "human"))
+                                              hyperparams=self.hyperparams, render=(render == "human"))
         self.training_worker.moveToThread(self.training_thread)
 
         # Connect signals
@@ -177,7 +173,7 @@ class TrainingSection(QWidget):
         else:
             self.status_label.setText("⚠ No training is running")
 
-        self._export_training_data()
+        self._autosave_model()
 
     def _save_agent_as(self):
         """Manual save: lets the user export the trained agent and optional artifacts."""
@@ -187,7 +183,7 @@ class TrainingSection(QWidget):
 
         if not hasattr(self, "run_logger"):
             # Fallback if no logger exists (e.g. manually loaded model)
-            self.run_logger = RunLogger(config.TRAINED_MODELS_FOLDER, self.env_name, self.agent_name)
+            self.run_logger = RunLogger(self.env_name, self.agent_name)
 
         # Suggest default filename based on latest run
         default_name = f"{self.env_name}_{self.agent_name}.pth"
@@ -242,7 +238,7 @@ class TrainingSection(QWidget):
         self.training_done = True
         self.status_label.setText("✅ Training finished!")
         self.save_btn.setEnabled(True)
-        self._export_training_data()
+        self._autosave_model()
 
     def _show_agent_details(self):
         if not hasattr(self, "hyperparams") or not self.hyperparams:
@@ -273,20 +269,38 @@ class TrainingSection(QWidget):
                     device={config.DEVICE} \
                     "
             )
-            
-    def _export_training_data(self):
+
+    def _autosave_model(self):
         """Export all run data using RunLogger."""
-        if not hasattr(self, "run_logger") or not hasattr(self, "agent"):
-            self.status_label.setText("⚠ Nothing to export — missing logger or agent.")
+        if not hasattr(self, "agent"):
+            self.status_label.setText("⚠ Nothing to autosave — missing agent.")
             return
 
         try:
-            self.run_logger.save_model()
-            self.run_logger.save_plots(self.reward_plot, self.loss_plot)
-            self.run_logger.save_config()
+            self.run_logger = RunLogger(self.env_name, self.agent, self.reward_plot, self.loss_plot)
+            self.run_logger.autosave_model()
 
             self.status_label.setText(f"💾 Training data exported to {self.run_logger.run_dir}")
+
         except Exception as e:
             self.status_label.setText(f"❌ Export failed: {e}")
             print(f"[TrainingSection] Export error: {e}")
+
+            
+    # def _export_training_data(self):
+    #     """Export all run data using RunLogger."""
+    #     if not hasattr(self, "run_logger") or not hasattr(self, "agent"):
+    #         self.status_label.setText("⚠ Nothing to export — missing logger or agent.")
+    #         return
+
+    #     try:
+    #         self.run_logger.save_model()
+    #         self.run_logger.save_plots(self.reward_plot, self.loss_plot)
+    #         self.run_logger.save_config()
+
+    #         self.status_label.setText(f"💾 Training data exported to {self.run_logger.run_dir}")
+    #     except Exception as e:
+    #         self.status_label.setText(f"❌ Export failed: {e}")
+    #         print(f"[TrainingSection] Export error: {e}")
+
         
