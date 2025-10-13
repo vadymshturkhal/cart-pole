@@ -41,15 +41,20 @@ class BaseAgent(ABC):
     @classmethod
     @abstractmethod
     def get_default_hyperparams(cls):
-        """Get default parameters specific for the agent"""
+        """Get default parameters specific for the agent."""
         pass
 
     @abstractmethod
     def get_hyperparams(self):
-        """Get parameters specific for the agent in particular training section"""
+        """Get parameters specific for the agent in particular training section."""
         pass
 
     @abstractmethod
     def get_checkpoint(self):
         """Get the original checkpoint created right after training."""
+        pass
+
+    @abstractmethod
+    def update_checkpoint(self):
+        """Add some data to checkpoint."""
         pass
