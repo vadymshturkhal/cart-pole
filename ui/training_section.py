@@ -176,48 +176,7 @@ class TrainingSection(QWidget):
         self._autosave_model()
 
     def _save_agent_as(self):
-        """Manual save: lets the user export the trained agent and optional artifacts."""
-        if not self.training_done or not hasattr(self, "agent"):
-            self.status_label.setText("⚠ No trained agent available to save.")
-            return
-
-        if not hasattr(self, "run_logger"):
-            # Fallback if no logger exists (e.g. manually loaded model)
-            self.run_logger = RunLogger(self.env_name, self.agent_name)
-
-        # Suggest default filename based on latest run
-        default_name = f"{self.env_name}_{self.agent_name}.pth"
-        default_path = os.path.join(self.run_logger.run_dir, default_name)
-
-        path, _ = QFileDialog.getSaveFileName(
-            self,
-            "Save Agent As",
-            default_path,
-            "Model Files (*.pth)"
-        )
-
-        if not path:
-            self.status_label.setText("💡 Save canceled by user.")
-            return
-
-        try:
-            # Save the agent model itself
-            self.agent.save(path, self.agent.get_checkpoint())
-
-            # If user saved outside the default run folder, offer to export artifacts too
-            user_dir = os.path.dirname(path)
-            if os.path.abspath(user_dir) != os.path.abspath(self.run_logger.run_dir):
-                self.run_logger.save_plots(self.reward_plot, self.loss_plot)
-                self.run_logger.save_config(self.hyperparams)
-                self.status_label.setText(
-                    f"✅ Agent and related artifacts saved to:\n{user_dir}"
-                )
-            else:
-                self.status_label.setText(f"✅ Agent saved successfully at {path}")
-
-        except Exception as e:
-            self.status_label.setText(f"❌ Failed to save agent: {e}")
-            print(f"[TrainingSection] Save error: {e}")
+        pass
 
     def _reset_training_refs(self):
         self.training_thread = None
@@ -271,7 +230,7 @@ class TrainingSection(QWidget):
             )
 
     def _autosave_model(self):
-        """Export all run data using RunLogger."""
+        """Create RunLogger and autosave model data."""
         if not hasattr(self, "agent"):
             self.status_label.setText("⚠ Nothing to autosave — missing agent.")
             return
@@ -279,8 +238,7 @@ class TrainingSection(QWidget):
         try:
             self.run_logger = RunLogger(self.env_name, self.agent, self.reward_plot, self.loss_plot)
             self.run_logger.autosave_model()
-
-            self.status_label.setText(f"💾 Training data exported to {self.run_logger.run_dir}")
+            self.status_label.setText(f"💾 Training data autosaved to {self.run_logger.autosave_dir}")
 
         except Exception as e:
             self.status_label.setText(f"❌ Export failed: {e}")
