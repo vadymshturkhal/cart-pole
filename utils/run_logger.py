@@ -37,7 +37,8 @@ class RunLogger:
             reward_plot.export_csv(os.path.join(self.run_dir, "rewards.csv"))
             reward_plot.export_png(os.path.join(self.run_dir, "rewards.png"))
         if loss_plot:
-            loss_plot.export_png(os.path.join(self.run_dir, "loss_curve.png"))
+            loss_plot.export_csv(os.path.join(self.run_dir, "loss.csv"))
+            loss_plot.export_png(os.path.join(self.run_dir, "loss.png"))
 
     def save_config(self):
         """Dump environment, agent, and hyperparams to config.json."""
