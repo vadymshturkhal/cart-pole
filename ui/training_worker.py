@@ -8,14 +8,13 @@ class TrainingWorker(QObject):
     progress = Signal(int, int, float, list, float)  # ep, episodes, ep_reward, rewards
     finished = Signal()
 
-    def __init__(self, env_name, env, agent_name, agent, episodes, model_path, hyperparams, render=False):
+    def __init__(self, env_name, env, agent_name, agent, episodes, hyperparams, render=False):
         super().__init__()
         self.env_name = env_name
         self.env = env
         self.agent_name = agent_name
         self.agent = agent
         self.episodes = episodes
-        self.model_path = model_path
         self._stop_flag = False
         self.hyperparams = hyperparams
         self.render = render
