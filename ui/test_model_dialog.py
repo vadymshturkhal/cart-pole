@@ -1,6 +1,7 @@
 import os, torch, config
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QListWidget, QPushButton, QHBoxLayout, QMessageBox
 
+
 class TestModelDialog(QDialog):
     def __init__(self, folder="trained_models"):
         super().__init__()
@@ -13,11 +14,20 @@ class TestModelDialog(QDialog):
         self.layout.addWidget(self.label)
 
         self.list_widget = QListWidget()
-        self.models = [f for f in os.listdir(folder) if f.endswith(".pth")]
+
+        # Recursive search
+        self.models = []
+        for root, _, files in os.walk(config.TRAINED_MODELS_FOLDER):
+            for f in files:
+                if f.endswith(".pth"):
+                    full_path = os.path.join(root, f)
+                    self.models.append(full_path)
+        
         self.models.sort()
 
         for m in self.models:
-            self.list_widget.addItem(m)
+            rel = os.path.relpath(m, config.TRAINED_MODELS_FOLDER)
+            self.list_widget.addItem(rel)
 
         self.layout.addWidget(self.list_widget)
 
