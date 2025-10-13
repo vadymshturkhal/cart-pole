@@ -19,20 +19,18 @@ class LossPlot(FigureCanvas):
     - Export helpers (PNG, CSV).
     """
 
-    def __init__(self,
-                 max_steps: Optional[int] = None,
-                 ma_window: int = 20,
-                 use_log_scale: bool = False):
-
-        self.fig = Figure(figsize=(5, 2.4), tight_layout=True)
+    def __init__(self, max_steps: Optional[int] = None, ma_window: int = 20):
+        self.fig = Figure(figsize=(5, 2.6), tight_layout=True)
         super().__init__(self.fig)
 
         self.ax = self.fig.add_subplot(111)
-        self.ax.set_title("Loss Curve")
-        self.ax.set_xlabel("Episode")
-        self.ax.set_ylabel("Loss")
-        if use_log_scale:
-            self.ax.set_yscale("log")
+        self.ax.set_title("Loss Curve", fontsize=10)
+        self.ax.set_xlabel("Episode", fontsize=9)
+        self.ax.set_ylabel("Loss", fontsize=9)
+        self.ax.margins(x=0.02, y=0.1)
+
+        # if use_log_scale:
+            # self.ax.set_yscale("log")
 
         # Lines — purple tone for distinction
         (self.raw_line,) = self.ax.plot([], [], color=(0.6, 0.1, 0.8, 0.5), lw=1.2, label="Loss")
@@ -92,7 +90,6 @@ class LossPlot(FigureCanvas):
         self._autoscale_y(ys, ma_y)
         self.draw_idle()
 
-    # ---------- Export ----------
     def export_png(self, path: str):
         """Save current figure as PNG."""
         self.fig.savefig(path, dpi=160)
@@ -119,7 +116,7 @@ class LossPlot(FigureCanvas):
             self.ax.set_ylim(y_min - pad, y_max + pad)
         else:
             span = y_max - y_min
-            margin = span * 0.08
+            margin = span * 0.08 if span > 0 else 1.0
             self.ax.set_ylim(y_min - margin, y_max + margin)
 
     def _recompute_ma(self):

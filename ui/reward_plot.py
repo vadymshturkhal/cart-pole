@@ -34,9 +34,10 @@ class RewardPlot(FigureCanvas):
         super().__init__(self.fig)
 
         self.ax = self.fig.add_subplot(111)
-        self.ax.set_title("Training Curve")
-        self.ax.set_xlabel("Episode")
-        self.ax.set_ylabel("Reward")
+        self.ax.set_title("Training Curve", fontsize=10)
+        self.ax.set_xlabel("Episode", fontsize=9)
+        self.ax.set_ylabel("Reward", fontsize=9)
+        self.ax.margins(x=0.02, y=0.1)
 
         # Lines
         (self.raw_line,) = self.ax.plot([], [], lw=1.0, label="Reward")
@@ -202,7 +203,7 @@ class RewardPlot(FigureCanvas):
             self.ax.set_ylim(y_min - pad, y_max + pad)
         else:
             span = y_max - y_min
-            margin = span * 0.08
+            margin = span * 0.08 if span > 0 else 1.0
             self.ax.set_ylim(y_min - margin, y_max + margin)
 
     def _redraw(self):
