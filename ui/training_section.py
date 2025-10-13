@@ -282,7 +282,7 @@ class TrainingSection(QWidget):
 
         try:
             self.run_logger.save_model()
-            self.run_logger.save_plots(self.reward_plot)
+            self.run_logger.save_plots(self.reward_plot, self.loss_plot)
             self.run_logger.save_config()
 
             self.status_label.setText(f"💾 Training data exported to {self.run_logger.run_dir}")
