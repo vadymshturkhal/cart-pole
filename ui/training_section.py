@@ -285,22 +285,3 @@ class TrainingSection(QWidget):
         except Exception as e:
             self.status_label.setText(f"❌ Export failed: {e}")
             print(f"[TrainingSection] Export error: {e}")
-
-            
-    # def _export_training_data(self):
-    #     """Export all run data using RunLogger."""
-    #     if not hasattr(self, "run_logger") or not hasattr(self, "agent"):
-    #         self.status_label.setText("⚠ Nothing to export — missing logger or agent.")
-    #         return
-
-    #     try:
-    #         self.run_logger.save_model()
-    #         self.run_logger.save_plots(self.reward_plot, self.loss_plot)
-    #         self.run_logger.save_config()
-
-    #         self.status_label.setText(f"💾 Training data exported to {self.run_logger.run_dir}")
-    #     except Exception as e:
-    #         self.status_label.setText(f"❌ Export failed: {e}")
-    #         print(f"[TrainingSection] Export error: {e}")
-
-        
