@@ -146,7 +146,7 @@ class TrainingSection(QWidget):
         self.agent = build_agent(self.agent_name, state_dim, action_dim, self.hyperparams)
 
         # Saving model's data
-        self.run_logger = RunLogger(config.TRAINED_MODELS_FOLDER, self.env_name, self.agent_name)
+        self.run_logger = RunLogger(config.TRAINED_MODELS_FOLDER, self.env_name, self.agent)
         model_path = os.path.join(self.run_logger.run_dir, "model.pth")
 
         # Create Worker & Thread
@@ -281,9 +281,9 @@ class TrainingSection(QWidget):
             return
 
         try:
-            self.run_logger.save_model(self.agent)
+            self.run_logger.save_model()
             self.run_logger.save_plots(self.reward_plot)
-            self.run_logger.save_config(self.hyperparams)
+            self.run_logger.save_config()
 
             self.status_label.setText(f"💾 Training data exported to {self.run_logger.run_dir}")
         except Exception as e:

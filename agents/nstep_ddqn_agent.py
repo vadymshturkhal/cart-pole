@@ -38,6 +38,7 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
             eps_decay (int): decay factor for epsilon
         """
 
+        self.name = "nstep_ddqn"
         hyperparams = self.DEFAULT_PARAMS.copy()
         hyperparams.update(kwargs)
         self.hyperparams = hyperparams

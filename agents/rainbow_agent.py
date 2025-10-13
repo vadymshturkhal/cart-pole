@@ -38,6 +38,8 @@ class RainbowAgent(BaseAgent):
             eps_end (float): final epsilon
             eps_decay (int): decay factor for epsilon
         """
+
+        self.name = "rainbow"
         self.state_dim = state_dim
         self.action_dim = action_dim
 

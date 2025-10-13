@@ -8,7 +8,7 @@ AGENTS = {
     "nstep_dqn": NStepDeepQLearningAgent, 
     "nstep_ddqn": NStepDoubleDeepQLearningAgent,
     "rainbow": RainbowAgent,
-    "ase_ace": ASEACEAgent,
+    # "ase_ace": ASEACEAgent,
 }
 
 def build_agent(agent_name: str, state_dim: int, action_dim: int, hyperparams: dict):
