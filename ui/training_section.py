@@ -84,7 +84,7 @@ class TrainingSection(QWidget):
 
         layout.addWidget(QLabel("Rendering Mode:"))
         self.render_box = QComboBox()
-        self.render_box.addItems(["off", "human", "gif", "mp4"])
+        self.render_box.addItems(["off", "human"])
         layout.addWidget(self.render_box)
 
         layout.addWidget(QLabel("Training Episodes:"))
