@@ -39,7 +39,7 @@
 - [ ] Add 'Load hyperparams from config' button for agent in Training section;
 - [ ] Zoom in for plots;
 - [ ] Selectable params in Testing section;
-- [ ] Zero must be lined at Reward Plot;
+- [ ] Zero must lined at Reward Plot;
 - [ ] Adaptive learning rate as option;
 - [ ] Integrate Stable Baselines3 agents;
 - [ ] Testing Section: Make status line smarter — e.g., show step count, FPS, or a small green “live” dot while testing runs;
