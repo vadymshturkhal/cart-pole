@@ -50,10 +50,10 @@
 - [ ] Add loss to NN optimization in Training section;
 - [ ] Add networks to NN optimization in Training section;
 - [ ] Add Configure Environment button in Training section;
-- [ ] In autosave save model's related data with model's name;
 
 
 ## Done
+- [x] In autosave save model's related data with model's name;
 - [x] Save Loss plot after training;
 - [x] Save Reward plot, reward.csv, model.pth and json data after training;
 - [x] Sort models in Testing section;

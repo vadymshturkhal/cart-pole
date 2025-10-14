@@ -54,11 +54,11 @@ class RunLogger:
     def _save_plots(self, dir):
         """Export reward/loss plots as PNG/CSV."""
         if self.reward_plot:
-            self.reward_plot.export_csv(os.path.join(dir, "rewards.csv"))
-            self.reward_plot.export_png(os.path.join(dir, "rewards.png"))
+            self.reward_plot.export_csv(os.path.join(dir, f"{self.env_name}_{self.agent_name}.csv"))
+            self.reward_plot.export_png(os.path.join(dir, f"{self.env_name}_{self.agent_name}.png"))
         if self.loss_plot:
-            self.loss_plot.export_csv(os.path.join(dir, "loss.csv"))
-            self.loss_plot.export_png(os.path.join(dir, "loss.png"))
+            self.loss_plot.export_csv(os.path.join(dir, f"{self.env_name}_{self.agent_name}.csv"))
+            self.loss_plot.export_png(os.path.join(dir, f"{self.env_name}_{self.agent_name}.png"))
 
     def _save_config(self, dir):
         """Dump environment, agent, and hyperparams to config.json."""
@@ -67,7 +67,7 @@ class RunLogger:
         # Delete tensor from config
         del cfg["model_state"]
 
-        cfg_path = os.path.join(dir, "config.json")
+        cfg_path = os.path.join(dir, f"{self.env_name}_{self.agent_name}.json")
         with open(cfg_path, "w", encoding="utf-8") as f:
             json.dump(cfg, f, indent=4)
 
