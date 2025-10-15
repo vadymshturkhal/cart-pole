@@ -3,6 +3,8 @@ torchvision>=0.15.0
 torchaudio>=2.0.0
 
 gymnasium[classic-control]>=0.29.0
+gymnasium[box2d]>=0.29.0
+
 numpy<2.0,>=1.24
 matplotlib>=3.7.0
 pandas>=2.0.0
@@ -13,4 +15,3 @@ pygame>=2.5.0
 imageio>=2.31.0
 PySide6>=6.9.2
 swig>=4.2.0
-gymnasium[box2d]>=0.29.0
