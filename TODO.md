@@ -50,6 +50,7 @@
 - [ ] Add loss to NN optimization in Training section;
 - [ ] Add networks to NN optimization in Training section;
 - [ ] Add Configure Environment button in Training section;
+- [ ] Add speed adjustment for environment in Testing section;
 
 
 ## Done
