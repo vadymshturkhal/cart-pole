@@ -57,9 +57,9 @@ class QNetwork(nn.Module):
         """Activation-aware initialization (He for ReLU, Xavier for tanh)."""
         for m in self.modules():
             if isinstance(m, nn.Linear):
-                if config.ACTIVATION.lower() == "relu":
+                if config.HIDDEN_ACTIVATION.lower() == "relu":
                     nn.init.kaiming_uniform_(m.weight, nonlinearity="relu")
-                elif config.ACTIVATION.lower() == "tanh":
+                elif config.HIDDEN_ACTIVATION.lower() == "tanh":
                     nn.init.xavier_uniform_(m.weight)
                 else:
                     # Fallback for other activations
