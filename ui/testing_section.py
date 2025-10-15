@@ -39,7 +39,8 @@ class TestingSection(QWidget):
 
         left_col.addWidget(self.info_label)
         left_col.addWidget(self.status_label)
-        left_wrap = QWidget(); left_wrap.setLayout(left_col)
+        left_wrap = QWidget(); 
+        left_wrap.setLayout(left_col)
         left_wrap.setStyleSheet("background:#f6f6f6; border:1px solid #ccc; padding:8px;")
         self.top_row.addWidget(left_wrap, 1)
 
@@ -142,7 +143,7 @@ class TestingSection(QWidget):
                 )
 
                 self.info_label.setText(info_html)
-                self.status_label.setText("")  # clear old status
+                self.status_label.setText(f"Model {agent_name} loaded in {env_name} environment")
                 self.selected_checkpoint = checkpoint
                 self._meta["env"] = env_name
                 self._meta["agent"] = agent_name
@@ -175,7 +176,7 @@ class TestingSection(QWidget):
         # UI state + status
         self._meta["env"] = env_name
         self._meta["agent"] = agent_name
-        self.status_label.setText(f"▶ Running {agent_name} on {env_name} …")
+        self.status_label.setText(f"▶ Running {agent_name} in {env_name} environment")
         self.start_testing_btn.setEnabled(False)
         self.choose_model_btn.setEnabled(False)
         self.stop_testing_btn.setEnabled(True)
