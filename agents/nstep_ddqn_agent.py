@@ -197,7 +197,8 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
         dropout = nn_cfg.get("dropout", config.DROPOUT)
         lr = nn_cfg.get("lr", config.LR)
         optimizer_name = nn_cfg.get("optimizer", config.OPTIMIZER)
-        device_name = nn_cfg.get("device", str(config.DEVICE))
+        # device_name = nn_cfg.get("device", str(config.DEVICE))
+        device_name = config.DEVICE
 
         # Update global config (runtime consistency)
         config.HIDDEN_LAYERS = hidden_layers

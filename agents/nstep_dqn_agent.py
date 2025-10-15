@@ -187,7 +187,8 @@ class NStepDeepQLearningAgent(BaseAgent):
         dropout = nn_cfg.get("dropout", config.DROPOUT)
         lr = nn_cfg.get("lr", config.LR)
         optimizer_name = nn_cfg.get("optimizer", config.OPTIMIZER)
-        device_name = nn_cfg.get("device", str(config.DEVICE))
+        # device_name = nn_cfg.get("device", str(config.DEVICE))
+        device_name = config.DEVICE
 
         # Update global config (runtime consistency)
         config.HIDDEN_LAYERS = hidden_layers
@@ -196,6 +197,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         config.LR = lr
         config.OPTIMIZER = optimizer_name
         config.DEVICE = torch.device(device_name)
+
 
         # === Recreate networks ===
         self.q_net = QNetwork(self.q_net.net[0].in_features, self.action_dim).to(config.DEVICE)
