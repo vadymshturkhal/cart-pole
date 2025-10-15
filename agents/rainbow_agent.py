@@ -1,4 +1,5 @@
-# Experimental Rainbow
+# FIXME
+# EXPERIMENTAL
 
 from copy import deepcopy
 import torch
