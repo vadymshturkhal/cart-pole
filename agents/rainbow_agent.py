@@ -160,58 +160,30 @@ class RainbowAgent(BaseAgent):
     
     def get_checkpoint(self):
         return deepcopy(self.checkpoint)
+
+    def update_checkpoint(self, extra):
+        self.checkpoint.update(extra)
     
     def save(self, path: str, extra: dict = None):
-        ckpt = {
-            "version": "v1",
+        self.checkpoint = {
             "agent_name": "rainbow",
-            "architecture": self.q_net.__class__.__name__,   # e.g., "DuelingQNetwork"
-            "state_dim": getattr(self, "state_dim", None),
-            "action_dim": getattr(self, "action_dim", None),
             "model_state": self.q_net.state_dict(),
-            "optimizer_state": self.optimizer.state_dict(),
             "hyperparams": self.hyperparams,
-            "steps_done": getattr(self, "steps_done", 0),
-            "total_steps": getattr(self, "total_steps", 0),
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "nn_config": {
-                "hidden_layers": getattr(config, "HIDDEN_LAYERS", None),
-                "activation": getattr(config, "ACTIVATION", None),
-                "dropout": getattr(config, "DROPOUT", None),
-                "lr": getattr(config, "LR", None),
-                "optimizer": getattr(config, "OPTIMIZER", None),
-                "device": str(getattr(config, "DEVICE", "cpu")),
+            "nn_config": {  # Save full NN architecture & optimizer info
+                "hidden_layers": config.HIDDEN_LAYERS,
+                "activation": config.ACTIVATION,
+                "dropout": config.DROPOUT,
+                "lr": config.LR,
+                "optimizer": config.OPTIMIZER,
+                "device": str(config.DEVICE),
             },
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
-        if extra:
-            ckpt.update(extra)
-        torch.save(ckpt, path)
 
-    def save(self, path: str, extra: dict = None):
-        ckpt = {
-            "version": "v1",
-            "agent_name": "rainbow",
-            "architecture": self.q_net.__class__.__name__,   # e.g., "DuelingQNetwork"
-            "state_dim": getattr(self, "state_dim", None),
-            "action_dim": getattr(self, "action_dim", None),
-            "model_state": self.q_net.state_dict(),
-            "optimizer_state": self.optimizer.state_dict(),
-            "hyperparams": self.hyperparams,
-            "steps_done": getattr(self, "steps_done", 0),
-            "total_steps": getattr(self, "total_steps", 0),
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "nn_config": {
-                "hidden_layers": getattr(config, "HIDDEN_LAYERS", None),
-                "activation": getattr(config, "ACTIVATION", None),
-                "dropout": getattr(config, "DROPOUT", None),
-                "lr": getattr(config, "LR", None),
-                "optimizer": getattr(config, "OPTIMIZER", None),
-                "device": str(getattr(config, "DEVICE", "cpu")),
-            },
-        }
         if extra:
-            ckpt.update(extra)
-        torch.save(ckpt, path)
+            self.checkpoint.update(extra)
+
+        torch.save(self.checkpoint, path)
 
     def _infer_arch_from_keys(self, model_state: dict) -> str:
         keys = list(model_state.keys())
