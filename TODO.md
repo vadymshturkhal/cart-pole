@@ -51,6 +51,7 @@
 - [ ] Add networks to NN optimization in Training section;
 - [ ] Add Configure Environment button in Training section;
 - [ ] Add speed adjustment for environment in Testing section;
+- [ ] Add tab for each section in model's JSON in Testion section in model info window;
 
 
 ## Done
