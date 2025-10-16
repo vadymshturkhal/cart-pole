@@ -98,7 +98,17 @@ class TrainingSection(QWidget):
 
         self.device_box.setMinimumWidth(100)
         agent_row.addWidget(self.device_box)
-        
+
+        # Automatically hides CUDA when unavailable.
+        gpu_available = config.torch.cuda.is_available()
+        if not gpu_available:
+            # Disable the CUDA option if not available on system
+            model = self.device_box.model()
+            cuda_index = self.device_box.findText("cuda")
+            if cuda_index >= 0:
+                item = model.item(cuda_index)
+                item.setEnabled(False)
+
         # Update device when changed
         self.device_box.currentTextChanged.connect(self._on_device_changed)
         layout.addLayout(agent_row)
