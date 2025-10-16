@@ -87,14 +87,12 @@ class TrainingSection(QWidget):
         agent_row.addWidget(self.device_label)
 
         self.device_box = QComboBox()
-        self.device_box.addItems(["auto", "cpu", "cuda"])
+        self.device_box.addItems(["cpu", "cuda"])
         current_dev = str(config.DEVICE)
         if "cuda" in current_dev:
             self.device_box.setCurrentText("cuda")
-        elif "cpu" in current_dev:
-            self.device_box.setCurrentText("cpu")
         else:
-            self.device_box.setCurrentText("auto")
+            self.device_box.setCurrentText("cpu")
 
         self.device_box.setMinimumWidth(100)
         agent_row.addWidget(self.device_box)
@@ -108,6 +106,11 @@ class TrainingSection(QWidget):
             if cuda_index >= 0:
                 item = model.item(cuda_index)
                 item.setEnabled(False)
+
+        # CUDA as default device
+        default_device = "cuda" if config.torch.cuda.is_available() else "cpu"
+        self.device_box.setCurrentText(default_device)
+        config.DEVICE = config.torch.device(default_device)
 
         # Update device when changed
         self.device_box.currentTextChanged.connect(self._on_device_changed)
@@ -307,8 +310,8 @@ class TrainingSection(QWidget):
         """Handle user selection of computation device."""
         import torch
 
-        if choice == "auto":
-            config.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if choice == "cuda" and torch.cuda.is_available():
+            config.DEVICE = torch.device("cuda")
         else:
             config.DEVICE = torch.device(choice)
 
