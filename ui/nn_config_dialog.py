@@ -4,6 +4,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 import config
+import torch
 
 
 class NNConfigDialog(QDialog):
@@ -78,14 +79,6 @@ class NNConfigDialog(QDialog):
         self.optimizer_box.setCurrentText(getattr(config, "OPTIMIZER", "adam"))
         form.addRow("Optimizer:", self.optimizer_box)
 
-        # Device Selection
-        self.device_box = QComboBox()
-        self.device_box.addItems(["auto", "cpu", "cuda"])
-        # Match current device
-        current_device = "cuda" if "cuda" in str(config.DEVICE) else "cpu"
-        self.device_box.setCurrentText(current_device)
-        form.addRow("Computation Device:", self.device_box)
-
         # Buttons
         save_btn = QPushButton("Apply")
         save_btn.clicked.connect(self._on_apply)
@@ -111,13 +104,6 @@ class NNConfigDialog(QDialog):
         self.updated_config["LR"] = self.lr_spin.value()
         self.updated_config["OPTIMIZER"] = self.optimizer_box.currentText()
 
-        # Device
-        dev_choice = self.device_box.currentText()
-        if dev_choice == "auto":
-            self.updated_config["DEVICE"] = "cuda" if config.torch.cuda.is_available() else "cpu"
-        else:
-            self.updated_config["DEVICE"] = dev_choice
-
     # Runtime apply
     def _on_apply(self):
         self._collect_updates()
@@ -139,7 +125,15 @@ class NNConfigDialog(QDialog):
         for key, value in self.updated_config.items():
             setattr(config, key, value)
 
-        # Rebuild DEVICE as torch.device (so PyTorch actually uses it)
-        if "DEVICE" in self.updated_config:
-            config.DEVICE = config.torch.device(self.updated_config["DEVICE"])
-            
+    def _on_device_changed(self, choice: str):
+        """Handle user selection of computation device."""
+
+        if choice == "auto":
+            config.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        else:
+            config.DEVICE = torch.device(choice)
+
+        # Optional
+        color = "#3a7" if "cuda" in str(config.DEVICE) else "#666"
+        self.device_label.setStyleSheet(f"font-weight:bold; color:{color}; margin-left:10px;")
+        self.status_label.setText(f"🖥️ Computation device set to {config.DEVICE}")

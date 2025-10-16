@@ -80,6 +80,27 @@ class TrainingSection(QWidget):
         self.nn_btn.setMinimumWidth(150)
         self.nn_btn.clicked.connect(self._show_nn_config)
         agent_row.addWidget(self.nn_btn)
+        
+        # --- Computation Device selector ---
+        self.device_label = QLabel("Device:")
+        self.device_label.setStyleSheet("font-weight:bold; margin-left:10px;")
+        agent_row.addWidget(self.device_label)
+
+        self.device_box = QComboBox()
+        self.device_box.addItems(["auto", "cpu", "cuda"])
+        current_dev = str(config.DEVICE)
+        if "cuda" in current_dev:
+            self.device_box.setCurrentText("cuda")
+        elif "cpu" in current_dev:
+            self.device_box.setCurrentText("cpu")
+        else:
+            self.device_box.setCurrentText("auto")
+
+        self.device_box.setMinimumWidth(100)
+        agent_row.addWidget(self.device_box)
+        
+        # Update device when changed
+        self.device_box.currentTextChanged.connect(self._on_device_changed)
         layout.addLayout(agent_row)
 
         layout.addWidget(QLabel("Rendering Mode:"))
@@ -271,3 +292,17 @@ class TrainingSection(QWidget):
         except Exception as e:
             self.status_label.setText(f"❌ Export failed: {e}")
             print(f"[TrainingSection] Export error: {e}")
+
+    def _on_device_changed(self, choice: str):
+        """Handle user selection of computation device."""
+        import torch
+
+        if choice == "auto":
+            config.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        else:
+            config.DEVICE = torch.device(choice)
+
+        # Optional UI feedback
+        color = "#3a7" if "cuda" in str(config.DEVICE) else "#666"
+        self.device_label.setStyleSheet(f"font-weight:bold; color:{color}; margin-left:10px;")
+        self.status_label.setText(f"🖥️ Computation device set to {config.DEVICE}")
