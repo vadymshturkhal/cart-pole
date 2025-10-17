@@ -69,6 +69,19 @@ class TrainingSection(QWidget):
         self.steps_box.setRange(50, 20000)
         layout.addWidget(self.steps_box)
 
+        # --- Episodes quantity ---
+        layout.addWidget(QLabel("Training Episodes (quantity):"))
+        self.episodes_box = QSpinBox()
+        self.episodes_box.setRange(*config.EPISODE_RANGE)
+        self.episodes_box.setValue(config.DEFAULT_EPISODES)
+        layout.addWidget(self.episodes_box)
+
+        # --- Rendering mode ---
+        layout.addWidget(QLabel("Rendering Mode:"))
+        self.render_box = QComboBox()
+        self.render_box.addItems(["off", "human"])
+        layout.addWidget(self.render_box)
+
         # Initialize steps for default env
         self._update_default_steps(config.DEFAULT_ENVIRONMENT)
 
@@ -92,18 +105,6 @@ class TrainingSection(QWidget):
         self._init_device_box()
         self.device_box.currentTextChanged.connect(self._on_device_changed)
         self._add_row(layout, [self.details_btn, self.nn_btn, self.device_label, self.device_box])
-
-        # --- Rendering mode & episode count ---
-        layout.addWidget(QLabel("Rendering Mode:"))
-        self.render_box = QComboBox()
-        self.render_box.addItems(["off", "human"])
-        layout.addWidget(self.render_box)
-
-        layout.addWidget(QLabel("Training Episodes (quantity):"))
-        self.episodes_box = QSpinBox()
-        self.episodes_box.setRange(*config.EPISODE_RANGE)
-        self.episodes_box.setValue(config.DEFAULT_EPISODES)
-        layout.addWidget(self.episodes_box)
 
         # --- Status label ---
         self.status_label = QLabel("Idle")
