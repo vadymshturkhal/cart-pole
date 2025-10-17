@@ -145,7 +145,9 @@ class TrainingSection(QWidget):
         self.train_btn.clicked.connect(self._start_training)
         self.stop_btn.clicked.connect(self._stop_training)
         self.save_btn.clicked.connect(self._save_agent_as)
-    
+
+        self._set_training_buttons_availability(enable=True)
+
     def _choose_agent(self):
         dlg = AgentDialog(self, current_agent=self.agent_name)
         if dlg.exec():
@@ -174,9 +176,9 @@ class TrainingSection(QWidget):
         self.reward_plot.reset(max_episodes=episodes)
         self.loss_plot.reset(max_steps=episodes)
 
+        # Environment setup
         self.env_name = self.env_box.currentText()
         env, state_dim, action_dim = create_environment(self.env_name, render)
-
         self.agent = build_agent(self.agent_name, state_dim, action_dim, self.hyperparams)
 
         # Create Worker & Thread
@@ -185,31 +187,23 @@ class TrainingSection(QWidget):
                                               hyperparams=self.hyperparams, render=(render == "human"))
         self.training_worker.moveToThread(self.training_thread)
 
-        # Connect signals
+        # Connect Worker & Thread signals
         self.training_thread.started.connect(self.training_worker.run)
         self.training_worker.progress.connect(self._on_progress)
         self.training_worker.finished.connect(self._on_finished)
 
-        # Cleanup
+        # Worker & Thread Cleanup
         self.training_worker.finished.connect(self.training_thread.quit)
         self.training_worker.finished.connect(self.training_worker.deleteLater)
         self.training_thread.finished.connect(self.training_thread.deleteLater)
         self.training_thread.finished.connect(self._reset_training_refs)
 
+        # Update UI
+        self.status_label.setText("🚀 Training started...")
+        self._set_training_buttons_availability(enable=False)
+
         # Start training
         self.training_thread.start()
-        self.status_label.setText("🚀 Training started...")
-        self._set_training_buttons_availability(is_available=False)
-
-    def _stop_training(self):
-        if self.training_worker:
-            self.training_worker.stop()
-            self.status_label.setText("⏹ Training stopped by user")
-        else:
-            self.status_label.setText("⚠ No training is running")
-
-        self._autosave_model()
-        self._set_training_buttons_availability(is_available=True)
 
     def _save_agent_as(self):
         """Create RunLogger and save model data to chosen folder."""
@@ -257,13 +251,6 @@ class TrainingSection(QWidget):
         # Update plots
         self.reward_plot.update_plot(rewards, episodes)
         self.loss_plot.add_point(average_loss)
-    
-    def _on_finished(self ):
-        self.training_done = True
-        self.status_label.setText("✅ Training finished!")
-        self.save_btn.setEnabled(True)
-        self._autosave_model()
-        self._set_training_buttons_availability(is_available=True)
 
     def _show_agent_details(self):
         if not hasattr(self, "hyperparams") or not self.hyperparams:
@@ -324,11 +311,29 @@ class TrainingSection(QWidget):
         self.device_label.setStyleSheet(f"font-weight:bold; color:{color}; margin-left:10px;")
         self.status_label.setText(f"🖥️ Computation device set to {config.DEVICE}")
 
-    def _set_training_buttons_availability(self, is_available=True):
-        self.agent_btn.setEnabled(is_available)
-        self.train_btn.setEnabled(is_available)
-        self.save_btn.setEnabled(is_available)
-        self.env_box.setEnabled(is_available)
-        self.device_box.setEnabled(is_available)
-        self.render_box.setEnabled(is_available)
-        self.episodes_box.setEnabled(is_available)
+    def _set_training_buttons_availability(self, enable=True):
+        self.agent_btn.setEnabled(enable)
+        self.train_btn.setEnabled(enable)
+        self.save_btn.setEnabled(enable)
+        self.env_box.setEnabled(enable)
+        self.device_box.setEnabled(enable)
+        self.render_box.setEnabled(enable)
+        self.episodes_box.setEnabled(enable)
+        self.save_btn.setEnabled(not enable)
+        self.stop_btn.setEnabled(not enable)
+
+    def _stop_training(self):
+        if self.training_worker:
+            self.training_worker.stop()
+            self.status_label.setText("⏹ Training stopped by user")
+        else:
+            self.status_label.setText("⚠ No training is running")
+
+        self._autosave_model()
+        self._set_training_buttons_availability(enable=True)
+
+    def _on_finished(self ):
+        self.training_done = True
+        self.status_label.setText("✅ Training finished!")
+        self._autosave_model()
+        self._set_training_buttons_availability(enable=True)
