@@ -53,7 +53,6 @@ class TrainingSection(QWidget):
         layout.addWidget(self.tabs)
 
         # --- Agent row ---
-        layout.addWidget(QLabel("Agent:"))
         self.agent_btn = QPushButton(f"{self.agent_name}")
         self.train_btn = QPushButton("Start Training")
         self.stop_btn = QPushButton("Stop Training")
