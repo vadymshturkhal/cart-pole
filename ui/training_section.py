@@ -1,3 +1,4 @@
+from re import I
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QMessageBox,
     QComboBox, QSpinBox, QFileDialog, QVBoxLayout, QTabWidget
@@ -198,7 +199,8 @@ class TrainingSection(QWidget):
         # Start training
         self.training_thread.start()
         self.status_label.setText("🚀 Training started...")
-    
+        self._set_training_buttons_availability(is_available=False)
+
     def _stop_training(self):
         if self.training_worker:
             self.training_worker.stop()
@@ -207,6 +209,7 @@ class TrainingSection(QWidget):
             self.status_label.setText("⚠ No training is running")
 
         self._autosave_model()
+        self._set_training_buttons_availability(is_available=True)
 
     def _save_agent_as(self):
         """Create RunLogger and save model data to chosen folder."""
@@ -260,6 +263,7 @@ class TrainingSection(QWidget):
         self.status_label.setText("✅ Training finished!")
         self.save_btn.setEnabled(True)
         self._autosave_model()
+        self._set_training_buttons_availability(is_available=True)
 
     def _show_agent_details(self):
         if not hasattr(self, "hyperparams") or not self.hyperparams:
@@ -319,3 +323,12 @@ class TrainingSection(QWidget):
         color = "#3a7" if "cuda" in str(config.DEVICE) else "#666"
         self.device_label.setStyleSheet(f"font-weight:bold; color:{color}; margin-left:10px;")
         self.status_label.setText(f"🖥️ Computation device set to {config.DEVICE}")
+
+    def _set_training_buttons_availability(self, is_available=True):
+        self.agent_btn.setEnabled(is_available)
+        self.train_btn.setEnabled(is_available)
+        self.save_btn.setEnabled(is_available)
+        self.env_box.setEnabled(is_available)
+        self.device_box.setEnabled(is_available)
+        self.render_box.setEnabled(is_available)
+        self.episodes_box.setEnabled(is_available)
