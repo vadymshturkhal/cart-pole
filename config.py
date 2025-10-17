@@ -41,7 +41,8 @@ DEFAULTS = {
     "OPTIMIZER": "adam",
 
     # Training
-    "EPISODES": 500,
+    "DEFAULT_EPISODES": 400,
+    "EPISODE_RANGE": (10, 100_000),
     "TARGET_UPDATE_FREQ": 20,
     "SUTTON_BARTO_REWARD": False,
 

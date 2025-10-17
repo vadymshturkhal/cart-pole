@@ -2,7 +2,7 @@ import config
 import pandas as pd
 
 
-def train(env, agent, episodes=config.EPISODES,
+def train(env, agent, episodes=config.DEFAULT_EPISODES,
           rewards_file=config.REWARDS_FILE,
           progress_cb=None, stop_flag=lambda: False,
           render=False):

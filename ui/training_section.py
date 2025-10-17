@@ -87,8 +87,8 @@ class TrainingSection(QWidget):
 
         layout.addWidget(QLabel("Training Episodes:"))
         self.episodes_box = QSpinBox()
-        self.episodes_box.setRange(100, 10000)
-        self.episodes_box.setValue(config.EPISODES)
+        self.episodes_box.setRange(*config.EPISODE_RANGE)
+        self.episodes_box.setValue(config.DEFAULT_EPISODES)
         layout.addWidget(self.episodes_box)
 
         # Status label
@@ -170,7 +170,7 @@ class TrainingSection(QWidget):
                 f"🧠 NN updated: layers={updates['HIDDEN_LAYERS']} activation={updates['ACTIVATION']} "
                 f"dropout={updates['DROPOUT']:.2f} device={config.DEVICE}"
             )
-            
+
     def _on_progress(self, ep: int, episodes: int, ep_reward: float, rewards: list, avg_loss: float) -> None:
         avg20 = sum(rewards[-20:]) / min(len(rewards), 20)
         global_avg = sum(rewards) / len(rewards)
