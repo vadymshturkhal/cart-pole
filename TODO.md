@@ -32,7 +32,6 @@
 - [ ] Planning for resume/continue training (hyperparam overrides);
 - [ ] Add unit testing;
 - [ ] Add Specific section with description to agent choosing in Training section;
-- [ ] Add CUDA tick to Training section;
 - [ ] Add continuous environment;
 - [ ] Hide discrete agents for continuous environments and vice versa;
 - [ ] Add target network update	every N steps to AgentDialog in Training section;
@@ -55,6 +54,7 @@
 
 
 ## Done
+- [x] Add CUDA to Training section;
 - [x] In autosave save model's related data with model's name;
 - [x] Save Loss plot after training;
 - [x] Save Reward plot, reward.csv, model.pth and json data after training;
