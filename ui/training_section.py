@@ -70,13 +70,13 @@ class TrainingSection(QWidget):
 
         # Configure row
         agent_row = QHBoxLayout()
-        self.details_btn = QPushButton(f"Configure {self.agent_name}")
+        self.details_btn = QPushButton(f"{self.agent_name} configuration ")
         self.details_btn.setVisible(True)
         self.details_btn.setMinimumWidth(150)
         self.details_btn.clicked.connect(self._show_agent_details)
         agent_row.addWidget(self.details_btn)
 
-        self.nn_btn = QPushButton("Configure NN")
+        self.nn_btn = QPushButton("NN configuration")
         self.nn_btn.setMinimumWidth(150)
         self.nn_btn.clicked.connect(self._show_nn_config)
         agent_row.addWidget(self.nn_btn)
