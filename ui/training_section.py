@@ -1,12 +1,13 @@
 from __future__ import annotations
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QPushButton, QHBoxLayout,
-    QComboBox, QSpinBox, QFileDialog, QTabWidget
+    QWidget, QVBoxLayout, QLabel, QPushButton, 
+    QComboBox, QFileDialog, QTabWidget, QHBoxLayout,
 )
 from PySide6.QtCore import Signal
 from ui.agent_dialog import AgentDialog
 from ui.agent_details_dialog import AgentDetailsDialog
 from ui.nn_config_dialog import NNConfigDialog
+from ui.environment_config_dialog import EnvironmentConfigDialog
 from ui.reward_plot import RewardPlot
 from ui.loss_plot import LossPlot
 from utils.agent_factory import AGENTS
@@ -52,39 +53,6 @@ class TrainingSection(QWidget):
         self.tabs.setMaximumHeight(310)
         layout.addWidget(self.tabs)
 
-        # --- Environment selection ---
-        layout.addWidget(QLabel("Environment:"))
-        self.env_box = QComboBox()
-        self.env_box.addItems(config.AVAILABLE_ENVIRONMENTS)
-        self.env_box.setCurrentText(config.DEFAULT_ENVIRONMENT)
-        self.env_box.currentTextChanged.connect(self._on_environment_changed)
-        layout.addWidget(self.env_box)
-
-        # --- Max steps display and control ---
-        self.default_steps_label = QLabel()
-        layout.addWidget(self.default_steps_label)
-
-        layout.addWidget(QLabel("Max Steps per Episode:"))
-        self.steps_box = QSpinBox()
-        self.steps_box.setRange(50, 20000)
-        layout.addWidget(self.steps_box)
-
-        # --- Episodes quantity ---
-        layout.addWidget(QLabel("Training Episodes (quantity):"))
-        self.episodes_box = QSpinBox()
-        self.episodes_box.setRange(*config.EPISODE_RANGE)
-        self.episodes_box.setValue(config.DEFAULT_EPISODES)
-        layout.addWidget(self.episodes_box)
-
-        # --- Rendering mode ---
-        layout.addWidget(QLabel("Rendering Mode:"))
-        self.render_box = QComboBox()
-        self.render_box.addItems(["off", "human"])
-        layout.addWidget(self.render_box)
-
-        # Initialize steps for default env
-        self._update_default_steps(config.DEFAULT_ENVIRONMENT)
-
         # --- Agent row ---
         layout.addWidget(QLabel("Agent:"))
         self.agent_btn = QPushButton(f"{self.agent_name}")
@@ -94,17 +62,29 @@ class TrainingSection(QWidget):
         self._add_row(layout, [self.agent_btn, self.train_btn, self.stop_btn, self.save_btn])
 
         # --- Configuration row ---
-        self.details_btn = QPushButton(f"{self.agent_name} configuration")
-        self.details_btn.clicked.connect(self._show_agent_details)
+        # Environment
+        self.env_config_btn = QPushButton("Configure Environment")
+        self.env_config_btn.setStyleSheet("font-weight:bold; padding:6px;")
+        self.env_config_btn.clicked.connect(self._show_environment_config)
+
+        # Agent
+        self.agent_config_btn = QPushButton(f"{self.agent_name} configuration")
+        self.agent_config_btn.clicked.connect(self._show_agent_config)
+
+        # NN
         self.nn_btn = QPushButton("NN configuration")
         self.nn_btn.clicked.connect(self._show_nn_config)
+
+        # Device
         self.device_label = QLabel("Device:")
         self.device_label.setStyleSheet("font-weight:bold; margin-left:10px;")
         self.device_box = QComboBox()
         self.device_box.addItems(["cpu", "cuda"])
         self._init_device_box()
         self.device_box.currentTextChanged.connect(self._on_device_changed)
-        self._add_row(layout, [self.details_btn, self.nn_btn, self.device_label, self.device_box])
+
+        # Config row
+        self._add_row(layout, [self.env_config_btn, self.agent_config_btn, self.nn_btn, self.device_label, self.device_box])
 
         # --- Status label ---
         self.status_label = QLabel("Idle")
@@ -143,14 +123,18 @@ class TrainingSection(QWidget):
 
     def _start_training(self) -> None:
         self._set_training_buttons(False)
-        env_name = self.env_box.currentText()
-        episodes = self.episodes_box.value()
-        render = self.render_box.currentText()
-        max_steps = self.steps_box.value()
-        self.controller.start_training(env_name, self.agent_name, self.hyperparams, episodes, render, max_steps)
+        self.controller.start_training(
+            config.ENV_NAME,
+            self.agent_name,
+            self.hyperparams,
+            config.EPISODES,
+            config.RENDER_MODE,
+            config.MAX_STEPS,
+        )
 
         self.status_label.setText(
-            f"🚀 Training started on {env_name} — {episodes} episodes, {max_steps} steps/episode"
+            f"🚀 Training started on {config.ENV_NAME} — "
+            f"{config.EPISODES} episodes, {config.MAX_STEPS} steps/episode | Render: {config.RENDER_MODE}"
         )
 
     def _stop_training(self) -> None:
@@ -166,29 +150,19 @@ class TrainingSection(QWidget):
         self.controller.save_model(user_dir, self.reward_plot, self.loss_plot)
 
     # ------------------------------------------------------------------
-    # Environment Handling
-    # ------------------------------------------------------------------
-    def _on_environment_changed(self, env_name: str) -> None:
-        """Update default steps display and spinbox when environment changes."""
-        self._update_default_steps(env_name)
-
-    def _update_default_steps(self, env_name: str) -> None:
-        """Fetch and show default max_episode_steps from config or env."""
-        try:
-            env = gym.make(env_name)
-            default_steps = getattr(env.spec, "max_episode_steps", 500)
-            env.close()
-            self.default_steps_label.setText(f"📏 Default Steps per Episode: {default_steps}")
-        except Exception:
-            default_steps = config.ENV_MAX_STEPS
-            self.default_steps_label.setText(f"📏 From Config Default Steps per Episode: {default_steps}")
-
-        self.steps_box.setValue(default_steps)
-
-    # ------------------------------------------------------------------
     # Utility Methods
     # ------------------------------------------------------------------
-    def _show_agent_details(self):
+    def _show_environment_config(self) -> None:
+        dlg = EnvironmentConfigDialog(self)
+        if dlg.exec():
+            updates = dlg.get_updated_config()
+            self.status_label.setText(
+                f"🌍 Environment configured: {updates['ENV_NAME']} | "
+                f"{updates['MAX_STEPS']} steps/ep | {updates['EPISODES']} episodes | "
+                f"Render: {updates['RENDER_MODE']}"
+            )
+    
+    def _show_agent_config(self):
         dlg = AgentDetailsDialog(self.agent_name, self.hyperparams.copy(), self)
         if dlg.exec():
             self.hyperparams = dlg.get_updated_params()
@@ -248,9 +222,8 @@ class TrainingSection(QWidget):
     def _set_training_buttons(self, enable: bool) -> None:
         """Toggle interactive buttons based on training state."""
         toggled_widgets = [
-            self.agent_btn, self.train_btn, self.env_box, self.device_box,
-            self.render_box, self.episodes_box, self.details_btn, self.nn_btn,
-            self.save_btn, self.steps_box
+            self.env_config_btn, self.agent_config_btn, self.nn_btn, self.device_label, 
+            self.device_box, self.agent_btn, self.train_btn, self.save_btn, 
         ]
         for w in toggled_widgets:
             w.setEnabled(enable)

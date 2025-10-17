@@ -10,6 +10,12 @@ DEFAULTS = {
     "DEFAULT_ENVIRONMENT": "CartPole-v1",
     "AVAILABLE_ENVIRONMENTS": ["CartPole-v1", "MountainCar-v0", "Acrobot-v1", "LunarLander-v3"],
     "SEED": 42,
+    "DEFAULT_EPISODES": 400,
+    "MAX_STEPS": 500,
+    "EPISODE_RANGE": (10, 100_000),
+    "ENV_NAME": "CartPole-v1",
+    "EPISODES": 400,
+    "RENDER_MODE": "off",
 
     # Rendering
     "RESOLUTION": [1280, 720],
@@ -41,11 +47,8 @@ DEFAULTS = {
     "OPTIMIZER": "adam",
 
     # Training
-    "DEFAULT_EPISODES": 400,
-    "EPISODE_RANGE": (10, 100_000),
     "TARGET_UPDATE_FREQ": 20,
     "SUTTON_BARTO_REWARD": False,
-    "ENV_MAX_STEPS": 500,
 
     # Logs
     "LOG_AFTER_EPISODES": 20,
