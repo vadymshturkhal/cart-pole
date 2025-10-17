@@ -19,7 +19,6 @@
 - [ ] Decouple hyperparameters from launcher;
 - [ ] Add Create Agent section;
 - [ ] Stop rendering after pressing Back to Main button;
-- [ ] In Training section make all buttons except Stop training unavailable during training;
 - [ ] Add logger to Testing section;
 - [ ] Make log window with all info from Agent when training;
 - [ ] Grouping related controls into collapsible panels;
@@ -54,6 +53,7 @@
 
 
 ## Done
+- [x] In Training section make some buttons unavailable during training;
 - [x] Add CUDA to Training section;
 - [x] In autosave save model's related data with model's name;
 - [x] Save Loss plot after training;
