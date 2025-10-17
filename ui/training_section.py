@@ -1,8 +1,9 @@
 from __future__ import annotations
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QPushButton, 
+    QWidget, QVBoxLayout, QLabel, QPushButton, QTextEdit,
     QComboBox, QFileDialog, QTabWidget, QHBoxLayout,
 )
+from PySide6.QtGui import QTextCursor
 from PySide6.QtCore import Signal
 from ui.agent_dialog import AgentDialog
 from ui.agent_details_dialog import AgentDetailsDialog
@@ -84,9 +85,23 @@ class TrainingSection(QWidget):
         # Config row
         self._add_row(layout, [self.env_config_btn, self.agent_config_btn, self.nn_btn, self.device_label, self.device_box])
 
-        # --- Status label ---
-        self.status_label = QLabel("Idle")
-        layout.addWidget(self.status_label)
+        # --- Console output ---
+        self.console_output = QTextEdit()
+        self.console_output.setReadOnly(True)
+        self.console_output.setPlaceholderText("Console output will appear here...")
+        self.console_output.setStyleSheet("""
+            QTextEdit {
+                background-color: #111;
+                color: #ddd;
+                font-family: Consolas, monospace;
+                font-size: 13px;
+                border: 1px solid #333;
+                border-radius: 6px;
+                padding: 4px;
+            }
+        """)
+        self.console_output.setMinimumHeight(140)
+        layout.addWidget(self.console_output)
 
         # --- Back button ---
         back_btn = QPushButton("⬅ Back to Main Menu")
@@ -116,8 +131,8 @@ class TrainingSection(QWidget):
             AgentClass = AGENTS[self.agent_name]
             self.hyperparams = AgentClass.get_default_hyperparams()
             self.agent_btn.setText(agent_name)
-            self.details_btn.setText(f"Configure {self.agent_name}")
-            self.status_label.setText(f"✅ Selected {self.agent_name} agent")
+            self.agent_config_btn.setText(f"Configure {self.agent_name}")
+            self._log(f"✅ Selected {self.agent_name} agent")
 
     def _start_training(self) -> None:
         self._set_training_buttons(False)
@@ -130,7 +145,7 @@ class TrainingSection(QWidget):
             config.MAX_STEPS,
         )
 
-        self.status_label.setText(
+        self._log(
             f"🚀 Training started on {config.ENV_NAME} — "
             f"{config.EPISODES} episodes, {config.MAX_STEPS} steps/episode | Render: {config.RENDER_MODE}"
         )
@@ -143,7 +158,7 @@ class TrainingSection(QWidget):
         default_dir = os.path.join(config.TRAINED_MODELS_FOLDER)
         user_dir, _ = QFileDialog.getSaveFileName(self, "Save Agent As", default_dir)
         if not user_dir:
-            self.status_label.setText("💡 Save canceled by user.")
+            self._log("💡 Save canceled by user.")
             return
         self.controller.save_model(user_dir, self.reward_plot, self.loss_plot)
 
@@ -154,7 +169,7 @@ class TrainingSection(QWidget):
         dlg = EnvironmentConfigDialog(self)
         if dlg.exec():
             updates = dlg.get_updated_config()
-            self.status_label.setText(
+            self._log(
                 f"🌍 Environment configured: {updates['ENV_NAME']} | "
                 f"{updates['MAX_STEPS']} steps/ep | {updates['EPISODES']} episodes | "
                 f"Render: {updates['RENDER_MODE']}"
@@ -164,7 +179,7 @@ class TrainingSection(QWidget):
         dlg = AgentDetailsDialog(self.agent_name, self.hyperparams.copy(), self)
         if dlg.exec():
             self.hyperparams = dlg.get_updated_params()
-            self.status_label.setText("⚙️ Agent hyperparameters updated.")
+            self._log("⚙️ Agent hyperparameters updated.")
 
     def _show_nn_config(self):
         dlg = NNConfigDialog(self)
@@ -175,7 +190,7 @@ class TrainingSection(QWidget):
             config.ACTIVATION = updates["ACTIVATION"]
             config.DROPOUT = updates["DROPOUT"]
             config.DEVICE = config.torch.device(updates["DEVICE"])
-            self.status_label.setText(
+            self._log(
                 f"🧠 NN updated: layers={updates['HIDDEN_LAYERS']} activation={updates['ACTIVATION']} "
                 f"dropout={updates['DROPOUT']:.2f} device={config.DEVICE}"
             )
@@ -183,7 +198,7 @@ class TrainingSection(QWidget):
     def _on_progress(self, ep: int, episodes: int, ep_reward: float, rewards: list, avg_loss: float) -> None:
         avg20 = sum(rewards[-20:]) / min(len(rewards), 20)
         global_avg = sum(rewards) / len(rewards)
-        self.status_label.setText(
+        self._log(
             f"Ep {ep+1}/{episodes} — R {ep_reward:.1f}, Avg20 {avg20:.1f}, Global {global_avg:.1f}, AvgLoss {avg_loss:.2f}"
         )
         self.reward_plot.update_plot(rewards, episodes)
@@ -193,7 +208,7 @@ class TrainingSection(QWidget):
         self._set_training_buttons(True)
 
     def _update_status(self, message: str) -> None:
-        self.status_label.setText(message)
+        self._log(message)
 
     def _add_row(self, parent_layout, widgets) -> None:
         row = QHBoxLayout()
@@ -215,7 +230,7 @@ class TrainingSection(QWidget):
         config.DEVICE = torch.device(choice if choice == "cpu" or torch.cuda.is_available() else "cpu")
         color = "#3a7" if "cuda" in str(config.DEVICE) else "#666"
         self.device_label.setStyleSheet(f"font-weight:bold; color:{color}; margin-left:10px;")
-        self.status_label.setText(f"🖥️ Device set to {config.DEVICE}")
+        self._log(f"🖥️ Device set to {config.DEVICE}")
 
     def _set_training_buttons(self, enable: bool) -> None:
         """Toggle interactive buttons based on training state."""
@@ -226,3 +241,9 @@ class TrainingSection(QWidget):
         for w in toggled_widgets:
             w.setEnabled(enable)
         self.stop_btn.setEnabled(not enable)
+
+    def _log(self, message: str) -> None:
+        """Append text to the console output."""
+        self.console_output.append(message)
+        self.console_output.moveCursor(QTextCursor.End)
+        
