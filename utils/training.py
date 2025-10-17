@@ -48,9 +48,6 @@ def train(env, agent, episodes=config.DEFAULT_EPISODES,
         if progress_cb:
             progress_cb(ep, episodes, total_reward, rewards, average_loss)
 
-        if ep % config.LOG_AFTER_EPISODES == 0:
-            print(f"Episode {ep}, Reward: {total_reward}")
-
     return rewards
 
 
