@@ -45,6 +45,7 @@ DEFAULTS = {
     "EPISODE_RANGE": (10, 100_000),
     "TARGET_UPDATE_FREQ": 20,
     "SUTTON_BARTO_REWARD": False,
+    "ENV_MAX_STEPS": 500,
 
     # Logs
     "LOG_AFTER_EPISODES": 20,

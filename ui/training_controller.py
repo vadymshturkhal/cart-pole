@@ -36,11 +36,14 @@ class TrainingController(QObject):
         hyperparams: dict,
         episodes: int,
         render_mode: str,
+        max_steps: int | None = None,
     ) -> None:
         """
         Start background training in a separate thread.
         """
         from ui.training_worker import TrainingWorker
+        import gymnasium as gym
+        from environments.factory import create_environment
 
         self.env_name = env_name
         self.agent_name = agent_name
@@ -50,6 +53,10 @@ class TrainingController(QObject):
 
         try:
             env, state_dim, action_dim = create_environment(env_name, render_mode)
+
+            if max_steps:
+                env = gym.wrappers.TimeLimit(env.unwrapped, max_episode_steps=max_steps)
+
             self.agent = build_agent(agent_name, state_dim, action_dim, hyperparams)
 
             # Setup QThread + Worker

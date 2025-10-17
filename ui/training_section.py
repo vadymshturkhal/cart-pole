@@ -14,6 +14,7 @@ from ui.training_controller import TrainingController
 import config
 import os
 import torch
+import gymnasium as gym
 
 
 class TrainingSection(QWidget):
@@ -51,14 +52,27 @@ class TrainingSection(QWidget):
         self.tabs.setMaximumHeight(310)
         layout.addWidget(self.tabs)
 
-        # Environment selection
+        # --- Environment selection ---
         layout.addWidget(QLabel("Environment:"))
         self.env_box = QComboBox()
         self.env_box.addItems(config.AVAILABLE_ENVIRONMENTS)
         self.env_box.setCurrentText(config.DEFAULT_ENVIRONMENT)
+        self.env_box.currentTextChanged.connect(self._on_environment_changed)
         layout.addWidget(self.env_box)
 
-        # Agent row
+        # --- Max steps display and control ---
+        self.default_steps_label = QLabel()
+        layout.addWidget(self.default_steps_label)
+
+        layout.addWidget(QLabel("Max Steps per Episode:"))
+        self.steps_box = QSpinBox()
+        self.steps_box.setRange(50, 20000)
+        layout.addWidget(self.steps_box)
+
+        # Initialize steps for default env
+        self._update_default_steps(config.DEFAULT_ENVIRONMENT)
+
+        # --- Agent row ---
         layout.addWidget(QLabel("Agent:"))
         self.agent_btn = QPushButton(f"{self.agent_name}")
         self.train_btn = QPushButton("Start Training")
@@ -66,7 +80,7 @@ class TrainingSection(QWidget):
         self.save_btn = QPushButton("Save Model")
         self._add_row(layout, [self.agent_btn, self.train_btn, self.stop_btn, self.save_btn])
 
-        # Configuration row
+        # --- Configuration row ---
         self.details_btn = QPushButton(f"{self.agent_name} configuration")
         self.details_btn.clicked.connect(self._show_agent_details)
         self.nn_btn = QPushButton("NN configuration")
@@ -79,30 +93,30 @@ class TrainingSection(QWidget):
         self.device_box.currentTextChanged.connect(self._on_device_changed)
         self._add_row(layout, [self.details_btn, self.nn_btn, self.device_label, self.device_box])
 
-        # Rendering and episodes
+        # --- Rendering mode & episode count ---
         layout.addWidget(QLabel("Rendering Mode:"))
         self.render_box = QComboBox()
         self.render_box.addItems(["off", "human"])
         layout.addWidget(self.render_box)
 
-        layout.addWidget(QLabel("Training Episodes:"))
+        layout.addWidget(QLabel("Training Episodes (quantity):"))
         self.episodes_box = QSpinBox()
         self.episodes_box.setRange(*config.EPISODE_RANGE)
         self.episodes_box.setValue(config.DEFAULT_EPISODES)
         layout.addWidget(self.episodes_box)
 
-        # Status label
+        # --- Status label ---
         self.status_label = QLabel("Idle")
         layout.addWidget(self.status_label)
 
-        # Back button
+        # --- Back button ---
         back_btn = QPushButton("⬅ Back to Main Menu")
         back_btn.setMinimumHeight(40)
         back_btn.setStyleSheet("font-size: 16px;")
         back_btn.clicked.connect(self.back_to_main.emit)
         layout.addWidget(back_btn)
 
-        # Event connections
+        # --- Button connections ---
         self.agent_btn.clicked.connect(self._choose_agent)
         self.train_btn.clicked.connect(self._start_training)
         self.stop_btn.clicked.connect(self._stop_training)
@@ -128,12 +142,14 @@ class TrainingSection(QWidget):
 
     def _start_training(self) -> None:
         self._set_training_buttons(False)
-        self.controller.start_training(
-            self.env_box.currentText(),
-            self.agent_name,
-            self.hyperparams,
-            self.episodes_box.value(),
-            self.render_box.currentText(),
+        env_name = self.env_box.currentText()
+        episodes = self.episodes_box.value()
+        render = self.render_box.currentText()
+        max_steps = self.steps_box.value()
+        self.controller.start_training(env_name, self.agent_name, self.hyperparams, episodes, render, max_steps)
+
+        self.status_label.setText(
+            f"🚀 Training started on {env_name} — {episodes} episodes, {max_steps} steps/episode"
         )
 
     def _stop_training(self) -> None:
@@ -147,6 +163,26 @@ class TrainingSection(QWidget):
             self.status_label.setText("💡 Save canceled by user.")
             return
         self.controller.save_model(user_dir, self.reward_plot, self.loss_plot)
+
+    # ------------------------------------------------------------------
+    # Environment Handling
+    # ------------------------------------------------------------------
+    def _on_environment_changed(self, env_name: str) -> None:
+        """Update default steps display and spinbox when environment changes."""
+        self._update_default_steps(env_name)
+
+    def _update_default_steps(self, env_name: str) -> None:
+        """Fetch and show default max_episode_steps from config or env."""
+        try:
+            env = gym.make(env_name)
+            default_steps = getattr(env.spec, "max_episode_steps", 500)
+            env.close()
+            self.default_steps_label.setText(f"📏 Default Steps per Episode: {default_steps}")
+        except Exception:
+            default_steps = config.ENV_MAX_STEPS
+            self.default_steps_label.setText(f"📏 From Config Default Steps per Episode: {default_steps}")
+
+        self.steps_box.setValue(default_steps)
 
     # ------------------------------------------------------------------
     # Utility Methods
@@ -213,10 +249,8 @@ class TrainingSection(QWidget):
         toggled_widgets = [
             self.agent_btn, self.train_btn, self.env_box, self.device_box,
             self.render_box, self.episodes_box, self.details_btn, self.nn_btn,
-            self.save_btn,
+            self.save_btn, self.steps_box
         ]
-
         for w in toggled_widgets:
             w.setEnabled(enable)
-
         self.stop_btn.setEnabled(not enable)
