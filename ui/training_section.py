@@ -15,7 +15,6 @@ from ui.training_controller import TrainingController
 import config
 import os
 import torch
-import gymnasium as gym
 
 
 class TrainingSection(QWidget):
