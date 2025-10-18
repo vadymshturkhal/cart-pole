@@ -55,7 +55,7 @@ class TrainingSection(QWidget):
         layout.addWidget(self.tabs)
 
         # --- Agent row ---
-        self.agent_btn = QPushButton(f"{self.agent_name}")
+        self.agent_btn = QPushButton(f"Agent: {self.agent_name}")
         self.train_btn = QPushButton("Start Training")
         self.stop_btn = QPushButton("Stop Training")
         self.save_btn = QPushButton("Save Model")
@@ -63,7 +63,7 @@ class TrainingSection(QWidget):
 
         # --- Configuration row ---
         # Agent
-        self.agent_config_btn = QPushButton(f"{self.agent_name} configuration")
+        self.agent_config_btn = QPushButton(f"{self.agent_name} Configuration")
         self.agent_config_btn.clicked.connect(self._show_agent_config)
 
         # Environment
@@ -71,7 +71,7 @@ class TrainingSection(QWidget):
         self.env_config_btn.clicked.connect(self._show_environment_config)
 
         # NN
-        self.nn_btn = QPushButton("NN configuration")
+        self.nn_btn = QPushButton("NN Configuration")
         self.nn_btn.clicked.connect(self._show_nn_config)
 
         # Device
