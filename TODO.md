@@ -52,6 +52,7 @@
 - [ ] Add Get Raw data which can get full model info JSON and provide selection of that info in place;
 - [ ] Add Night Mode to GUI;
 - [ ] Add Export model JSON button to Training section;
+- [ ] Add epsilon to log;
 
 
 ## Done
