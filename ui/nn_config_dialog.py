@@ -8,10 +8,11 @@ import torch
 
 
 class NNConfigDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None,  read_only: bool = False):
         super().__init__(parent)
-        self.setWindowTitle("Configure Neural Network")
+        self.setWindowTitle("Neural Network Configuration")
         self.resize(420, 380)
+        self.read_only = read_only
 
         self.updated_config = {
             "HIDDEN_LAYERS": config.HIDDEN_LAYERS.copy(),
@@ -22,9 +23,6 @@ class NNConfigDialog(QDialog):
         }
 
         layout = QVBoxLayout(self)
-        header = QLabel("<b>Neural Network Configuration</b>")
-        header.setAlignment(Qt.AlignCenter)
-        layout.addWidget(header)
 
         # Architecture section
         arch_label = QLabel("<b>🧩 Architecture</b>")
@@ -92,6 +90,16 @@ class NNConfigDialog(QDialog):
         layout.addWidget(save_btn)
         layout.addWidget(save_default_btn)
         layout.addWidget(cancel_btn)
+
+        # --- Disable editing in read-only mode ---
+        if self.read_only:
+            for w in [
+                self.hidden_layers_input, self.hidden_activation_box, self.dropout_spin,
+                self.lr_spin, self.optimizer_box
+            ]:
+                w.setEnabled(False)
+            save_btn.setEnabled(False)
+            save_default_btn.setEnabled(False)
 
     def _collect_updates(self):
         """Gather values from form widgets"""

@@ -182,8 +182,8 @@ class TrainingSection(QWidget):
             self._log("⚙️ Agent hyperparameters updated.")
 
     def _show_nn_config(self):
-        dlg = NNConfigDialog(self)
-        if dlg.exec():
+        dlg = NNConfigDialog(self, read_only=self.training_active)
+        if dlg.exec() and not self.training_active:
             updates = dlg.get_updated_config()
             config.HIDDEN_LAYERS = updates["HIDDEN_LAYERS"]
             config.LR = updates["LR"]
@@ -236,11 +236,11 @@ class TrainingSection(QWidget):
         """Toggle interactive buttons based on training state."""
         self.training_active = not enable  # True while training
         toggled_widgets = [
-            self.agent_config_btn, self.nn_btn, self.device_label, 
+            self.agent_config_btn, self.device_label, 
             self.device_box, self.agent_btn, self.train_btn, self.save_btn, 
         ]
         
-        # self.env_config_btn always enable
+        # self.env_config_btn, self.nn_btn are always enable
 
         for w in toggled_widgets:
             w.setEnabled(enable)
