@@ -5,10 +5,10 @@ from ui.testing_section import TestingSection
 import config
 
 
-class CartPoleLauncher(QWidget):
+class RLLauncher(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("CartPole RL Launcher")
+        self.setWindowTitle("RL Launcher")
         self.resize(*config.RESOLUTION)
 
         # === Stack of pages ===
