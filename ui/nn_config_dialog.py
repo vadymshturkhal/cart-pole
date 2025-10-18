@@ -100,6 +100,7 @@ class NNConfigDialog(QDialog):
                 w.setEnabled(False)
             save_btn.setEnabled(False)
             save_default_btn.setEnabled(False)
+            layout.addWidget(QLabel("<span style='color:#bbb;'>🔒 Read-only mode (Training in progress)</span>"))
 
     def _collect_updates(self):
         """Gather values from form widgets"""

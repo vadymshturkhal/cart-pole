@@ -59,6 +59,8 @@ class AgentDetailsDialog(QDialog):
             for w in self.widgets.values():
                 w.setEnabled(False)
             save_btn.setEnabled(not self.read_only)
+            layout.addWidget(QLabel("<span style='color:#bbb;'>🔒 Read-only mode (Training in progress)</span>"))
+
 
     def _on_save(self):
         """Collect updated hyperparameters."""

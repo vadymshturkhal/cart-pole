@@ -78,6 +78,8 @@ class EnvironmentConfigDialog(QDialog):
                 widget.setEnabled(False)
             apply_btn.setEnabled(False)
             save_default_btn.setEnabled(False)
+            layout.addWidget(QLabel("<span style='color:#bbb;'>🔒 Read-only mode (Training in progress)</span>"))
+
 
         self._update_default_steps(self.updated_env_config["ENV_NAME"])
 
