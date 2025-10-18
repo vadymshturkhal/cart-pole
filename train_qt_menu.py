@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication
-from ui.launcher import CartPoleLauncher
+from ui.main_section import CartPoleLauncher
 
 
 if __name__ == "__main__":
