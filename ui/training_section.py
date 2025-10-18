@@ -244,7 +244,7 @@ class TrainingSection(QWidget):
         """Toggle interactive buttons based on training state."""
         self.training_active = not enable  # True while training
         toggled_widgets = [
-            self.device_label, self.device_box, self.agent_btn, self.train_btn, self.save_btn, 
+            self.device_label, self.device_box, self.agent_btn, self.train_btn, self.save_btn, self.load_btn
         ]
         
         # self.agent_config_btn, , self.env_config_btn, self.nn_btn are always enable
