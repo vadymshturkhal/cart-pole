@@ -10,10 +10,11 @@ import gymnasium as gym
 class EnvironmentConfigDialog(QDialog):
     """Dialog for configuring environment-related training settings."""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, read_only: bool = False):
         super().__init__(parent)
         self.setWindowTitle("Configure Environment")
         self.resize(420, 320)
+        self.read_only = read_only
 
         self.updated_env_config = {
             "ENV_NAME": getattr(config, "DEFAULT_ENVIRONMENT", "CartPole-v1"),
@@ -23,9 +24,6 @@ class EnvironmentConfigDialog(QDialog):
         }
 
         layout = QVBoxLayout(self)
-        header = QLabel("<b>🌍 Environment Configuration</b>")
-        header.setAlignment(Qt.AlignCenter)
-        layout.addWidget(header)
 
         # --- Environment selection ---
         layout.addWidget(QLabel("Environment:"))
@@ -73,6 +71,14 @@ class EnvironmentConfigDialog(QDialog):
         apply_btn.clicked.connect(self._on_apply)
         save_default_btn.clicked.connect(self._on_save_default)
         cancel_btn.clicked.connect(self.reject)
+
+        # --- Disable editing if read-only mode ---
+        if self.read_only:
+            self.setWindowTitle("Environment Configuration")
+            for widget in [self.env_box, self.steps_box, self.episodes_box, self.render_box]:
+                widget.setEnabled(False)
+            apply_btn.setEnabled(False)
+            save_default_btn.setEnabled(False)
 
         self._update_default_steps(self.updated_env_config["ENV_NAME"])
 

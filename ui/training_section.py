@@ -36,6 +36,7 @@ class TrainingSection(QWidget):
         self.controller.finished.connect(self._on_finished)
         self.controller.status.connect(self._update_status)
 
+        self.training_active = False
         self._build_training_section()
 
     # ------------------------------------------------------------------
@@ -166,7 +167,7 @@ class TrainingSection(QWidget):
     # Utility Methods
     # ------------------------------------------------------------------
     def _show_environment_config(self) -> None:
-        dlg = EnvironmentConfigDialog(self)
+        dlg = EnvironmentConfigDialog(self, read_only=self.training_active)
         if dlg.exec():
             updates = dlg.get_updated_config()
             self._log(
@@ -234,10 +235,14 @@ class TrainingSection(QWidget):
 
     def _set_training_buttons(self, enable: bool) -> None:
         """Toggle interactive buttons based on training state."""
+        self.training_active = not enable  # True while training
         toggled_widgets = [
-            self.env_config_btn, self.agent_config_btn, self.nn_btn, self.device_label, 
+            self.agent_config_btn, self.nn_btn, self.device_label, 
             self.device_box, self.agent_btn, self.train_btn, self.save_btn, 
         ]
+        
+        # self.env_config_btn always enable
+
         for w in toggled_widgets:
             w.setEnabled(enable)
         self.stop_btn.setEnabled(not enable)
