@@ -17,7 +17,7 @@ class EnvironmentConfigDialog(QDialog):
         self.read_only = read_only
 
         self.updated_env_config = {
-            "ENV_NAME": getattr(config, "DEFAULT_ENVIRONMENT", "CartPole-v1"),
+            "ENV_NAME": getattr(config, "ENV_NAME", "CartPole-v1"),
             "MAX_STEPS": config.MAX_STEPS,
             "EPISODES": getattr(config, "DEFAULT_EPISODES", 1000),
             "RENDER_MODE": "off",
