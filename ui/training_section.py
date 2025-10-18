@@ -48,6 +48,7 @@ class TrainingSection(QWidget):
         # Tabs for plots
         self.tabs = QTabWidget()
         self.reward_plot, self.loss_plot = RewardPlot(), LossPlot()
+        self.controller.add_plots(self.reward_plot, self.loss_plot)
         self.tabs.addTab(self.reward_plot, "Training Curve")
         self.tabs.addTab(self.loss_plot, "Loss Curve")
         self.tabs.setMinimumHeight(300)

@@ -127,9 +127,13 @@ class TrainingController(QObject):
             return
 
         try:
-            run_logger = RunLogger(self.env_name, self.agent, None, None)
+            run_logger = RunLogger(self.env_name, self.agent, self.reward_plot, self.loss_plot)
             run_logger.autosave_model()
             self.status.emit(f"💾 Autosaved to {run_logger.autosave_dir}")
         except Exception as e:
             self.status.emit(f"❌ Autosave failed: {e}")
             traceback.print_exc()
+
+    def add_plots(self, reward_plot, loss_plot):
+        self.reward_plot = reward_plot
+        self.loss_plot = loss_plot
