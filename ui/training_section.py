@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QTextCursor
 from PySide6.QtCore import Signal
 from ui.agent_dialog import AgentDialog
-from ui.agent_details_dialog import AgentDetailsDialog
+from ui.agent_config_dialog import AgentConfigDialog
 from ui.nn_config_dialog import NNConfigDialog
 from ui.environment_config_dialog import EnvironmentConfigDialog
 from ui.reward_plot import RewardPlot
@@ -176,7 +176,7 @@ class TrainingSection(QWidget):
             )
     
     def _show_agent_config(self):
-        dlg = AgentDetailsDialog(self.agent_name, self.hyperparams.copy(), self, self.training_active)
+        dlg = AgentConfigDialog(self.agent_name, self.hyperparams.copy(), self, self.training_active)
         if dlg.exec() and not self.training_active:
             self.hyperparams = dlg.get_updated_params()
             self._log("⚙️ Agent hyperparameters updated.")

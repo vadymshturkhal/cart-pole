@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
 )
 
 
-class AgentDetailsDialog(QDialog):
+class AgentConfigDialog(QDialog):
     """
         Editable dialog for viewing and adjusting agent hyperparameters.
     """
