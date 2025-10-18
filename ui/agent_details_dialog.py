@@ -3,6 +3,7 @@ from PySide6.QtWidgets import (
     QSpinBox, QCheckBox, QLabel
 )
 
+
 class AgentDetailsDialog(QDialog):
     """
         Editable dialog for viewing and adjusting agent hyperparameters.
