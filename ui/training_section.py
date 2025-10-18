@@ -64,7 +64,6 @@ class TrainingSection(QWidget):
         # --- Configuration row ---
         # Environment
         self.env_config_btn = QPushButton("Configure Environment")
-        self.env_config_btn.setStyleSheet("font-weight:bold; padding:6px;")
         self.env_config_btn.clicked.connect(self._show_environment_config)
 
         # Agent
