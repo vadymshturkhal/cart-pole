@@ -136,6 +136,10 @@ class TrainingSection(QWidget):
             self._log(f"✅ Selected {self.agent_name} agent")
 
     def _start_training(self) -> None:
+        # Clear plots
+        self.reward_plot.reset()
+        self.loss_plot.reset()
+
         self._set_training_buttons(False)
         self.controller.start_training(
             config.ENV_NAME,
