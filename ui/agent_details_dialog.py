@@ -9,13 +9,14 @@ class AgentDetailsDialog(QDialog):
         Editable dialog for viewing and adjusting agent hyperparameters.
     """
 
-    def __init__(self, agent_name: str, hyperparams: dict, parent=None):
+    def __init__(self, agent_name: str, hyperparams: dict, parent=None, read_only: bool = False):
         super().__init__(parent)
-        self.setWindowTitle(f"Configure Agent — {agent_name}")
+        self.setWindowTitle(f"{agent_name} Configuration")
         self.resize(420, 520)
         self.agent_name = agent_name
         self._original_params = hyperparams
         self.updated_params = hyperparams.copy()
+        self.read_only = read_only
 
         layout = QVBoxLayout(self)
         self.form = QFormLayout()
@@ -52,6 +53,12 @@ class AgentDetailsDialog(QDialog):
         btn_layout.addWidget(save_btn)
         btn_layout.addWidget(close_btn)
         layout.addLayout(btn_layout)
+
+        # --- Disable editing in read-only mode ---
+        if self.read_only:
+            for w in self.widgets.values():
+                w.setEnabled(False)
+            save_btn.setEnabled(not self.read_only)
 
     def _on_save(self):
         """Collect updated hyperparameters."""

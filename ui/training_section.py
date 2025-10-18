@@ -176,8 +176,8 @@ class TrainingSection(QWidget):
             )
     
     def _show_agent_config(self):
-        dlg = AgentDetailsDialog(self.agent_name, self.hyperparams.copy(), self)
-        if dlg.exec():
+        dlg = AgentDetailsDialog(self.agent_name, self.hyperparams.copy(), self, self.training_active)
+        if dlg.exec() and not self.training_active:
             self.hyperparams = dlg.get_updated_params()
             self._log("⚙️ Agent hyperparameters updated.")
 
@@ -236,11 +236,10 @@ class TrainingSection(QWidget):
         """Toggle interactive buttons based on training state."""
         self.training_active = not enable  # True while training
         toggled_widgets = [
-            self.agent_config_btn, self.device_label, 
-            self.device_box, self.agent_btn, self.train_btn, self.save_btn, 
+            self.device_label, self.device_box, self.agent_btn, self.train_btn, self.save_btn, 
         ]
         
-        # self.env_config_btn, self.nn_btn are always enable
+        # self.agent_config_btn, , self.env_config_btn, self.nn_btn are always enable
 
         for w in toggled_widgets:
             w.setEnabled(enable)
