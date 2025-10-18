@@ -16,6 +16,7 @@ from ui.training_controller import TrainingController
 import config
 import os
 import torch
+from ui.test_model_dialog import TestModelDialog
 
 
 class TrainingSection(QWidget):
@@ -60,7 +61,8 @@ class TrainingSection(QWidget):
         self.train_btn = QPushButton("Start Training")
         self.stop_btn = QPushButton("Stop Training")
         self.save_btn = QPushButton("Save Model")
-        self._add_row(layout, [self.agent_btn, self.train_btn, self.stop_btn, self.save_btn])
+        self.load_btn = QPushButton("Load Model")
+        self._add_row(layout, [self.agent_btn, self.train_btn, self.stop_btn, self.save_btn, self.load_btn])
 
         # --- Configuration row ---
         # Agent
@@ -116,6 +118,7 @@ class TrainingSection(QWidget):
         self.train_btn.clicked.connect(self._start_training)
         self.stop_btn.clicked.connect(self._stop_training)
         self.save_btn.clicked.connect(self._save_agent_as)
+        self.load_btn.clicked.connect(self._load_model)
 
         # Initial button states
         self.save_btn.setEnabled(False)
@@ -255,3 +258,47 @@ class TrainingSection(QWidget):
         self.console_output.append(message)
         self.console_output.moveCursor(QTextCursor.End)
         
+    def _load_model(self):
+        """Load an existing trained model and apply its configuration."""
+        dlg = TestModelDialog("trained_models")
+        if dlg.exec():
+            model_file = dlg.get_selected()
+            if not model_file:
+                self._log("⚠ Load canceled by user.")
+                return
+
+            try:
+                checkpoint = torch.load(model_file, map_location=config.DEVICE)
+            except Exception as e:
+                self._log(f"❌ Failed to load model: {e}")
+                return
+
+            # --- Update Agent ---
+            self.agent_name = checkpoint.get("agent_name", self.agent_name)
+            self.agent_btn.setText(f"Agent: {self.agent_name}")
+            AgentClass = AGENTS.get(self.agent_name)
+            if AgentClass:
+                self.hyperparams = checkpoint.get("hyperparams", AgentClass.get_default_hyperparams())
+            self.agent_config_btn.setText(f"{self.agent_name} Configuration")
+
+            # --- Update Environment Config ---
+            config.ENV_NAME = checkpoint.get("environment", config.ENV_NAME)
+            config.MAX_STEPS = checkpoint.get("max_steps", config.MAX_STEPS)
+            config.EPISODES = checkpoint.get("episodes_total", config.EPISODES)
+            config.RENDER_MODE = checkpoint.get("render_mode", config.RENDER_MODE)
+
+            # --- Update Neural Network Config ---
+            nn_cfg = checkpoint.get("nn_config", {})
+            config.HIDDEN_LAYERS = nn_cfg.get("hidden_layers", config.HIDDEN_LAYERS)
+            config.LR = nn_cfg.get("lr", config.LR)
+            config.ACTIVATION = nn_cfg.get("activation", config.ACTIVATION)
+            config.DROPOUT = nn_cfg.get("dropout", config.DROPOUT)
+            device_str = nn_cfg.get("device", str(config.DEVICE))
+            config.DEVICE = torch.device(device_str if torch.cuda.is_available() or device_str == "cpu" else "cpu")
+
+            # --- Logging and Confirmation ---
+            env_name = config.ENV_NAME
+            self._log(f"📦 Model loaded: {self.agent_name} in {env_name}")
+            self._log(f"→ Hyperparameters: {len(self.hyperparams)} params")
+            self._log(f"→ NN: layers={config.HIDDEN_LAYERS}, lr={config.LR}, dropout={config.DROPOUT}, device={config.DEVICE}")
+            self._log(f"→ Episodes trained: {checkpoint.get('episodes_trained', 'N/A')}")
