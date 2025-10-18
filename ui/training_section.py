@@ -62,13 +62,13 @@ class TrainingSection(QWidget):
         self._add_row(layout, [self.agent_btn, self.train_btn, self.stop_btn, self.save_btn])
 
         # --- Configuration row ---
-        # Environment
-        self.env_config_btn = QPushButton("Configure Environment")
-        self.env_config_btn.clicked.connect(self._show_environment_config)
-
         # Agent
         self.agent_config_btn = QPushButton(f"{self.agent_name} configuration")
         self.agent_config_btn.clicked.connect(self._show_agent_config)
+
+        # Environment
+        self.env_config_btn = QPushButton("Environment Configuration")
+        self.env_config_btn.clicked.connect(self._show_environment_config)
 
         # NN
         self.nn_btn = QPushButton("NN configuration")
@@ -83,7 +83,7 @@ class TrainingSection(QWidget):
         self.device_box.currentTextChanged.connect(self._on_device_changed)
 
         # Config row
-        self._add_row(layout, [self.env_config_btn, self.agent_config_btn, self.nn_btn, self.device_label, self.device_box])
+        self._add_row(layout, [self.agent_config_btn, self.env_config_btn, self.nn_btn, self.device_label, self.device_box])
 
         # --- Console output ---
         self.console_output = QTextEdit()

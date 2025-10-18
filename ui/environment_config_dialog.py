@@ -12,7 +12,7 @@ class EnvironmentConfigDialog(QDialog):
 
     def __init__(self, parent=None, read_only: bool = False):
         super().__init__(parent)
-        self.setWindowTitle("Configure Environment")
+        self.setWindowTitle("Environment Configuration")
         self.resize(420, 320)
         self.read_only = read_only
 
@@ -74,7 +74,6 @@ class EnvironmentConfigDialog(QDialog):
 
         # --- Disable editing if read-only mode ---
         if self.read_only:
-            self.setWindowTitle("Environment Configuration")
             for widget in [self.env_box, self.steps_box, self.episodes_box, self.render_box]:
                 widget.setEnabled(False)
             apply_btn.setEnabled(False)
