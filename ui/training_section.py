@@ -297,6 +297,13 @@ class TrainingSection(QWidget):
             config.DROPOUT = nn_cfg.get("dropout", config.DROPOUT)
             device_str = nn_cfg.get("device", str(config.DEVICE))
             config.DEVICE = torch.device(device_str if torch.cuda.is_available() or device_str == "cpu" else "cpu")
+            # Ensure NN config values persist in runtime
+            config.HIDDEN_ACTIVATION = nn_cfg.get("activation", config.ACTIVATION)
+            config.OPTIMIZER = nn_cfg.get("optimizer", getattr(config, "OPTIMIZER", "adam"))
+
+            # Log sanity check
+            self._log(f"✅ NN Config loaded: LR={config.LR}, Dropout={config.DROPOUT}, Act={config.ACTIVATION}")
+
 
             # --- Logging and Confirmation ---
             env_name = config.ENV_NAME

@@ -3,6 +3,8 @@ from PySide6.QtCore import QObject, QThread, Signal
 from utils.agent_factory import build_agent
 from utils.run_logger import RunLogger
 import traceback
+import torch
+import config
 
 
 class TrainingController(QObject):
@@ -62,7 +64,7 @@ class TrainingController(QObject):
             self.agent = build_agent(agent_name, state_dim, action_dim, self.hyperparams)
 
             if self.selected_model_file is not None:
-                self.agent.load(self.selected_model_file, self.hyperparams)
+                self.agent.load(self.selected_model_file, self.hyperparams, apply_nn_config=False)
 
             # Setup QThread + Worker
             self.training_thread = QThread()

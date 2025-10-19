@@ -165,7 +165,7 @@ class NStepDeepQLearningAgent(BaseAgent):
 
         torch.save(self.checkpoint, path)
 
-    def load(self, path: str, hyperparams: dict = None):
+    def load(self, path: str, hyperparams: dict = None, apply_nn_config: bool = True):
         """
         Load model weights, optimizer, and NN configuration from a checkpoint file.
         """
@@ -192,12 +192,14 @@ class NStepDeepQLearningAgent(BaseAgent):
         lr = nn_cfg.get("lr", config.LR)
         optimizer_name = nn_cfg.get("optimizer", config.OPTIMIZER)
 
-        # Update global config (runtime consistency)
-        config.HIDDEN_LAYERS = hidden_layers
-        config.ACTIVATION = activation
-        config.DROPOUT = dropout
-        config.LR = lr
-        config.OPTIMIZER = optimizer_name
+        # Conditional config override
+        if apply_nn_config:
+            # Update global config (runtime consistency)
+            config.HIDDEN_LAYERS = hidden_layers
+            config.ACTIVATION = activation
+            config.DROPOUT = dropout
+            config.LR = lr
+            config.OPTIMIZER = optimizer_name
 
         # === Recreate networks ===
         self.q_net = QNetwork(self.q_net.net[0].in_features, self.action_dim).to(config.DEVICE)
