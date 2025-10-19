@@ -1,8 +1,11 @@
+from typing import Any
 from PySide6.QtCore import QObject, QThread, Signal
 from environments.factory import create_environment
 from utils.agent_factory import build_agent
 from utils.run_logger import RunLogger
 import traceback
+import torch
+import config
 
 
 class TrainingController(QObject):
@@ -37,6 +40,7 @@ class TrainingController(QObject):
         episodes: int,
         render_mode: str,
         max_steps: int | None = None,
+        model_file = None,
     ) -> None:
         """
         Start background training in a separate thread.
@@ -50,6 +54,7 @@ class TrainingController(QObject):
         self.hyperparams = hyperparams
         self.episodes = episodes
         self.render_mode = render_mode
+        self.selected_model_file = model_file
 
         try:
             env, state_dim, action_dim = create_environment(env_name, render_mode)
@@ -57,7 +62,13 @@ class TrainingController(QObject):
             if max_steps:
                 env = gym.wrappers.TimeLimit(env.unwrapped, max_episode_steps=max_steps)
 
-            self.agent = build_agent(agent_name, state_dim, action_dim, hyperparams)
+            if self.selected_model_file is not None:
+                checkpoint = torch.load(self.selected_model_file, map_location=config.DEVICE)
+                hps = checkpoint.get("hyperparams", {})
+                hps.update(self.hyperparams)
+                self.hyperparams = hps
+
+            self.agent = build_agent(agent_name, state_dim, action_dim, hps)
 
             # Setup QThread + Worker
             self.training_thread = QThread()

@@ -26,6 +26,7 @@ class TrainingSection(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.controller = TrainingController()
+        self.selected_model_file = None
 
         # --- Default agent setup ---
         self.agent_name = config.DEFAULT_AGENT
@@ -151,6 +152,7 @@ class TrainingSection(QWidget):
             config.EPISODES,
             config.RENDER_MODE,
             config.MAX_STEPS,
+            self.selected_model_file,
         )
 
         self._log(
@@ -262,13 +264,13 @@ class TrainingSection(QWidget):
         """Load an existing trained model and apply its configuration."""
         dlg = TestModelDialog("trained_models")
         if dlg.exec():
-            model_file = dlg.get_selected()
-            if not model_file:
+            self.selected_model_file = dlg.get_selected()
+            if not self.selected_model_file:
                 self._log("⚠ Load canceled by user.")
                 return
 
             try:
-                checkpoint = torch.load(model_file, map_location=config.DEVICE)
+                checkpoint = torch.load(self.selected_model_file, map_location=config.DEVICE)
             except Exception as e:
                 self._log(f"❌ Failed to load model: {e}")
                 return
