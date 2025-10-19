@@ -1,5 +1,4 @@
 import config
-import pandas as pd
 
 
 def train(env, agent, episodes=config.DEFAULT_EPISODES,

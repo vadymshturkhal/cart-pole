@@ -1,6 +1,4 @@
 from PySide6.QtCore import QObject, Signal, Slot
-import os
-import config
 from utils.training import train
 
 

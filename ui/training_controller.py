@@ -1,11 +1,8 @@
 from typing import Any
 from PySide6.QtCore import QObject, QThread, Signal
-from environments.factory import create_environment
 from utils.agent_factory import build_agent
 from utils.run_logger import RunLogger
 import traceback
-import torch
-import config
 
 
 class TrainingController(QObject):
