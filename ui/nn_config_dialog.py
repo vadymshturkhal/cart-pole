@@ -8,11 +8,12 @@ import torch
 
 
 class NNConfigDialog(QDialog):
-    def __init__(self, parent=None,  read_only: bool = False):
+    def __init__(self, parent=None,  read_only: bool = False, lock_hidden_layers: bool = False):
         super().__init__(parent)
         self.setWindowTitle("Neural Network Configuration")
         self.resize(420, 380)
         self.read_only = read_only
+        self.lock_hidden_layers = lock_hidden_layers
 
         self.updated_config = {
             "HIDDEN_LAYERS": config.HIDDEN_LAYERS.copy(),
@@ -101,6 +102,10 @@ class NNConfigDialog(QDialog):
             save_btn.setEnabled(False)
             save_default_btn.setEnabled(False)
             layout.addWidget(QLabel("<span style='color:#bbb;'>🔒 Read-only mode (Training in progress)</span>"))
+
+        if self.lock_hidden_layers:
+            self.hidden_layers_input.setEnabled(False)
+            layout.addWidget(QLabel("<span style='color:#bbb;'>🔒 Hidden layers locked (loaded model)</span>"))
 
     def _collect_updates(self):
         """Gather values from form widgets"""

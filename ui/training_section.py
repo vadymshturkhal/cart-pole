@@ -39,6 +39,7 @@ class TrainingSection(QWidget):
         self.controller.status.connect(self._update_status)
 
         self.training_active = False
+        self.nn_locked = False
         self._build_training_section()
 
     # ------------------------------------------------------------------
@@ -131,6 +132,7 @@ class TrainingSection(QWidget):
     def _choose_agent(self) -> None:
         dlg = AgentDialog(self, current_agent=self.agent_name)
         if dlg.exec():
+            self.nn_locked = False
             agent_name = dlg.get_selection()
             self.agent_name = agent_name
             AgentClass = AGENTS[self.agent_name]
@@ -192,7 +194,7 @@ class TrainingSection(QWidget):
             self._log("⚙️ Agent hyperparameters updated.")
 
     def _show_nn_config(self):
-        dlg = NNConfigDialog(self, read_only=self.training_active)
+        dlg = NNConfigDialog(self, read_only=self.training_active, lock_hidden_layers=getattr(self, "nn_locked", False))
         if dlg.exec() and not self.training_active:
             updates = dlg.get_updated_config()
             config.HIDDEN_LAYERS = updates["HIDDEN_LAYERS"]
@@ -301,9 +303,10 @@ class TrainingSection(QWidget):
             config.HIDDEN_ACTIVATION = nn_cfg.get("activation", config.ACTIVATION)
             config.OPTIMIZER = nn_cfg.get("optimizer", getattr(config, "OPTIMIZER", "adam"))
 
+            self.nn_locked = True
+
             # Log sanity check
             self._log(f"✅ NN Config loaded: LR={config.LR}, Dropout={config.DROPOUT}, Act={config.ACTIVATION}")
-
 
             # --- Logging and Confirmation ---
             env_name = config.ENV_NAME

@@ -52,7 +52,6 @@
 - [ ] Add Night Mode to GUI;
 - [ ] Add Export model JSON button to Training section;
 - [ ] Add epsilon to log;
-- [ ] Set Read-only mode to NN hidden layers after loading;
 - [ ] Add Save as Default option to Agent and Environment configurations;
 - [ ] Add Restore config button;
 - [ ] Show rewards in Testing section console;
@@ -61,6 +60,7 @@
 
 
 ## Done
+- [x] Set Read-only mode to NN hidden layers after loading model;
 - [x] Add Configure Environment button in Training section;
 - [x] Add max_step_per_episode to Training section;
 - [x] In Training section make some buttons unavailable during training;
