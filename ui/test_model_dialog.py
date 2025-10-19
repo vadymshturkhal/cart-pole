@@ -37,7 +37,7 @@ class TestModelDialog(QDialog):
 
         # Model management buttons
         btn_row = QHBoxLayout()
-        self.test_btn = QPushButton("Test Selected Model")
+        self.test_btn = QPushButton("Choose Selected Model")
         self.delete_btn = QPushButton("Delete Selected Model")
 
         btn_row.addWidget(self.test_btn)
