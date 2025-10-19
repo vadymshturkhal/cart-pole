@@ -66,13 +66,6 @@ class TrainingController(QObject):
 
             if self.selected_model_file is not None:
                 self.agent.load(self.selected_model_file, self.hyperparams)
-                # checkpoint = torch.load(self.selected_model_file, map_location=config.DEVICE)
-                # hps = checkpoint.get("hyperparams", {})
-                # hps.update(self.hyperparams)
-                # self.hyperparams = hps
-
-            print(self.agent.hyperparams)
-
 
             # Setup QThread + Worker
             self.training_thread = QThread()
