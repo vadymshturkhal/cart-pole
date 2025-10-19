@@ -137,7 +137,7 @@ class TrainingSection(QWidget):
             self.agent_name = agent_name
             AgentClass = AGENTS[self.agent_name]
             self.hyperparams = AgentClass.get_default_hyperparams()
-            self.agent_btn.setText(agent_name)
+            self.agent_btn.setText(f"Agent:{agent_name}")
             self.agent_config_btn.setText(f"Configure {self.agent_name}")
             self._log(f"✅ Selected {self.agent_name} agent")
 
