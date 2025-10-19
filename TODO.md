@@ -55,6 +55,7 @@
 - [ ] Set Read-only mode to NN hidden layers after loading;
 - [ ] Add Save as Default option to Agent and Environment configurations;
 - [ ] Add Restore config button;
+- [ ] Show rewards in Testing section console;
 
 
 ## Done
