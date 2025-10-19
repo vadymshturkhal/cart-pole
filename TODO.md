@@ -53,6 +53,9 @@
 - [ ] Add Night Mode to GUI;
 - [ ] Add Export model JSON button to Training section;
 - [ ] Add epsilon to log;
+- [ ] Set Read-only mode to NN hidden layers after loading;
+- [ ] Add Save as Default option to Agent and Environment configurations;
+- [ ] Add Restore config button;
 
 
 ## Done
