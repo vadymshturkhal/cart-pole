@@ -56,6 +56,7 @@
 - [ ] Add Save as Default option to Agent and Environment configurations;
 - [ ] Add Restore config button;
 - [ ] Show rewards in Testing section console;
+- [ ] Add 'From loaded model' message to all configs after loading model;
 
 
 ## Done
