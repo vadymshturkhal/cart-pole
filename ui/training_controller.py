@@ -62,13 +62,17 @@ class TrainingController(QObject):
             if max_steps:
                 env = gym.wrappers.TimeLimit(env.unwrapped, max_episode_steps=max_steps)
 
-            if self.selected_model_file is not None:
-                checkpoint = torch.load(self.selected_model_file, map_location=config.DEVICE)
-                hps = checkpoint.get("hyperparams", {})
-                hps.update(self.hyperparams)
-                self.hyperparams = hps
+            self.agent = build_agent(agent_name, state_dim, action_dim, self.hyperparams)
 
-            self.agent = build_agent(agent_name, state_dim, action_dim, hps)
+            if self.selected_model_file is not None:
+                self.agent.load(self.selected_model_file, self.hyperparams)
+                # checkpoint = torch.load(self.selected_model_file, map_location=config.DEVICE)
+                # hps = checkpoint.get("hyperparams", {})
+                # hps.update(self.hyperparams)
+                # self.hyperparams = hps
+
+            print(self.agent.hyperparams)
+
 
             # Setup QThread + Worker
             self.training_thread = QThread()

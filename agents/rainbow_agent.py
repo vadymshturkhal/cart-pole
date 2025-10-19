@@ -193,18 +193,18 @@ class RainbowAgent(BaseAgent):
             return "QNetwork"
         return "QNetwork"  # safe default
 
-    def load(self, path: str):
-        ckpt = torch.load(path, map_location=config.DEVICE)
+    def load(self, path: str, hyperparams: dict = None):
+        checkpoint = torch.load(path, map_location=config.DEVICE)
 
         # 1) Decide architecture
-        arch_name = ckpt.get("architecture")
+        arch_name = checkpoint.get("architecture")
         if arch_name is None:
-            arch_name = self._infer_arch_from_keys(ckpt["model_state"])
+            arch_name = self._infer_arch_from_keys(checkpoint["model_state"])
         print(f"🧠 Loading RainbowAgent with architecture: {arch_name}")
 
         # 2) Decide dims
-        state_dim = ckpt.get("state_dim", getattr(self, "state_dim", None))
-        action_dim = ckpt.get("action_dim", getattr(self, "action_dim", None))
+        state_dim = checkpoint.get("state_dim", getattr(self, "state_dim", None))
+        action_dim = checkpoint.get("action_dim", getattr(self, "action_dim", None))
         if state_dim is None or action_dim is None:
             raise ValueError("Checkpoint missing state_dim/action_dim and agent has none set.")
 
@@ -218,7 +218,7 @@ class RainbowAgent(BaseAgent):
         self.target_net = NetClass(state_dim, action_dim).to(config.DEVICE)
 
         # 4) Load weights (non-strict so minor diffs don’t crash)
-        incompatible = self.q_net.load_state_dict(ckpt["model_state"], strict=False)
+        incompatible = self.q_net.load_state_dict(checkpoint["model_state"], strict=False)
         if incompatible.missing_keys or incompatible.unexpected_keys:
             print(f"⚠️ Partial load. missing={len(incompatible.missing_keys)} "
                 f"unexpected={len(incompatible.unexpected_keys)}")
@@ -227,16 +227,20 @@ class RainbowAgent(BaseAgent):
 
         # 5) Optimizer (rebuild if shape mismatch)
         try:
-            if "optimizer_state" in ckpt:
-                self.optimizer.load_state_dict(ckpt["optimizer_state"])
+            if "optimizer_state" in checkpoint:
+                self.optimizer.load_state_dict(checkpoint["optimizer_state"])
         except Exception as e:
             print(f"⚠️ Optimizer state incompatible, resetting optimizer. ({e})")
             self.optimizer = build_optimizer(config.OPTIMIZER, self.q_net.parameters(), lr=config.LR)
 
         # 6) Restore misc
-        self.hyperparams = ckpt.get("hyperparams", self.hyperparams)
-        self.steps_done = ckpt.get("steps_done", 0)
-        self.total_steps = ckpt.get("total_steps", 0)
+        self.hyperparams = checkpoint.get("hyperparams", self.hyperparams)
+
+        if hyperparams:
+            self.hyperparams.update(hyperparams)
+
+        self.steps_done = checkpoint.get("steps_done", 0)
+        self.total_steps = checkpoint.get("total_steps", 0)
 
         self.q_net.eval()
         print("✅ Loaded successfully.")
