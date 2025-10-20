@@ -4,10 +4,10 @@ import config
 from PySide6.QtWidgets import QFileDialog
 from ui.agent_dialog import AgentDialog
 from ui.agent_config_dialog import AgentConfigDialog
-from ui.environment_config_dialog import EnvironmentConfigDialog
 from utils.agent_factory import AGENTS
 from ui.load_model_panel import LoadModelPanel
 from ui.nn_config_panel import NNConfigPanel
+from ui.environment_config_panel import EnvironmentConfigPanel
 
 
 class TrainingActions:
@@ -170,15 +170,32 @@ class TrainingActions:
     # Config dialogs
     # --------------------------------------------------------------
     def show_environment_config(self):
+        """Open inline Environment configuration panel."""
         section = self.section
-        dlg = EnvironmentConfigDialog(section, read_only=section.training_active)
-        if not dlg.exec():
+        read_only = section.training_active
+        mode = "read-only" if read_only else "editable"
+        section._log(f"🌍 Opening Environment configuration ({mode})...")
+
+        panel = EnvironmentConfigPanel(
+            on_close_callback=self._on_env_config_closed,
+            read_only=read_only,
+        )
+        section.panel_manager.show_panel(panel)
+        self.env_panel = panel
+
+    def _on_env_config_closed(self, applied: bool, updates: dict | None):
+        """Handle closing of Environment configuration panel."""
+        section = self.section
+        section.panel_manager.close_panel()
+
+        if not applied:
+            section._log("💡 Environment configuration canceled.")
             return
 
-        updates = dlg.get_updated_config()
         section._log(
-            f"🌍 Environment configured: {updates['ENV_NAME']} | "
-            f"{updates['MAX_STEPS']} steps/ep | {updates['EPISODES']} episodes | Render: {updates['RENDER_MODE']}"
+            f"🌍 Environment updated: {updates['ENV_NAME']} | "
+            f"{updates['MAX_STEPS']} steps/ep | {updates['EPISODES']} episodes | "
+            f"Render: {updates['RENDER_MODE']}"
         )
 
     def show_agent_config(self):
