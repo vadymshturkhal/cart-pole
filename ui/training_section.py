@@ -9,6 +9,7 @@ from utils.agent_factory import AGENTS
 import config
 import torch
 from datetime import datetime
+from ui.inline_panel_manager import InlinePanelManager
 
 
 class TrainingSection(QWidget):
@@ -20,6 +21,7 @@ class TrainingSection(QWidget):
 
         # --- Build UI ---
         self.ui = TrainingUIBuilder(self)
+        self.panel_manager = InlinePanelManager(self.ui)
 
         # --- Controller and state ---
         self.controller = TrainingController()

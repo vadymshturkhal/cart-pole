@@ -4,10 +4,10 @@ import config
 from PySide6.QtWidgets import QFileDialog
 from ui.agent_dialog import AgentDialog
 from ui.agent_config_dialog import AgentConfigDialog
-from ui.nn_config_dialog import NNConfigDialog
 from ui.environment_config_dialog import EnvironmentConfigDialog
 from utils.agent_factory import AGENTS
 from ui.load_model_panel import LoadModelPanel
+from ui.nn_config_panel import NNConfigPanel
 
 
 class TrainingActions:
@@ -89,24 +89,15 @@ class TrainingActions:
     def load_model(self):
         """Show model selection panel and handle model loading."""
         section = self.section
-        ui = section.ui
-
         section._log("📂 Loading available models...")
-        ui.tabs.setVisible(False)
-
-        # Inline panel creation (no need for separate _show_load_panel)
-        self.load_panel = LoadModelPanel(on_select_callback=self._on_model_selected)
-        ui.layout.insertWidget(0, self.load_panel)
+        panel = LoadModelPanel(on_select_callback=self._on_model_selected)
+        section.panel_manager.show_panel(panel)
+        self.load_panel = panel
 
     def _on_model_selected(self, path: str | None):
         """Callback for when user selects a model or cancels."""
         section = self.section
-        ui = section.ui
-
-        # Restore layout
-        ui.layout.removeWidget(self.load_panel)
-        self.load_panel.deleteLater()
-        ui.tabs.setVisible(True)
+        section.panel_manager.close_panel()
 
         # Handle cancel
         if not path:
@@ -199,16 +190,32 @@ class TrainingActions:
             section._log("⚙️ Agent hyperparameters updated.")
 
     def show_nn_config(self):
+        """Open inline NN configuration panel using InlinePanelManager."""
         section = self.section
-        dlg = NNConfigDialog(section, read_only=section.training_active, lock_hidden_layers=section.nn_locked)
-        if dlg.exec() and not section.training_active:
-            updates = dlg.get_updated_config()
-            config.HIDDEN_LAYERS = updates["HIDDEN_LAYERS"]
-            config.LR = updates["LR"]
-            config.ACTIVATION = updates["ACTIVATION"]
-            config.DROPOUT = updates["DROPOUT"]
-            config.DEVICE = torch.device(updates["DEVICE"])
-            section._log(
-                f"🧠 NN updated: layers={updates['HIDDEN_LAYERS']} activation={updates['ACTIVATION']} "
-                f"dropout={updates['DROPOUT']:.2f} device={config.DEVICE}"
-            )
+
+        if section.training_active:
+            section._log("⚠️ Cannot edit NN config during training.")
+            return
+
+        section._log("🧩 Opening NN configuration editor...")
+        panel = NNConfigPanel(
+            on_close_callback=self._on_nn_config_closed,
+            lock_hidden_layers=section.nn_locked,
+        )
+        section.panel_manager.show_panel(panel)
+        self.nn_panel = panel
+
+    def _on_nn_config_closed(self, applied: bool, updates: dict | None):
+        """Handle close of NN config panel."""
+        section = self.section
+        section.panel_manager.close_panel()
+
+        if not applied:
+            section._log("💡 NN configuration changes canceled.")
+            return
+
+        # Already applied by panel, just log summary
+        section._log(
+            f"🧠 NN updated: layers={updates['HIDDEN_LAYERS']} activation={updates['HIDDEN_ACTIVATION']} "
+            f"dropout={updates['DROPOUT']:.2f}, lr={updates['LR']}, optimizer={updates['OPTIMIZER']}"
+        )
