@@ -2,12 +2,12 @@ import os
 import torch
 import config
 from PySide6.QtWidgets import QFileDialog
-from ui.agent_dialog import AgentDialog
 from utils.agent_factory import AGENTS
 from ui.load_model_panel import LoadModelPanel
 from ui.nn_config_panel import NNConfigPanel
 from ui.environment_config_panel import EnvironmentConfigPanel
 from ui.agent_config_panel import AgentConfigPanel
+from ui.agent_select_panel import AgentSelectPanel
 
 
 class TrainingActions:
@@ -36,20 +36,6 @@ class TrainingActions:
     # --------------------------------------------------------------
     # Core actions
     # --------------------------------------------------------------
-    def choose_agent(self):
-        section = self.section
-        dlg = AgentDialog(section, current_agent=section.agent_name)
-        if not dlg.exec():
-            return
-
-        section.nn_locked = False
-        section.agent_name = dlg.get_selection()
-        AgentClass = AGENTS[section.agent_name]
-        section.hyperparams = AgentClass.get_default_hyperparams()
-        section.ui.agent_btn.setText(f"Agent: {section.agent_name}")
-        section.ui.agent_config_btn.setText(f"{section.agent_name} Configuration")
-        section._log(f"✅ Selected {section.agent_name} agent")
-
     def start_training(self):
         section = self.section
 
@@ -169,6 +155,41 @@ class TrainingActions:
     # --------------------------------------------------------------
     # Config dialogs
     # --------------------------------------------------------------
+    def choose_agent(self):
+        """Inline agent selection using InlinePanelManager."""
+        section = self.section
+        read_only = section.training_active
+        if read_only:
+            section._log("⚠️ Agent cannot be changed during training.")
+            return
+
+        section._log("🤖 Opening Agent selection panel...")
+        panel = AgentSelectPanel(
+            on_close_callback=self._on_agent_selected,
+            current_agent=section.agent_name,
+        )
+        section.panel_manager.show_panel(panel)
+        self.agent_panel = panel
+
+    def _on_agent_selected(self, applied: bool, agent_name: str | None):
+        """Handle agent selection result."""
+        section = self.section
+        section.panel_manager.close_panel()
+
+        if not applied or not agent_name:
+            section._log("💡 Agent selection canceled.")
+            return
+
+        section.agent_name = agent_name
+        from utils.agent_factory import AGENTS
+        AgentClass = AGENTS[agent_name]
+        section.hyperparams = AgentClass.get_default_hyperparams()
+        section.ui.agent_btn.setText(f"Agent: {agent_name}")
+        section.ui.agent_config_btn.setText(f"{agent_name} Configuration")
+        section.nn_locked = False
+
+        section._log(f"✅ Selected agent: {agent_name}")
+    
     def show_agent_config(self):
         """Open inline Agent configuration panel using InlinePanelManager."""
         section = self.section
