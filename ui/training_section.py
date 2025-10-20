@@ -1,24 +1,13 @@
 from __future__ import annotations
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QPushButton, QTextEdit,
-    QComboBox, QFileDialog, QTabWidget, QHBoxLayout,
-)
+from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QTextCursor
 from PySide6.QtCore import Signal
-from ui.agent_dialog import AgentDialog
-from ui.agent_config_dialog import AgentConfigDialog
-from ui.nn_config_dialog import NNConfigDialog
-from ui.environment_config_dialog import EnvironmentConfigDialog
-from ui.reward_plot import RewardPlot
-from ui.loss_plot import LossPlot
 from ui.training_controller import TrainingController
 from ui.training_ui_builder import TrainingUIBuilder
 from ui.training_actions import TrainingActions
 from utils.agent_factory import AGENTS
 import config
-import os
 import torch
-from ui.test_model_dialog import TestModelDialog
 
 
 class TrainingSection(QWidget):
