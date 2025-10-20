@@ -3,7 +3,6 @@ from PySide6.QtWidgets import (
     QComboBox, QPushButton, QLabel, QHBoxLayout
 )
 import config
-import torch
 
 
 class NNConfigPanel(QWidget):
