@@ -93,14 +93,10 @@ class TrainingActions:
 
         section._log("📂 Loading available models...")
         ui.tabs.setVisible(False)
-        self.load_panel = self._show_load_panel(ui, section)
 
-    def _show_load_panel(self, ui, section):
-        """Temporarily replace plots with the model list panel."""
-        panel = LoadModelPanel(on_select_callback=self._on_model_selected)
-        ui.layout.insertWidget(0, panel)
-        return panel
-
+        # Inline panel creation (no need for separate _show_load_panel)
+        self.load_panel = LoadModelPanel(on_select_callback=self._on_model_selected)
+        ui.layout.insertWidget(0, self.load_panel)
 
     def _on_model_selected(self, path: str | None):
         """Callback for when user selects a model or cancels."""
@@ -112,10 +108,12 @@ class TrainingActions:
         self.load_panel.deleteLater()
         ui.tabs.setVisible(True)
 
+        # Handle cancel
         if not path:
             section._log("💡 Model load canceled by user.")
             return
 
+        # Load checkpoint file
         section.selected_model_file = path
         section._log(f"📦 Selected model: {os.path.basename(path)}")
 
@@ -125,6 +123,7 @@ class TrainingActions:
             section._log(f"❌ Failed to load model: {e}")
             return
 
+        # Apply checkpoint
         self._apply_checkpoint(checkpoint)
 
     def _apply_checkpoint(self, checkpoint: dict):
@@ -156,6 +155,8 @@ class TrainingActions:
             config.DROPOUT = nn_cfg.get("dropout", config.DROPOUT)
             config.HIDDEN_ACTIVATION = nn_cfg.get("activation", config.ACTIVATION)
             config.OPTIMIZER = nn_cfg.get("optimizer", getattr(config, "OPTIMIZER", "adam"))
+
+            # Device setup
             device_str = nn_cfg.get("device", str(config.DEVICE))
             config.DEVICE = torch.device(
                 device_str if torch.cuda.is_available() or device_str == "cpu" else "cpu"
@@ -163,7 +164,7 @@ class TrainingActions:
 
             section.nn_locked = True
 
-            # Log results
+            # Log summary
             section._log(f"✅ Model loaded: {section.agent_name} on {config.ENV_NAME}")
             section._log(
                 f"→ NN: layers={config.HIDDEN_LAYERS}, lr={config.LR}, "
