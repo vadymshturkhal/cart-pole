@@ -8,6 +8,7 @@ from ui.training_actions import TrainingActions
 from utils.agent_factory import AGENTS
 import config
 import torch
+from datetime import datetime
 
 
 class TrainingSection(QWidget):
@@ -83,5 +84,7 @@ class TrainingSection(QWidget):
 
     def _log(self, message: str) -> None:
         """Append text to the console output."""
-        self.ui.console_output.append(message)
+
+        ts = datetime.now().strftime("[%H:%M:%S]")
+        self.ui.console_output.append(f"{ts} {message}")
         self.ui.console_output.moveCursor(QTextCursor.End)
