@@ -25,8 +25,13 @@ class TrainingSection(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        # --- Controller and state ---
         self.controller = TrainingController()
+        self.controller.add_plots(self.reward_plot, self.loss_plot)
         self.selected_model_file = None
+        self.training_active = False
+        self.nn_locked = False
 
         # --- Default agent setup ---
         self.agent_name = config.DEFAULT_AGENT
@@ -38,8 +43,7 @@ class TrainingSection(QWidget):
         self.controller.finished.connect(self._on_finished)
         self.controller.status.connect(self._update_status)
 
-        self.training_active = False
-        self.nn_locked = False
+
         self._build_training_section()
 
     # ------------------------------------------------------------------
@@ -51,7 +55,6 @@ class TrainingSection(QWidget):
         # Tabs for plots
         self.tabs = QTabWidget()
         self.reward_plot, self.loss_plot = RewardPlot(), LossPlot()
-        self.controller.add_plots(self.reward_plot, self.loss_plot)
         self.tabs.addTab(self.reward_plot, "Training Curve")
         self.tabs.addTab(self.loss_plot, "Loss Curve")
         self.tabs.setMinimumHeight(300)
