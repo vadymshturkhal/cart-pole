@@ -171,7 +171,7 @@ class RainbowAgent(BaseAgent):
             "hyperparams": self.hyperparams,
             "nn_config": {  # Save full NN architecture & optimizer info
                 "hidden_layers": config.HIDDEN_LAYERS,
-                "activation": config.ACTIVATION,
+                "activation": config.HIDDEN_ACTIVATION,
                 "dropout": config.DROPOUT,
                 "lr": config.LR,
                 "optimizer": config.OPTIMIZER,
