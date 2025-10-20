@@ -166,7 +166,6 @@ class TrainingActions:
         except Exception as e:
             section._log(f"❌ Error applying model checkpoint: {e}")
 
-        
     # --------------------------------------------------------------
     # Config dialogs
     # --------------------------------------------------------------
@@ -193,14 +192,14 @@ class TrainingActions:
         """Open inline NN configuration panel using InlinePanelManager."""
         section = self.section
 
-        if section.training_active:
-            section._log("⚠️ Cannot edit NN config during training.")
-            return
+        read_only = section.training_active
+        mode_text = "read-only" if read_only else "editable"
+        section._log(f"🧩 Opening NN configuration editor ({mode_text})...")
 
-        section._log("🧩 Opening NN configuration editor...")
         panel = NNConfigPanel(
             on_close_callback=self._on_nn_config_closed,
             lock_hidden_layers=section.nn_locked,
+            read_only=read_only,
         )
         section.panel_manager.show_panel(panel)
         self.nn_panel = panel

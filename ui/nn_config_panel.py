@@ -9,10 +9,11 @@ import torch
 class NNConfigPanel(QWidget):
     """Inline panel for editing Neural Network configuration."""
 
-    def __init__(self, on_close_callback, lock_hidden_layers=False):
+    def __init__(self, on_close_callback, lock_hidden_layers=False, read_only=False):
         super().__init__()
         self.on_close_callback = on_close_callback
         self.lock_hidden_layers = lock_hidden_layers
+        self.read_only = read_only
         self.updated_config = {}
 
         layout = QVBoxLayout(self)
@@ -76,6 +77,19 @@ class NNConfigPanel(QWidget):
 
         self.apply_btn.clicked.connect(self._on_apply)
         self.cancel_btn.clicked.connect(self._on_cancel)
+
+        # Disable editing in read-only mode
+        if self.read_only:
+            for w in [
+                self.hidden_layers_input,
+                self.activation_box,
+                self.dropout_spin,
+                self.lr_spin,
+                self.optimizer_box,
+            ]:
+                w.setEnabled(False)
+            self.apply_btn.setEnabled(False)
+            layout.addWidget(QLabel("<span style='color:#bbb;'>🔒 Read-only mode (Training in progress)</span>"))
 
     def _on_apply(self):
         """Collect and apply updates."""
