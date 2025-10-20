@@ -6,8 +6,8 @@ from ui.agent_dialog import AgentDialog
 from ui.agent_config_dialog import AgentConfigDialog
 from ui.nn_config_dialog import NNConfigDialog
 from ui.environment_config_dialog import EnvironmentConfigDialog
-from ui.test_model_dialog import TestModelDialog
 from utils.agent_factory import AGENTS
+from ui.load_model_panel import LoadModelPanel
 
 
 class TrainingActions:
@@ -87,57 +87,94 @@ class TrainingActions:
         self.controller.save_model(user_dir, section.ui.reward_plot, section.ui.loss_plot)
 
     def load_model(self):
+        """Show model selection panel and handle model loading."""
         section = self.section
-        dlg = TestModelDialog("trained_models")
-        if not dlg.exec():
+        ui = section.ui
+
+        section._log("📂 Loading available models...")
+        ui.tabs.setVisible(False)
+        self.load_panel = self._show_load_panel(ui, section)
+
+    def _show_load_panel(self, ui, section):
+        """Temporarily replace plots with the model list panel."""
+        panel = LoadModelPanel(on_select_callback=self._on_model_selected)
+        ui.layout.insertWidget(0, panel)
+        return panel
+
+
+    def _on_model_selected(self, path: str | None):
+        """Callback for when user selects a model or cancels."""
+        section = self.section
+        ui = section.ui
+
+        # Restore layout
+        ui.layout.removeWidget(self.load_panel)
+        self.load_panel.deleteLater()
+        ui.tabs.setVisible(True)
+
+        if not path:
+            section._log("💡 Model load canceled by user.")
             return
 
-        section.selected_model_file = dlg.get_selected()
-        if not section.selected_model_file:
-            section._log("⚠ Load canceled by user.")
-            return
+        section.selected_model_file = path
+        section._log(f"📦 Selected model: {os.path.basename(path)}")
 
         try:
-            checkpoint = torch.load(section.selected_model_file, map_location=config.DEVICE)
+            checkpoint = torch.load(path, map_location=config.DEVICE)
         except Exception as e:
             section._log(f"❌ Failed to load model: {e}")
             return
 
-        # Agent setup
-        section.agent_name = checkpoint.get("agent_name", section.agent_name)
-        section.ui.agent_btn.setText(f"Agent: {section.agent_name}")
-        AgentClass = AGENTS.get(section.agent_name)
-        if AgentClass:
-            section.hyperparams = checkpoint.get("hyperparams", AgentClass.get_default_hyperparams())
-        section.ui.agent_config_btn.setText(f"{section.agent_name} Configuration")
+        self._apply_checkpoint(checkpoint)
 
-        # Environment setup
-        config.ENV_NAME = checkpoint.get("environment", config.ENV_NAME)
-        config.MAX_STEPS = checkpoint.get("max_steps", config.MAX_STEPS)
-        config.EPISODES = checkpoint.get("episodes_total", config.EPISODES)
-        config.RENDER_MODE = checkpoint.get("render_mode", config.RENDER_MODE)
+    def _apply_checkpoint(self, checkpoint: dict):
+        """Apply checkpoint contents to configuration and UI."""
+        section = self.section
 
-        # Neural Network setup
-        nn_cfg = checkpoint.get("nn_config", {})
-        config.HIDDEN_LAYERS = nn_cfg.get("hidden_layers", config.HIDDEN_LAYERS)
-        config.LR = nn_cfg.get("lr", config.LR)
-        config.ACTIVATION = nn_cfg.get("activation", config.ACTIVATION)
-        config.DROPOUT = nn_cfg.get("dropout", config.DROPOUT)
-        config.HIDDEN_ACTIVATION = nn_cfg.get("activation", config.ACTIVATION)
-        config.OPTIMIZER = nn_cfg.get("optimizer", getattr(config, "OPTIMIZER", "adam"))
-        device_str = nn_cfg.get("device", str(config.DEVICE))
-        config.DEVICE = torch.device(device_str if torch.cuda.is_available() or device_str == "cpu" else "cpu")
+        try:
+            # Agent setup
+            section.agent_name = checkpoint.get("agent_name", section.agent_name)
+            section.ui.agent_btn.setText(f"Agent: {section.agent_name}")
+            AgentClass = AGENTS.get(section.agent_name)
+            if AgentClass:
+                section.hyperparams = checkpoint.get(
+                    "hyperparams", AgentClass.get_default_hyperparams()
+                )
+            section.ui.agent_config_btn.setText(f"{section.agent_name} Configuration")
 
-        # Log
-        section._log(f"📦 Model loaded: {section.agent_name} in {config.ENV_NAME}")
-        section._log(f"✅ NN Config loaded: LR={config.LR}, Dropout={config.DROPOUT}, Act={config.ACTIVATION}")
-        section._log(f"→ Hyperparameters: {len(section.hyperparams)} params")
-        section._log(f"→ NN: layers={config.HIDDEN_LAYERS}, lr={config.LR}, dropout={config.DROPOUT}, device={config.DEVICE}")
-        section._log(f"→ Episodes trained: {checkpoint.get('episodes_trained', 'N/A')}")
+            # Environment setup
+            config.ENV_NAME = checkpoint.get("environment", config.ENV_NAME)
+            config.MAX_STEPS = checkpoint.get("max_steps", config.MAX_STEPS)
+            config.EPISODES = checkpoint.get("episodes_total", config.EPISODES)
+            config.RENDER_MODE = checkpoint.get("render_mode", config.RENDER_MODE)
 
-        # Lock NN architecture
-        section.nn_locked = True
+            # NN setup
+            nn_cfg = checkpoint.get("nn_config", {})
+            config.HIDDEN_LAYERS = nn_cfg.get("hidden_layers", config.HIDDEN_LAYERS)
+            config.LR = nn_cfg.get("lr", config.LR)
+            config.ACTIVATION = nn_cfg.get("activation", config.ACTIVATION)
+            config.DROPOUT = nn_cfg.get("dropout", config.DROPOUT)
+            config.HIDDEN_ACTIVATION = nn_cfg.get("activation", config.ACTIVATION)
+            config.OPTIMIZER = nn_cfg.get("optimizer", getattr(config, "OPTIMIZER", "adam"))
+            device_str = nn_cfg.get("device", str(config.DEVICE))
+            config.DEVICE = torch.device(
+                device_str if torch.cuda.is_available() or device_str == "cpu" else "cpu"
+            )
 
+            section.nn_locked = True
+
+            # Log results
+            section._log(f"✅ Model loaded: {section.agent_name} on {config.ENV_NAME}")
+            section._log(
+                f"→ NN: layers={config.HIDDEN_LAYERS}, lr={config.LR}, "
+                f"dropout={config.DROPOUT}, device={config.DEVICE}"
+            )
+            section._log(f"→ Episodes trained: {checkpoint.get('episodes_trained', 'N/A')}")
+
+        except Exception as e:
+            section._log(f"❌ Error applying model checkpoint: {e}")
+
+        
     # --------------------------------------------------------------
     # Config dialogs
     # --------------------------------------------------------------
