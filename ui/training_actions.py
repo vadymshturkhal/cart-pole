@@ -3,11 +3,11 @@ import torch
 import config
 from PySide6.QtWidgets import QFileDialog
 from ui.agent_dialog import AgentDialog
-from ui.agent_config_dialog import AgentConfigDialog
 from utils.agent_factory import AGENTS
 from ui.load_model_panel import LoadModelPanel
 from ui.nn_config_panel import NNConfigPanel
 from ui.environment_config_panel import EnvironmentConfigPanel
+from ui.agent_config_panel import AgentConfigPanel
 
 
 class TrainingActions:
@@ -169,6 +169,34 @@ class TrainingActions:
     # --------------------------------------------------------------
     # Config dialogs
     # --------------------------------------------------------------
+    def show_agent_config(self):
+        """Open inline Agent configuration panel using InlinePanelManager."""
+        section = self.section
+        read_only = section.training_active
+        mode = "read-only" if read_only else "editable"
+        section._log(f"🤖 Opening Agent configuration ({mode})...")
+
+        panel = AgentConfigPanel(
+            agent_name=section.agent_name,
+            hyperparams=section.hyperparams.copy(),
+            on_close_callback=self._on_agent_config_closed,
+            read_only=read_only,
+        )
+        section.panel_manager.show_panel(panel)
+        self.agent_panel = panel
+
+    def _on_agent_config_closed(self, applied: bool, updates: dict | None):
+        """Handle closing of Agent configuration panel."""
+        section = self.section
+        section.panel_manager.close_panel()
+
+        if not applied:
+            section._log("💡 Agent configuration canceled.")
+            return
+
+        section.hyperparams = updates
+        section._log("⚙️ Agent hyperparameters updated.")
+
     def show_environment_config(self):
         """Open inline Environment configuration panel."""
         section = self.section
@@ -197,13 +225,6 @@ class TrainingActions:
             f"{updates['MAX_STEPS']} steps/ep | {updates['EPISODES']} episodes | "
             f"Render: {updates['RENDER_MODE']}"
         )
-
-    def show_agent_config(self):
-        section = self.section
-        dlg = AgentConfigDialog(section.agent_name, section.hyperparams.copy(), section, section.training_active)
-        if dlg.exec() and not section.training_active:
-            section.hyperparams = dlg.get_updated_params()
-            section._log("⚙️ Agent hyperparameters updated.")
 
     def show_nn_config(self):
         """Open inline NN configuration panel using InlinePanelManager."""
