@@ -2,7 +2,6 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QListWidget, QPushButton, QLabel, QHBoxLayout
 )
 from utils.agent_specs import AGENT_SPECS
-from utils.agent_factory import AGENTS
 import config
 
 
