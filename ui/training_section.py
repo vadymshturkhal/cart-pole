@@ -42,13 +42,13 @@ class TrainingSection(QWidget):
         self.ui.agent_btn.setText(f"Agent: {self.agent_name}")
         self.ui.agent_config_btn.setText(f"{self.agent_name} Configuration")
 
-        # Light gray #ddd, Bright blue #0040ff 
+        # Light gray #ddd, Steel #777b7e
         self.setStyleSheet("""
             QPushButton:hover {
                 background-color: #ddd;
             }
             QPushButton:focus {
-                background-color: #ddd
+                background-color: #777b7e;
             }
         """)
 
