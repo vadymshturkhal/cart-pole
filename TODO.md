@@ -57,6 +57,7 @@
 - [ ] Add 'From loaded model' message to all configs after loading model;
 - [ ] Color low rewards with red, average with yellow and high with green;
 - [ ] Add 'Export Logs' button;
+- [ ] Add 'Training time' to model data;
 
 
 ## Done
