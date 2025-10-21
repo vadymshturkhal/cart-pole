@@ -42,6 +42,13 @@ class TrainingSection(QWidget):
         self.ui.agent_btn.setText(f"Agent: {self.agent_name}")
         self.ui.agent_config_btn.setText(f"{self.agent_name} Configuration")
 
+        # Light gray #ddd, Bright blue #0040ff 
+        self.setStyleSheet("""
+            QPushButton:hover {
+                background-color: #ddd;
+            }
+        """)
+
         # --- Connect Controller Signals ---
         self.controller.progress.connect(self._on_progress)
         self.controller.finished.connect(self._on_finished)
