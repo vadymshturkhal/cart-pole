@@ -48,11 +48,11 @@ class TrainingSection(QWidget):
         self.controller.status.connect(self._update_status)
 
     # Controller callbacks
-    def _on_progress(self, ep: int, episodes: int, ep_reward: float, rewards: list, avg_loss: float) -> None:
+    def _on_progress(self, ep: int, episodes: int, ep_reward: float, rewards: list, avg_loss: float, epsilon: float) -> None:
         avg20 = sum(rewards[-20:]) / min(len(rewards), 20)
         global_avg = sum(rewards) / len(rewards)
         self._log(
-            f"Ep {ep+1}/{episodes} — R {ep_reward:.1f}, Avg20 {avg20:.1f}, Global {global_avg:.1f}, AvgLoss {avg_loss:.2f}"
+            f"Ep {ep+1}/{episodes} — R {ep_reward:.1f}, Avg20 {avg20:.1f}, Global {global_avg:.1f}, AvgLoss {avg_loss:.2f}, Epsilon {epsilon:.4f}"
         )
         self.ui.reward_plot.update_plot(rewards, episodes)
         self.ui.loss_plot.add_point(avg_loss)

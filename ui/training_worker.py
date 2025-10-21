@@ -3,7 +3,7 @@ from utils.training import train
 
 
 class TrainingWorker(QObject):
-    progress = Signal(int, int, float, list, float)  # ep, episodes, ep_reward, rewards
+    progress = Signal(int, int, float, list, float, float)  # ep, episodes, ep_reward, rewards, epsilon
     finished = Signal()
 
     def __init__(self, env_name, env, agent_name, agent, episodes, hyperparams, render=False):
@@ -41,8 +41,8 @@ class TrainingWorker(QObject):
 
         self.agent.update_checkpoint(extra=self.extra)
 
-    def _progress_cb(self, ep, episodes, ep_reward, rewards, average_loss):
-        self.progress.emit(ep, episodes, ep_reward, rewards, average_loss)
+    def _progress_cb(self, ep, episodes, ep_reward, rewards, average_loss, epsilon):
+        self.progress.emit(ep, episodes, ep_reward, rewards, average_loss, epsilon)
 
     def _on_finished(self):
         self.status_label.setText("✅ Training finished!")

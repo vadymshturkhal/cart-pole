@@ -45,7 +45,7 @@ def train(env, agent, episodes=config.DEFAULT_EPISODES,
 
         # ✅ callback for Qt / pygame menus
         if progress_cb:
-            progress_cb(ep, episodes, total_reward, rewards, average_loss)
+            progress_cb(ep, episodes, total_reward, rewards, average_loss, agent.current_epsilon)
 
     return rewards
 

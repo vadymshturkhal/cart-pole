@@ -54,6 +54,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         self.eps_start = hyperparams["eps_start"]
         self.eps_end = hyperparams["eps_end"]
         self.eps_decay = hyperparams["eps_decay"]
+        self.current_epsilon = self.eps_start
 
         # Replay buffer (use n-step > 1)
         self.memory = NStepReplayBuffer(hyperparams["buffer_size"], hyperparams["n_step"], self.gamma)
@@ -87,6 +88,8 @@ class NStepDeepQLearningAgent(BaseAgent):
         # Epsilon-greedy for training
         eps = self.eps_end + (self.eps_start - self.eps_end) * \
                 np.exp(-1 * self.steps_done / self.eps_decay)
+        
+        self.current_epsilon = eps
         self.steps_done += 1
 
         if random.random() < eps:
