@@ -51,7 +51,6 @@
 - [ ] Add Get Raw data which can get full model info JSON and provide selection of that info in place;
 - [ ] Add Night Mode to GUI;
 - [ ] Add Export model JSON button to Training section;
-- [ ] Add epsilon to log;
 - [ ] Add Save as Default option to Agent and Environment configurations;
 - [ ] Add Restore config button;
 - [ ] Show rewards in Testing section console;
@@ -61,6 +60,7 @@
 
 
 ## Done
+- [x] Add epsilon to log;
 - [x] Set Read-only mode to NN hidden layers after loading model;
 - [x] Add Configure Environment button in Training section;
 - [x] Add max_step_per_episode to Training section;
