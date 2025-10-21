@@ -59,6 +59,7 @@ class TrainingController(QObject):
                 env = gym.wrappers.TimeLimit(env.unwrapped, max_episode_steps=max_steps)
 
             self.agent = build_agent(agent_name, state_dim, action_dim, self.hyperparams)
+            self.agent.set_total_episodes(episodes)
 
             if self.selected_model_file is not None:
                 self.agent.load(self.selected_model_file, self.hyperparams, apply_nn_config=False)

@@ -28,6 +28,8 @@ def train(env, agent, episodes=config.DEFAULT_EPISODES,
             if render:
                 env.render()
 
+        agent.add_episode()
+
         rewards.append(total_reward)
 
         # Loss

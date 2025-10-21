@@ -49,6 +49,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         self.batch_size = hyperparams["batch_size"]
         self.action_dim = action_dim
         self.steps_done = 0
+        self.episodes = 0
 
         # Exploration
         self.eps_start = hyperparams["eps_start"]
@@ -86,8 +87,11 @@ class NStepDeepQLearningAgent(BaseAgent):
                 return q_values.argmax().item()
 
         # Epsilon-greedy for training
-        eps = self.eps_end + (self.eps_start - self.eps_end) * \
-                np.exp(-1 * self.steps_done / self.eps_decay)
+        # eps = self.eps_end + (self.eps_start - self.eps_end) * \
+                # np.exp(-1 * self.steps_done / self.eps_decay)
+        
+        # Linear episode-based epsilon schedule
+        eps = self.eps_start - (self.eps_start - self.eps_end) * (self.episodes / self.total_episodes)
         
         self.current_epsilon = eps
         self.steps_done += 1
@@ -224,3 +228,10 @@ class NStepDeepQLearningAgent(BaseAgent):
     
     def clear_losses(self):
         self.losses_.clear()
+
+    def add_episode(self):
+        """Increment episode count for scheduling (epsilon decay, etc.)."""
+        self.episodes += 1
+
+    def set_total_episodes(self, episodes):
+        self.total_episodes = episodes
