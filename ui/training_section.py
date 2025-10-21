@@ -47,6 +47,9 @@ class TrainingSection(QWidget):
             QPushButton:hover {
                 background-color: #ddd;
             }
+            QPushButton:focus {
+                background-color: #ddd
+            }
         """)
 
         # --- Connect Controller Signals ---
