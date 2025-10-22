@@ -61,6 +61,7 @@
 - [ ] Add options to Agent Config for choosing epsilon decays;
 - [ ] Add loss clipping to Training section NN configuration;
 - [ ] Add 'Load last session' to Main Menu;
+- [ ] Fix incorrect Training episodes showing after Apply;
 
 
 ## Done
