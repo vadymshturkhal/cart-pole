@@ -62,6 +62,8 @@
 - [ ] Add loss clipping to Training section NN configuration;
 - [ ] Add 'Load last session' to Main Menu;
 - [ ] Fix incorrect Training episodes showing after Apply;
+- [ ] Move Apply/Cancel to the top of configs window;
+- [ ] Rename Cancel to Close in NN config;
 
 
 ## Done
