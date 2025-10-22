@@ -20,6 +20,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         "eps_start": config.EPSILON_START,
         "eps_end": config.EPSILON_END,
         "eps_decay": config.EPSILON_DECAY,
+        "epsilon_schedule": "linear",
     }
         
     def __init__(self, state_dim, action_dim, **kwargs):
@@ -86,12 +87,16 @@ class NStepDeepQLearningAgent(BaseAgent):
                 q_values = self.q_net(state)
                 return q_values.argmax().item()
 
-        # Epsilon-greedy for training
-        # eps = self.eps_end + (self.eps_start - self.eps_end) * \
-                # np.exp(-1 * self.steps_done / self.eps_decay)
-        
-        # Linear episode-based epsilon schedule
-        eps = self.eps_start - (self.eps_start - self.eps_end) * (self.episodes / self.total_episodes)
+        schedule = self.hyperparams.get("epsilon_schedule", "linear")
+
+        if schedule == "linear":
+            eps = self.eps_start - (self.eps_start - self.eps_end) * (self.episodes / self.total_episodes)
+        elif schedule == "exponential":
+            eps = self.eps_end + (self.eps_start - self.eps_end) * np.exp(-5 * (self.episodes / self.total_episodes))
+        elif schedule == "manual":
+            eps = self.eps_end + (self.eps_start - self.eps_end) * np.exp(-1.0 * self.steps_done / self.eps_decay)
+        else:
+            eps = self.eps_end  # fallback
         
         self.current_epsilon = eps
         self.steps_done += 1
