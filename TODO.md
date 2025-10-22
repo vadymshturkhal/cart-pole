@@ -65,6 +65,7 @@
 - [ ] Move Apply/Cancel to the top of configs window;
 - [ ] Add saving model during training;
 - [ ] Fix loss plot episodes after applying in Environment settings;
+- [ ] Add fixed epsilon to Epsilon Schedule;
 
 
 ## Done
