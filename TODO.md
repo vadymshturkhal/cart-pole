@@ -59,6 +59,8 @@
 - [ ] Add 'Export Logs' button;
 - [ ] Add 'Training time' to model data;
 - [ ] Add options to Agent Config for choosing epsilon decays;
+- [ ] Add loss clipping to Training section NN configuration;
+- [ ] Add 'Load last session' to Main Menu;
 
 
 ## Done
