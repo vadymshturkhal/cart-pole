@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QFormLayout, QPushButton,
+    QWidget, QVBoxLayout, QFormLayout, QPushButton, QGroupBox, QRadioButton,
     QDoubleSpinBox, QSpinBox, QCheckBox, QLabel, QHBoxLayout
 )
 
@@ -25,9 +25,11 @@ class AgentConfigPanel(QWidget):
         self.form = QFormLayout()
         layout.addLayout(self.form)
 
-        # --- Build form dynamically ---
+        # === Other parameters (auto-added) ===
         for key, value in self.updated_params.items():
-            widget = None
+            if key in ["eps_start", "eps_end", "eps_decay", "epsilon_schedule"]:
+                continue
+
             if isinstance(value, bool):
                 widget = QCheckBox()
                 widget.setChecked(value)
@@ -47,7 +49,51 @@ class AgentConfigPanel(QWidget):
             self.form.addRow(f"{key}:", widget)
             self.widgets[key] = widget
 
-        # --- Buttons ---
+        # === Epsilon Schedule Section ===
+        eps_schedule_group = QGroupBox("Epsilon Schedule Type")
+        eps_schedule_layout = QHBoxLayout()
+
+        self.eps_linear = QRadioButton("Linear (episodes)")
+        self.eps_exponential = QRadioButton("Exponential (episodes)")
+        self.eps_manual = QRadioButton("Manual (steps)")
+        eps_schedule_layout.addWidget(self.eps_linear)
+        eps_schedule_layout.addWidget(self.eps_exponential)
+        eps_schedule_layout.addWidget(self.eps_manual)
+        eps_schedule_group.setLayout(eps_schedule_layout)
+        self.form.addRow(eps_schedule_group)
+
+        self.widgets["epsilon_schedule"] = [self.eps_linear, self.eps_exponential, self.eps_manual]
+
+        # === Epsilon Parameter Row ===
+        eps_param_layout = QHBoxLayout()
+        self.eps_start_spin = QDoubleSpinBox()
+        self.eps_start_spin.setDecimals(6)
+        self.eps_start_spin.setRange(0.0, 1.0)
+        self.eps_start_spin.setValue(self.updated_params.get("eps_start", 1.0))
+
+        self.eps_end_spin = QDoubleSpinBox()
+        self.eps_end_spin.setDecimals(6)
+        self.eps_end_spin.setRange(0.0, 1.0)
+        self.eps_end_spin.setValue(self.updated_params.get("eps_end", 0.05))
+
+        self.eps_decay_spin = QSpinBox()
+        self.eps_decay_spin.setRange(1, 1_000_000)
+        self.eps_decay_spin.setValue(self.updated_params.get("eps_decay", 10000))
+        self.eps_decay_spin.setVisible(False)  # hidden initially
+
+        eps_param_layout.addWidget(QLabel("eps_start:"))
+        eps_param_layout.addWidget(self.eps_start_spin)
+        eps_param_layout.addWidget(QLabel("eps_end:"))
+        eps_param_layout.addWidget(self.eps_end_spin)
+        eps_param_layout.addWidget(QLabel("eps_decay:"))
+        eps_param_layout.addWidget(self.eps_decay_spin)
+        self.form.addRow(eps_param_layout)
+
+        self.widgets["eps_start"] = self.eps_start_spin
+        self.widgets["eps_end"] = self.eps_end_spin
+        self.widgets["eps_decay"] = self.eps_decay_spin
+        
+        # === Buttons ===
         btn_row = QHBoxLayout()
         self.save_btn = QPushButton("Apply")
         self.cancel_btn = QPushButton("Close" if read_only else "Cancel")
@@ -58,23 +104,64 @@ class AgentConfigPanel(QWidget):
         self.save_btn.clicked.connect(self._on_apply)
         self.cancel_btn.clicked.connect(self._on_cancel)
 
-        # --- Read-only mode ---
+        # === Behavior ===
+        self.eps_linear.toggled.connect(self._update_epsilon_fields)
+        self.eps_exponential.toggled.connect(self._update_epsilon_fields)
+        self.eps_manual.toggled.connect(self._update_epsilon_fields)
+
+        # Restore saved epsilon schedule
+        schedule_type = self.updated_params.get("epsilon_schedule", "linear")
+        if schedule_type == "linear":
+            self.eps_linear.setChecked(True)
+        elif schedule_type == "exponential":
+            self.eps_exponential.setChecked(True)
+        elif schedule_type == "manual":
+            self.eps_manual.setChecked(True)
+
+        # === Read-only mode ===
         if self.read_only:
-            for w in self.widgets.values():
-                w.setEnabled(False)
-            self.save_btn.setEnabled(False)
             layout.addWidget(QLabel("<span style='color:#bbb;'>🔒 Read-only mode (Training in progress)</span>"))
+            for w in self.widgets.values():
+                if isinstance(w, list):
+                    for sub_w in w:
+                        sub_w.setEnabled(False)
+                else:
+                    w.setEnabled(False)
+            self.save_btn.setEnabled(False)
+
+    # ------------------------------------------------------------------
+    def _update_epsilon_fields(self):
+        """Show eps_decay only for Manual schedule."""
+        if self.eps_manual.isChecked():
+            self.eps_decay_spin.setVisible(True)
+        else:
+            self.eps_decay_spin.setVisible(False)
 
     # ------------------------------------------------------------------
     def _on_apply(self):
         """Collect updated hyperparameters and return."""
+        if self.eps_linear.isChecked():
+            self.updated_params["epsilon_schedule"] = "linear"
+        elif self.eps_exponential.isChecked():
+            self.updated_params["epsilon_schedule"] = "exponential"
+        elif self.eps_manual.isChecked():
+            self.updated_params["epsilon_schedule"] = "manual"
+
+        self.updated_params["eps_start"] = self.eps_start_spin.value()
+        self.updated_params["eps_end"] = self.eps_end_spin.value()
+        self.updated_params["eps_decay"] = self.eps_decay_spin.value()
+
         for k, w in self.widgets.items():
+            if k in ["eps_start", "eps_end", "eps_decay", "epsilon_schedule"]:
+                continue
             if isinstance(w, QCheckBox):
                 self.updated_params[k] = w.isChecked()
             elif isinstance(w, (QSpinBox, QDoubleSpinBox)):
                 self.updated_params[k] = w.value()
+
         self.on_close_callback(True, self.updated_params)
 
+    # ------------------------------------------------------------------
     def _on_cancel(self):
         """Close without saving."""
         self.on_close_callback(False, None)
