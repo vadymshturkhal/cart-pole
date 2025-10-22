@@ -12,37 +12,39 @@ class PrioritizedReplayBuffer(NStepReplayBuffer):
         self.capacity = capacity
         self.priorities = np.ones((capacity,), dtype=np.float32)
         self.max_priority = 1.0
-        self.pos = 0  # explicit write pointer
+        self.pos = 0
+        self.frame = 0  # used if step is not provided
 
     def push(self, *args):
         super().push(*args)
-        # update position pointer
-        if len(self.buffer) == self.capacity:
-            idx = self.pos
-        else:
-            idx = len(self.buffer) - 1
+        idx = self.pos if len(self.buffer) == self.capacity else len(self.buffer) - 1
         self.priorities[idx] = self.max_priority
         self.pos = (self.pos + 1) % self.capacity
 
-    def sample(self, batch_size, step):
+    def sample(self, batch_size, step=None):
         if len(self.buffer) == 0:
             raise ValueError("Buffer is empty")
 
-        # valid priorities slice
-        valid_priorities = self.priorities[:len(self.buffer)]
-        valid_priorities = np.where(valid_priorities <= 0, 1e-5, valid_priorities)
+        valid_n = len(self.buffer)
+        prios = self.priorities[:valid_n]
+        prios = np.where(np.isfinite(prios) & (prios > 0), prios, 1e-5)
 
-        probs = valid_priorities ** self.alpha
-        probs /= probs.sum() if probs.sum() > 0 else len(valid_priorities)
+        probs = prios ** self.alpha
+        psum = probs.sum()
+        probs = probs / psum if psum > 0 else np.full(valid_n, 1.0 / valid_n, dtype=np.float32)
 
-        indices = np.random.choice(len(self.buffer), batch_size, p=probs)
-        samples = [self.buffer[idx] for idx in indices]
-        batch = Transition(*zip(*samples))
+        indices = np.random.choice(valid_n, batch_size, p=probs)
+        batch = Transition(*zip(*[self.buffer[i] for i in indices]))
 
-        total = len(self.buffer)
+        # anneal beta
+        if step is None:
+            self.frame += 1
+            step = self.frame
         beta = min(1.0, self.beta_start + step * (1.0 - self.beta_start) / self.beta_frames)
-        weights = (total * probs[indices]) ** (-beta)
-        weights /= weights.max() if weights.max() > 0 else 1.0
+
+        weights = (valid_n * probs[indices]) ** (-beta)
+        wmax = weights.max()
+        weights = weights / wmax if wmax > 0 else weights
 
         states = np.array(batch.state, dtype=np.float32)
         actions = np.array(batch.action)
@@ -50,14 +52,17 @@ class PrioritizedReplayBuffer(NStepReplayBuffer):
         next_states = np.array(batch.next_state, dtype=np.float32)
         dones = np.array(batch.done, dtype=np.float32)
 
-        return (Transition(states, actions, rewards, next_states, dones),
-                indices, weights)
+        # return Transition(states, actions, rewards, next_states, dones), indices, weights.astype(np.float32)
+
+        # Removed indices, weights.astype(np.float32) for consistency with NStepReplayBuffer
+        return Transition(states, actions, rewards, next_states, dones)
 
     def update_priorities(self, indices, td_errors, eps=1e-5):
-        td_errors = np.abs(td_errors) + eps
-        for idx, err in zip(indices, td_errors):
-            self.priorities[idx] = float(err)
-        self.max_priority = max(self.max_priority, td_errors.max())
+        td = np.abs(td_errors) + eps
+        td = np.where(np.isfinite(td), td, eps)
+        for i, e in zip(indices, td):
+            self.priorities[i] = float(e)
+        self.max_priority = max(self.max_priority, float(td.max()))
 
     def __len__(self):
         return len(self.buffer)
