@@ -69,7 +69,7 @@ class NNConfigPanel(QWidget):
         # Buttons
         btn_row = QHBoxLayout()
         self.apply_btn = QPushButton("Apply")
-        self.cancel_btn = QPushButton("Cancel")
+        self.cancel_btn = QPushButton("Close")
         btn_row.addWidget(self.apply_btn)
         btn_row.addWidget(self.cancel_btn)
         layout.addLayout(btn_row)

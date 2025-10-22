@@ -63,10 +63,10 @@
 - [ ] Add 'Load last session' to Main Menu;
 - [ ] Fix incorrect Training episodes showing after Apply;
 - [ ] Move Apply/Cancel to the top of configs window;
-- [ ] Rename Cancel to Close in NN config;
 
 
 ## Done
+- [x] Rename Cancel to Close in NN config;
 - [x] Add epsilon to log;
 - [x] Set Read-only mode to NN hidden layers after loading model;
 - [x] Add Configure Environment button in Training section;
