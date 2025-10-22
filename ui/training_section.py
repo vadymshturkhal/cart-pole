@@ -1,4 +1,5 @@
 from __future__ import annotations
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QTextCursor
 from PySide6.QtCore import Signal
@@ -93,6 +94,9 @@ class TrainingSection(QWidget):
         for w in toggled_widgets:
             w.setEnabled(enable)
         self.ui.stop_btn.setEnabled(not enable)
+
+        # clear any button highlight
+        self.ui.console_output.setFocus(Qt.OtherFocusReason)
 
     def _log(self, message: str) -> None:
         """Append text to the console output."""
