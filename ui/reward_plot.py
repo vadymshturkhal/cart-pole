@@ -99,11 +99,11 @@ class RewardPlot(FigureCanvas):
         self.ax.set_title(text)
         self.draw_idle()
 
-    def add_point(self, rewards: list[float], episodes: int):
+    def add_point(self, rewards: list[float]):
         """Backward compatible batch update used by existing code."""
         if not rewards:
             return
-        self._max_episodes = int(episodes)
+
         self._rewards = [float(r) for r in rewards]
         self._recompute_ma()
         xs = np.arange(1, len(self._rewards) + 1)

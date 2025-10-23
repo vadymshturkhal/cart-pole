@@ -39,8 +39,8 @@ class TrainingActions:
     def start_training(self):
         section = self.section
 
-        section.ui.reward_plot.reset()
-        section.ui.loss_plot.reset()
+        section.ui.reward_plot.reset(max_episodes=config.EPISODES)
+        section.ui.loss_plot.reset(max_episodes=config.EPISODES)
         section._set_training_buttons(False)
 
         self.controller.start_training(
