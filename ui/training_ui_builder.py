@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QPushButton, QLabel,
-    QTextEdit, QComboBox, QTabWidget
+    QTextEdit, QComboBox, QTabWidget, QSpinBox
 )
 from ui.reward_plot import RewardPlot
 from ui.loss_plot import LossPlot
@@ -15,6 +15,7 @@ class TrainingUIBuilder:
         self.parent = parent
         self.layout = QVBoxLayout(parent)
         self._build_tabs()
+        self._build_plot_interval_row()   # new row added
         self._build_agent_row()
         self._build_config_row()
         self._build_console()
@@ -104,3 +105,16 @@ class TrainingUIBuilder:
         default_device = "cuda" if gpu_available else "cpu"
         self.device_box.setCurrentText(default_device)
         config.DEVICE = torch.device(default_device)
+
+    def _build_plot_interval_row(self):
+        """Adds a GUI control for config.PLOT_UPDATE_INTERVAL."""
+        row = QHBoxLayout()
+        self.plot_interval_label = QLabel("Update plots every (episodes):")
+        self.plot_interval_label.setStyleSheet("margin-left:10px; font-weight:bold;")
+        self.plot_interval_box = QSpinBox()
+        self.plot_interval_box.setRange(1, 500)
+        self.plot_interval_box.setValue(getattr(config, "PLOT_UPDATE_INTERVAL", 5))
+        self.plot_interval_box.setToolTip("Number of episodes between plot updates")
+        row.addWidget(self.plot_interval_label)
+        row.addWidget(self.plot_interval_box)
+        self.layout.addLayout(row)

@@ -65,10 +65,10 @@
 - [ ] Move Apply/Cancel to the top of configs window;
 - [ ] Add saving model during training;
 - [ ] Add 'Stop episode' to Testing section during an episode:
-- [ ] Add 'Update plots every: ' to Plots Panel;
 
 
 ## Done
+- [x] Add 'Update plots every:' to Plots Panel;
 - [x] Fix loss plot episodes after applying in Environment settings;
 - [x] Add fixed epsilon to Epsilon Schedule;
 - [x] Rename Cancel to Close in NN config;

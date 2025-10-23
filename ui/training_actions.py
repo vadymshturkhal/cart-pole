@@ -32,6 +32,7 @@ class TrainingActions:
         u.agent_config_btn.clicked.connect(self.show_agent_config)
         u.env_config_btn.clicked.connect(self.show_environment_config)
         u.nn_btn.clicked.connect(self.show_nn_config)
+        u.plot_interval_box.valueChanged.connect(self._on_plot_interval_changed)
 
     # --------------------------------------------------------------
     # Core actions
@@ -277,3 +278,8 @@ class TrainingActions:
             f"🧠 NN updated: layers={updates['HIDDEN_LAYERS']} activation={updates['HIDDEN_ACTIVATION']} "
             f"dropout={updates['DROPOUT']:.2f}, lr={updates['LR']}, optimizer={updates['OPTIMIZER']}"
         )
+
+    def _on_plot_interval_changed(self, value: int):
+        config.PLOT_UPDATE_INTERVAL = value
+        section = self.section
+        section._log(f"Plot update interval set to {value} episodes")
