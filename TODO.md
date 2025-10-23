@@ -64,13 +64,13 @@
 - [ ] Fix incorrect Training episodes showing after Apply;
 - [ ] Move Apply/Cancel to the top of configs window;
 - [ ] Add saving model during training;
-- [ ] Fix loss plot episodes after applying in Environment settings;
-- [ ] Add fixed epsilon to Epsilon Schedule;
 - [ ] Add 'Stop episode' to Testing section during an episode:
 - [ ] Add 'Update plots every: ' to Plots Panel;
 
 
 ## Done
+- [x] Fix loss plot episodes after applying in Environment settings;
+- [x] Add fixed epsilon to Epsilon Schedule;
 - [x] Rename Cancel to Close in NN config;
 - [x] Add epsilon to log;
 - [x] Set Read-only mode to NN hidden layers after loading model;
