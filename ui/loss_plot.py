@@ -22,7 +22,7 @@ class LossPlot(RewardPlot):
         self.ma_line.set_label(f"MA({ma_window})")
 
         # Update legend to match new label colors
-        self.ax.legend(loc="upper right", frameon=False, fontsize=8)
+        self.ax.legend(loc="upper left", frameon=False, fontsize=8)
 
     # Optional override (for semantic clarity)
     def add_point(self, losses: list[float]):
