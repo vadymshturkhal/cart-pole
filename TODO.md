@@ -67,6 +67,7 @@
 - [ ] Fix loss plot episodes after applying in Environment settings;
 - [ ] Add fixed epsilon to Epsilon Schedule;
 - [ ] Add 'Stop episode' to Testing section during an episode:
+- [ ] Add 'Update plots every: ' to Plots Panel;
 
 
 ## Done
