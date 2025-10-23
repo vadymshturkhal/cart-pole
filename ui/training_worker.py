@@ -3,7 +3,7 @@ from utils.training import train
 
 
 class TrainingWorker(QObject):
-    progress = Signal(int, int, float, list, float, float)  # ep, episodes, ep_reward, rewards, epsilon
+    progress = Signal(int, int, float, list, list, float)  # ep, episodes, ep_reward, rewards, losses, epsilon
     finished = Signal()
 
     def __init__(self, env_name, env, agent_name, agent, episodes, hyperparams, render=False):

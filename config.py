@@ -6,6 +6,9 @@ DEFAULTS = {
     # System
     "DEVICE": "cuda" if torch.cuda.is_available() else "cpu",
 
+    # Plots
+    "PLOT_UPDATE_INTERVAL": 5,
+
     # Environment
     "DEFAULT_ENVIRONMENT": "CartPole-v1",
     "AVAILABLE_ENVIRONMENTS": ["CartPole-v1", "MountainCar-v0", "Acrobot-v1", "LunarLander-v3"],

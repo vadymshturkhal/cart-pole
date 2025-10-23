@@ -7,11 +7,13 @@ def train(env, agent, episodes=config.DEFAULT_EPISODES,
           render=False):
     
     rewards = []
+    losses = []
 
     for ep in range(episodes):
         state, _ = env.reset(seed=config.SEED)
         done = False
         total_reward = 0
+        total_loss = 0
 
         if stop_flag():
             break
@@ -24,22 +26,13 @@ def train(env, agent, episodes=config.DEFAULT_EPISODES,
             agent.update_step(state, action, reward, next_state, done)
             state = next_state
             total_reward += reward
+            total_loss += agent.loss
 
             if render:
                 env.render()
 
-        agent.add_episode()
-
         rewards.append(total_reward)
-
-        # Loss
-        average_loss = 0
-        if hasattr(agent, "losses"):
-            losses = agent.losses
-
-            if len(losses) > 0:
-                average_loss = sum(losses) / len(losses)
-                agent.clear_losses()
+        losses.append(total_loss)
 
         # ✅ periodically update target net
         if (ep + 1) % config.TARGET_UPDATE == 0:
@@ -47,7 +40,9 @@ def train(env, agent, episodes=config.DEFAULT_EPISODES,
 
         # ✅ callback for Qt / pygame menus
         if progress_cb:
-            progress_cb(ep, episodes, total_reward, rewards, average_loss, agent.current_epsilon)
+            progress_cb(ep, episodes, total_reward, rewards, losses, agent.current_epsilon)
+
+        agent.add_episode()
 
     return rewards
 

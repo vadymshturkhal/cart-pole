@@ -10,7 +10,7 @@ class TrainingController(QObject):
     Acts as a logic/controller layer separated from the GUI.
     """
 
-    progress: Signal = Signal(int, int, float, list, float, float)
+    progress: Signal = Signal(int, int, float, list, list, float)
     finished: Signal = Signal()
     status: Signal = Signal(str)
 

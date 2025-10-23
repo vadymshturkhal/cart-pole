@@ -59,14 +59,24 @@ class TrainingSection(QWidget):
         self.controller.status.connect(self._update_status)
 
     # Controller callbacks
-    def _on_progress(self, ep: int, episodes: int, ep_reward: float, rewards: list, avg_loss: float, epsilon: float) -> None:
-        avg20 = sum(rewards[-20:]) / min(len(rewards), 20)
-        global_avg = sum(rewards) / len(rewards)
-        self._log(
-            f"Ep {ep+1}/{episodes} — R {ep_reward:.1f}, Avg20 {avg20:.1f}, Global {global_avg:.1f}, AvgLoss {avg_loss:.2f}, Epsilon {epsilon:.4f}"
-        )
-        self.ui.reward_plot.add_point(rewards)
-        self.ui.loss_plot.add_point(avg_loss)
+    def _on_progress(self, ep: int, episodes: int, ep_reward: float, rewards: list, losses: float, epsilon: float) -> None:
+        # Update plot
+        if ep % config.PLOT_UPDATE_INTERVAL == 0 or ep+1 == episodes:
+            # Rewards
+            global_rewards_avg = sum(rewards) / len(rewards)
+            rewards_avg20 = sum(rewards[-20:]) / min(len(rewards), 20)
+
+            # Losses
+            global_loss_avg = sum(losses)/ len(losses)
+            losses_avg20 = sum(losses[-20:]) / min(len(losses), 20)
+
+            self.ui.reward_plot.add_point(rewards)
+            self.ui.loss_plot.add_point(losses)
+
+            # Write to Logger
+            self._log(
+                f"Ep {ep+1}/{episodes} — R {ep_reward:.1f}, RewardsAvg20 {rewards_avg20:.1f}, RewardsAvgGlobal {global_rewards_avg:.1f}, LossesAvg20 {losses_avg20:.1f}, LossAvgGlobal {global_loss_avg:.2f}, Epsilon {epsilon:.4f}"
+            )
 
     def _on_finished(self) -> None:
         self._set_training_buttons(True)
