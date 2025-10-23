@@ -99,7 +99,7 @@ class RewardPlot(FigureCanvas):
         self.ax.set_title(text)
         self.draw_idle()
 
-    def update_plot(self, rewards: list[float], episodes: int):
+    def add_point(self, rewards: list[float], episodes: int):
         """Backward compatible batch update used by existing code."""
         if not rewards:
             return

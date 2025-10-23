@@ -69,7 +69,7 @@ class LossPlot(FigureCanvas):
         self.ax.set_ylim(0, 1.0)
         self.draw_idle()
 
-    def update_plot(self, loss: float, episodes: int):
+    def add_point(self, loss: float, episodes: int):
         """Incrementally add a new loss value."""
         self._losses.append(float(loss))
         self._max_episodes = int(episodes)

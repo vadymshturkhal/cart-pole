@@ -65,8 +65,8 @@ class TrainingSection(QWidget):
         self._log(
             f"Ep {ep+1}/{episodes} — R {ep_reward:.1f}, Avg20 {avg20:.1f}, Global {global_avg:.1f}, AvgLoss {avg_loss:.2f}, Epsilon {epsilon:.4f}"
         )
-        self.ui.reward_plot.update_plot(rewards, episodes)
-        self.ui.loss_plot.update_plot(avg_loss, episodes)
+        self.ui.reward_plot.add_point(rewards, episodes)
+        self.ui.loss_plot.add_point(avg_loss, episodes)
 
     def _on_finished(self) -> None:
         self._set_training_buttons(True)
