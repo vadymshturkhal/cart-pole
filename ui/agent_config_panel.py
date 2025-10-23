@@ -53,26 +53,28 @@ class AgentConfigPanel(QWidget):
         eps_schedule_group = QGroupBox("Epsilon Schedule Type")
         eps_schedule_layout = QHBoxLayout()
 
+        self.eps_fixed = QRadioButton("Fixed")
         self.eps_linear = QRadioButton("Linear (episodes)")
         self.eps_exponential = QRadioButton("Exponential (episodes)")
         self.eps_manual = QRadioButton("Manual (steps)")
+        eps_schedule_layout.addWidget(self.eps_fixed)
         eps_schedule_layout.addWidget(self.eps_linear)
         eps_schedule_layout.addWidget(self.eps_exponential)
         eps_schedule_layout.addWidget(self.eps_manual)
         eps_schedule_group.setLayout(eps_schedule_layout)
         self.form.addRow(eps_schedule_group)
 
-        self.widgets["epsilon_schedule"] = [self.eps_linear, self.eps_exponential, self.eps_manual]
+        self.widgets["epsilon_schedule"] = [self.eps_fixed, self.eps_linear, self.eps_exponential, self.eps_manual]
 
         # === Epsilon Parameter Row ===
         eps_param_layout = QHBoxLayout()
         self.eps_start_spin = QDoubleSpinBox()
-        self.eps_start_spin.setDecimals(6)
+        self.eps_start_spin.setDecimals(4)
         self.eps_start_spin.setRange(0.0, 1.0)
         self.eps_start_spin.setValue(self.updated_params.get("eps_start", 1.0))
 
         self.eps_end_spin = QDoubleSpinBox()
-        self.eps_end_spin.setDecimals(6)
+        self.eps_end_spin.setDecimals(4)
         self.eps_end_spin.setRange(0.0, 1.0)
         self.eps_end_spin.setValue(self.updated_params.get("eps_end", 0.05))
 
@@ -81,17 +83,26 @@ class AgentConfigPanel(QWidget):
         self.eps_decay_spin.setValue(self.updated_params.get("eps_decay", 10000))
         self.eps_decay_spin.setVisible(False)  # hidden initially
 
-        eps_param_layout.addWidget(QLabel("eps_start:"))
+        eps_param_layout.addWidget(QLabel("Epsilon Start:"))
         eps_param_layout.addWidget(self.eps_start_spin)
-        eps_param_layout.addWidget(QLabel("eps_end:"))
+        eps_param_layout.addWidget(QLabel("Epsilon End:"))
         eps_param_layout.addWidget(self.eps_end_spin)
-        eps_param_layout.addWidget(QLabel("eps_decay:"))
+        eps_param_layout.addWidget(QLabel("Epsilon Decay:"))
         eps_param_layout.addWidget(self.eps_decay_spin)
         self.form.addRow(eps_param_layout)
 
         self.widgets["eps_start"] = self.eps_start_spin
         self.widgets["eps_end"] = self.eps_end_spin
         self.widgets["eps_decay"] = self.eps_decay_spin
+
+        # === Fixed epsilon single value ===
+        self.eps_fixed_spin = QDoubleSpinBox()
+        self.eps_fixed_spin.setDecimals(4)
+        self.eps_fixed_spin.setRange(0.0, 1.0)
+        self.eps_fixed_spin.setValue(self.updated_params.get("eps_fixed", 0.05))
+        self.form.addRow(QLabel("Fixed epsilon:"), self.eps_fixed_spin)
+        self.eps_fixed_spin.setVisible(False)
+        self.widgets["eps_fixed"] = self.eps_fixed_spin
         
         # === Buttons ===
         btn_row = QHBoxLayout()
@@ -105,13 +116,16 @@ class AgentConfigPanel(QWidget):
         self.cancel_btn.clicked.connect(self._on_cancel)
 
         # === Behavior ===
+        self.eps_fixed.toggled.connect(self._update_epsilon_fields)
         self.eps_linear.toggled.connect(self._update_epsilon_fields)
         self.eps_exponential.toggled.connect(self._update_epsilon_fields)
         self.eps_manual.toggled.connect(self._update_epsilon_fields)
 
         # Restore saved epsilon schedule
         schedule_type = self.updated_params.get("epsilon_schedule", "linear")
-        if schedule_type == "linear":
+        if schedule_type == "fixed":
+            self.eps_fixed .setChecked(True)
+        elif schedule_type == "linear":
             self.eps_linear.setChecked(True)
         elif schedule_type == "exponential":
             self.eps_exponential.setChecked(True)
@@ -131,16 +145,31 @@ class AgentConfigPanel(QWidget):
 
     # ------------------------------------------------------------------
     def _update_epsilon_fields(self):
-        """Show eps_decay only for Manual schedule."""
-        if self.eps_manual.isChecked():
+        """Toggle epsilon controls depending on schedule type."""
+        if self.eps_fixed.isChecked():
+            # show only fixed epsilon
+            self.eps_fixed_spin.setVisible(True)
+            self.eps_start_spin.setVisible(False)
+            self.eps_end_spin.setVisible(False)
+            self.eps_decay_spin.setVisible(False)
+        elif self.eps_manual.isChecked():
+            self.eps_fixed_spin.setVisible(False)
+            self.eps_start_spin.setVisible(True)
+            self.eps_end_spin.setVisible(True)
             self.eps_decay_spin.setVisible(True)
-        else:
+        else:  # linear or exponential
+            self.eps_fixed_spin.setVisible(False)
+            self.eps_start_spin.setVisible(True)
+            self.eps_end_spin.setVisible(True)
             self.eps_decay_spin.setVisible(False)
 
     # ------------------------------------------------------------------
     def _on_apply(self):
         """Collect updated hyperparameters and return."""
-        if self.eps_linear.isChecked():
+        if self.eps_fixed.isChecked():
+            self.updated_params["epsilon_schedule"] = "fixed"
+            self.updated_params["eps_fixed"] = self.eps_fixed_spin.value()
+        elif self.eps_linear.isChecked():
             self.updated_params["epsilon_schedule"] = "linear"
         elif self.eps_exponential.isChecked():
             self.updated_params["epsilon_schedule"] = "exponential"

@@ -22,22 +22,12 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
         "eps_end": config.EPSILON_END,
         "eps_decay": config.EPSILON_DECAY,
         "epsilon_schedule": "linear",
+        "eps_fixed": 0.1,
     }
         
     def __init__(self, state_dim, action_dim, **kwargs):
         """
         N-step DDQN agent.
-
-        Args:
-            state_dim (int): dimension of state space
-            action_dim (int): dimension of action space
-            gamma (float): discount factor
-            buffer_size (int): replay buffer capacity
-            batch_size (int): minibatch size
-            n_step (int): N-step horizon
-            eps_start (float): starting epsilon for exploration
-            eps_end (float): final epsilon
-            eps_decay (int): decay factor for epsilon
         """
 
         self.name = "nstep_ddqn"
@@ -57,6 +47,7 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
         self.eps_start = hyperparams["eps_start"]
         self.eps_end = hyperparams["eps_end"]
         self.eps_decay = hyperparams["eps_decay"]
+        self.eps_fixed = hyperparams["eps_fixed"]
         self.current_epsilon = self.eps_start
         
         # Replay buffer (use n-step > 1)
@@ -89,8 +80,10 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
                 return q_values.argmax().item()
 
         schedule = self.hyperparams.get("epsilon_schedule", "linear")
-
-        if schedule == "linear":
+        
+        if schedule == "fixed":
+            eps = self.eps_fixed
+        elif schedule == "linear":
             eps = self.eps_start - (self.eps_start - self.eps_end) * (self.episodes / self.total_episodes)
         elif schedule == "exponential":
             eps = self.eps_end + (self.eps_start - self.eps_end) * np.exp(-5 * (self.episodes / self.total_episodes))
