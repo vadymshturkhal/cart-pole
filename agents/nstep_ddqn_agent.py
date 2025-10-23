@@ -6,6 +6,7 @@ import random
 from agents.base_agent import BaseAgent
 from .q_network import QNetwork
 from memory.replay_buffer import NStepReplayBuffer
+from memory.prioritized_replay_buffer import PrioritizedReplayBuffer
 import config
 from datetime import datetime
 from utils.optim_factory import build_optimizer
@@ -68,7 +69,7 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
         self.optimizer = build_optimizer(config.OPTIMIZER, self.q_net.parameters(), lr=config.LR)
 
         # Loss
-        self.losses_ = []
+        self._losses = []
 
     def select_action(self, state, greedy: bool = False):
         """
@@ -148,7 +149,7 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
         torch.nn.utils.clip_grad_norm_(self.q_net.parameters(), 10)
         self.optimizer.step()
 
-        self.losses_.append(loss.item())
+        self._losses.append(loss.item())
 
     def update_target(self):
         """Update target network weights."""
@@ -240,10 +241,10 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
 
     @property
     def losses(self):
-        return self.losses_.copy()
+        return self._losses.copy()
     
     def clear_losses(self):
-        self.losses_.clear()
+        self._losses.clear()
 
     def add_episode(self):
         """Increment episode count for scheduling (epsilon decay, etc.)."""

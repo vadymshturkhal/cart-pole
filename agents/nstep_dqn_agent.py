@@ -68,7 +68,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         self.optimizer = build_optimizer(config.OPTIMIZER, self.q_net.parameters(), lr=config.LR)
 
         #Loss
-        self.losses_ = []
+        self._losses = []
 
     def select_action(self, state, greedy: bool = False):
         """
@@ -138,7 +138,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         torch.nn.utils.clip_grad_norm_(self.q_net.parameters(), 10)
         self.optimizer.step()
 
-        self.losses_.append(loss.item())
+        self._losses.append(loss.item())
 
     def update_target(self):
         self.target_net.load_state_dict(self.q_net.state_dict())
@@ -229,10 +229,10 @@ class NStepDeepQLearningAgent(BaseAgent):
 
     @property
     def losses(self):
-        return self.losses_.copy()
+        return self._losses.copy()
     
     def clear_losses(self):
-        self.losses_.clear()
+        self._losses.clear()
 
     def add_episode(self):
         """Increment episode count for scheduling (epsilon decay, etc.)."""
