@@ -225,12 +225,18 @@ class NStepDeepQLearningAgent(BaseAgent):
     def losses(self):
         return self._losses.copy()
     
-    def clear_losses(self):
+    @property
+    def loss(self):
+        return self._losses.copy()[-1]
+    
+    def _clear_losses(self):
         self._losses.clear()
+        self._losses.append(0)
 
     def add_episode(self):
         """Increment episode count for scheduling (epsilon decay, etc.)."""
         self.episodes += 1
+        self._clear_losses()
 
     def set_total_episodes(self, episodes):
         self.total_episodes = episodes
