@@ -27,7 +27,7 @@ class AgentConfigPanel(QWidget):
 
         # === Other parameters (auto-added) ===
         for key, value in self.updated_params.items():
-            if key in ["eps_start", "eps_end", "eps_decay", "epsilon_schedule"]:
+            if key in ["eps_fixed", "eps_start", "eps_end", "eps_decay", "epsilon_schedule"]:
                 continue
 
             if isinstance(value, bool):
