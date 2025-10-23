@@ -69,7 +69,7 @@ class NStepDoubleDeepQLearningAgent(BaseAgent):
         self.optimizer = build_optimizer(config.OPTIMIZER, self.q_net.parameters(), lr=config.LR)
 
         # Loss
-        self._losses = []
+        self._losses = [0]
 
     def select_action(self, state, greedy: bool = False):
         """
