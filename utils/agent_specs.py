@@ -24,16 +24,16 @@ AGENT_SPECS = {
         "eps_decay":    ("int",   1,    10_000_000, 1,     config.EPSILON_DECAY),
     },
 
-    # "rainbow": {
-    #     "gamma":        ("float", 0.0, 0.9999, 0.001, config.GAMMA),
-    #     "lr":           ("float", 1e-6, 1.0, 1e-6,  config.LR),
-    #     "buffer_size":  ("int",   1000, 10_000_000, 1000, config.BUFFER_SIZE),
-    #     "batch_size":   ("int",   8,    65536,      1,    config.BATCH_SIZE),
-    #     "n_step":       ("int",   1,    10,         1,    config.N_STEP),
-    #     "eps_start":    ("float", 0.0,  1.0,        0.01, config.EPSILON_START),
-    #     "eps_end":      ("float", 0.0,  1.0,        0.01, config.EPSILON_END),
-    #     "eps_decay":    ("int",   1,    10_000_000, 1,    config.EPSILON_DECAY),
-    # },
+    "rainbow": {
+        "gamma":        ("float", 0.0, 0.9999, 0.001, config.GAMMA),
+        "lr":           ("float", 1e-6, 1.0, 1e-6,  config.LR),
+        "buffer_size":  ("int",   1000, 10_000_000, 1000, config.BUFFER_SIZE),
+        "batch_size":   ("int",   8,    65536,      1,    config.BATCH_SIZE),
+        "n_step":       ("int",   1,    10,         1,    config.N_STEP),
+        "eps_start":    ("float", 0.0,  1.0,        0.01, config.EPSILON_START),
+        "eps_end":      ("float", 0.0,  1.0,        0.01, config.EPSILON_END),
+        "eps_decay":    ("int",   1,    10_000_000, 1,    config.EPSILON_DECAY),
+    },
 
     # Actor–Critic w/ eligibilities (your ase_ace)
     # "ase_ace": {

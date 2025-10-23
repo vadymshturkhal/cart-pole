@@ -7,7 +7,7 @@ from agents.ase_ace_agent import ASEACEAgent
 AGENTS = {
     "nstep_dqn": NStepDeepQLearningAgent, 
     "nstep_ddqn": NStepDoubleDeepQLearningAgent,
-    # "rainbow": RainbowAgent,
+    "rainbow": RainbowAgent,
     # "ase_ace": ASEACEAgent,
 }
 

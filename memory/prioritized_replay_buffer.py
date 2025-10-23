@@ -52,10 +52,7 @@ class PrioritizedReplayBuffer(NStepReplayBuffer):
         next_states = np.array(batch.next_state, dtype=np.float32)
         dones = np.array(batch.done, dtype=np.float32)
 
-        # return Transition(states, actions, rewards, next_states, dones), indices, weights.astype(np.float32)
-
-        # Removed indices, weights.astype(np.float32) for consistency with NStepReplayBuffer
-        return Transition(states, actions, rewards, next_states, dones)
+        return Transition(states, actions, rewards, next_states, dones), indices, weights.astype(np.float32)
 
     def update_priorities(self, indices, td_errors, eps=1e-5):
         td = np.abs(td_errors) + eps
