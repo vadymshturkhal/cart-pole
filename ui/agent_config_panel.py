@@ -39,7 +39,7 @@ class AgentConfigPanel(QWidget):
                 widget.setValue(value)
             elif isinstance(value, float):
                 widget = QDoubleSpinBox()
-                widget.setDecimals(6)
+                widget.setDecimals(4)
                 widget.setRange(-1_000_000.0, 1_000_000.0)
                 widget.setValue(value)
             else:
