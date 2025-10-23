@@ -1,8 +1,8 @@
+# FIXME Unstable Experimental Lite version
 from .nstep_ddqn_agent import NStepDoubleDeepQLearningAgent
 from memory.prioritized_replay_buffer import PrioritizedReplayBuffer
+from .dueling_q_network import DuelingQNetwork
 import torch
-import torch.nn as nn
-import numpy as np
 import config
 
 
@@ -13,8 +13,13 @@ class RainbowAgent(NStepDoubleDeepQLearningAgent):
         super().__init__(state_dim, action_dim, **kwargs)
         self.name = "rainbow"
 
-        hyperparams = self.DEFAULT_PARAMS.copy()
-        self.memory = PrioritizedReplayBuffer(hyperparams["buffer_size"], hyperparams["n_step"], self.gamma)
+        # 1 Replaced default QNetworks with Dueling version
+        self.q_net = DuelingQNetwork(state_dim, action_dim).to(config.DEVICE)
+        self.target_net = DuelingQNetwork(state_dim, action_dim).to(config.DEVICE)
+        self.target_net.load_state_dict(self.q_net.state_dict())
+
+        # 2 Prioritized Buffer
+        self.memory = PrioritizedReplayBuffer(self.hyperparams["buffer_size"], self.hyperparams["n_step"], self.gamma)
 
 
     def update(self):
