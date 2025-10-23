@@ -99,46 +99,6 @@ class RewardPlot(FigureCanvas):
         self.ax.set_title(text)
         self.draw_idle()
 
-    def add_point(self, episode_idx: int, reward: float):
-        """Incremental update. Call from UI thread (Qt signal ensures that)."""
-        self._rewards.append(float(reward))
-
-        # Update rolling mean in O(1)
-        self._window_sum += reward
-        if len(self._window) == self._window.maxlen:
-            self._window_sum -= self._window[0]
-        self._window.append(reward)
-        self._ma.append(self._window_sum / len(self._window))
-
-        # Update X
-        xs = np.arange(1, len(self._rewards) + 1)
-
-        # Y transform
-        if self._normalize and len(self._rewards) > 1:
-            rmin = min(self._rewards)
-            rmax = max(self._rewards)
-            denom = max(1e-9, (rmax - rmin))
-            raw_y = (np.array(self._rewards) - rmin) / denom
-            ma_y  = (np.array(self._ma)      - rmin) / denom
-            self.ax.set_ylabel("Reward (normalized)")
-        else:
-            raw_y = np.array(self._rewards)
-            ma_y  = np.array(self._ma)
-            self.ax.set_ylabel("Reward")
-
-        self.raw_line.set_data(xs, raw_y)
-        self.ma_line.set_data(xs, ma_y)
-
-        # X limits
-        self.ax.set_xlim(0, max(self._max_episodes, len(self._rewards) + 1))
-        # Y limits
-        if not self._normalize:
-            self._autoscale_y(raw_y, ma_y)
-        else:
-            self.ax.set_ylim(0.0, 1.0)
-
-        self.draw_idle()
-
     def update_plot(self, rewards: list[float], episodes: int):
         """Backward compatible batch update used by existing code."""
         if not rewards:
