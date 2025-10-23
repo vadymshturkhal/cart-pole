@@ -19,7 +19,7 @@ class LossPlot(FigureCanvas):
     - Export helpers (PNG, CSV).
     """
 
-    def __init__(self, max_steps: Optional[int] = None, ma_window: int = 20):
+    def __init__(self, max_episodes: Optional[int] = None, ma_window: int = 20):
         self.fig = Figure(figsize=(5, 2.6), tight_layout=True)
         super().__init__(self.fig)
 
@@ -45,32 +45,34 @@ class LossPlot(FigureCanvas):
         self._ma_window = max(1, int(ma_window))
         self._window = deque(maxlen=self._ma_window)
         self._window_sum = 0.0
-        self._max_steps = max_steps or getattr(config, "EPISODES", 1000)
+        self._max_episodes = max_episodes or getattr(config, "EPISODES", 1000)
 
         # Axes limits
-        self.ax.set_xlim(0, self._max_steps)
+        self.ax.set_xlim(0, self._max_episodes)
         self.ax.set_ylim(0.0, 1.0)
 
     # ---------- Public API ----------
-    def reset(self, max_steps: Optional[int] = None):
+    def reset(self, max_episodes: Optional[int] = None):
         """Reset plot to empty state."""
         self._losses.clear()
         self._ma.clear()
         self._window.clear()
         self._window_sum = 0.0
 
-        if max_steps is not None:
-            self._max_steps = int(max_steps)
+        print(self._max_episodes)
+        if max_episodes is not None:
+            self._max_episodes = int(max_episodes)
 
         self.raw_line.set_data([], [])
         self.ma_line.set_data([], [])
-        self.ax.set_xlim(0, self._max_steps)
+        self.ax.set_xlim(0, self._max_episodes)
         self.ax.set_ylim(0, 1.0)
         self.draw_idle()
 
-    def add_point(self, loss: float):
+    def update_plot(self, loss: float, episodes: int):
         """Incrementally add a new loss value."""
         self._losses.append(float(loss))
+        self._max_episodes = int(episodes)
 
         # Rolling mean
         self._window_sum += loss
@@ -86,7 +88,7 @@ class LossPlot(FigureCanvas):
         self.raw_line.set_data(xs, ys)
         self.ma_line.set_data(xs, ma_y)
 
-        self.ax.set_xlim(0, max(self._max_steps, len(self._losses) + 1))
+        self.ax.set_xlim(0, max(self._max_episodes, len(self._losses) + 1))
         self._autoscale_y(ys, ma_y)
         self.draw_idle()
 
@@ -136,6 +138,6 @@ class LossPlot(FigureCanvas):
         xs = np.arange(1, len(self._losses) + 1)
         self.raw_line.set_data(xs, np.array(self._losses))
         self.ma_line.set_data(xs, np.array(self._ma))
-        self.ax.set_xlim(0, max(self._max_steps, len(self._losses) + 1))
+        self.ax.set_xlim(0, max(self._max_episodes, len(self._losses) + 1))
         self._autoscale_y()
         self.draw_idle()
