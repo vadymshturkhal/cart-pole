@@ -3,7 +3,6 @@ import numpy as np
 
 
 def train(env, agent, episodes=config.DEFAULT_EPISODES,
-          rewards_file=config.REWARDS_FILE,
           progress_cb=None, stop_flag=lambda: False,
           render=False):
     
@@ -50,7 +49,6 @@ def train(env, agent, episodes=config.DEFAULT_EPISODES,
             progress_cb(ep, episodes, episode_total_reward, rewards, losses, agent.current_epsilon)
 
         agent.add_episode()
-        # losses.clear()
 
     return rewards
 
