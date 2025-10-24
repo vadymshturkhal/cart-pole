@@ -91,7 +91,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         elif schedule == "manual":
             eps = self.eps_end + (self.eps_start - self.eps_end) * np.exp(-1.0 * self.steps_done / self.eps_decay)
         else:
-            eps = self.eps_end  # fallback
+            eps = self.eps_end
         
         # For Logger
         self.current_epsilon = eps
@@ -110,6 +110,9 @@ class NStepDeepQLearningAgent(BaseAgent):
         self.update()
 
     def update(self):
+        if self.batch_size == 0:
+            return
+
         if len(self.memory) < self.batch_size:
             return
 
@@ -153,6 +156,9 @@ class NStepDeepQLearningAgent(BaseAgent):
         self.checkpoint.update(extra)
 
     def save(self, path: str, extra: dict = None):
+        # Add latest epsilon
+        self.hyperparams["eps_current"] = self.current_epsilon
+
         self.checkpoint = {
             "agent_name": "nstep_dqn",
             "model_state": self.q_net.state_dict(),
