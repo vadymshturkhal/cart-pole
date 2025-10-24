@@ -54,7 +54,7 @@ class NNConfigPanel(QWidget):
 
         # Learning Rate
         self.lr_spin = QDoubleSpinBox()
-        self.lr_spin.setDecimals(6)
+        self.lr_spin.setDecimals(4)
         self.lr_spin.setRange(1e-6, 1.0)
         self.lr_spin.setSingleStep(1e-4)
         self.lr_spin.setValue(config.LR)
