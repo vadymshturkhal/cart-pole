@@ -47,6 +47,8 @@ class NStepDeepQLearningAgent(BaseAgent):
         self.eps_start = hyperparams["eps_start"]
         self.eps_end = hyperparams["eps_end"]
         self.eps_decay = hyperparams["eps_decay"]
+        self.eps_fixed = hyperparams["eps_fixed"]
+
         self.current_epsilon = self.eps_start
 
         # Replay buffer (use n-step > 1)
