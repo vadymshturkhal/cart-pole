@@ -157,7 +157,7 @@ class NStepDeepQLearningAgent(BaseAgent):
 
     def save(self, path: str, extra: dict = None):
         # Add latest epsilon
-        self.hyperparams["eps_current"] = self.current_epsilon
+        self.hyperparams["eps_latest"] = self.current_epsilon
 
         self.checkpoint = {
             "agent_name": "nstep_dqn",
