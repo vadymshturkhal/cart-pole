@@ -68,6 +68,7 @@
 - [ ] Add episode based ReplayBuffer;
 - [ ] Plots should be scaled to stop episode, not the whole set episodes, e.g. to 80 if stop is 80 in 800 episodes training;
 - [ ] Add eps_current to dqn_agent for showing current epsilon after stopping training;
+- [ ] Add 'Save as Default' to all panels;
 
 
 ## Done
