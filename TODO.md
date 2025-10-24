@@ -66,6 +66,7 @@
 - [ ] Add saving model during training;
 - [ ] Add 'Stop episode' to Testing section during an episode:
 - [ ] Add episode based ReplayBuffer;
+- [ ] Plots should be scaled to stop episode, not the whole set episodes, e.g. to 80 if stop is 80 in 800 episodes training;
 
 
 ## Done
