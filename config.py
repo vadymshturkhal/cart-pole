@@ -30,33 +30,33 @@ DEFAULTS = {
     "N_STEP_DQN": "nstep_dqn_qnet.pth",
 
     # Agent
-    "DEFAULT_AGENT": "nstep_ddqn",
+    "DEFAULT_AGENT": "nstep_dqn",
     "GAMMA": 0.99,
     "BUFFER_SIZE": 10000,
     "BATCH_SIZE": 64,
-    "N_STEP": 3,
+    "N_STEP": 2,
     "EPSILON_START": 1.0,
     "EPSILON_END": 0.05,
     "EPSILON_DECAY": 10000,
+    "EPSILON_FIXED": 0.1,
+    "TARGET_UPDATE": 100,
 
     # Neural network architecture
     "HIDDEN_LAYERS": [256, 128],
     "HIDDEN_ACTIVATIONS": ["relu", "leaky_relu", "sigmoid", "softmax", "tanh", "gelu"],
     "HIDDEN_ACTIVATION": "relu",
-    "DROPOUT": 0.2,
+    "DROPOUT": 0.1,
 
     # Neural network optimization
     "LR": 1e-3,
     "OPTIMIZER": "adam",
 
     # Training
-    "TARGET_UPDATE_FREQ": 20,
     "SUTTON_BARTO_REWARD": False,
 
     # Logs
     "LOG_AFTER_EPISODES": 20,
     "LOG_DIR": "runs/cartpole_nstep",
-    "TARGET_UPDATE": 10,
 }
 
 # ===== User config handling =====

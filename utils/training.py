@@ -41,10 +41,11 @@ def train(env, agent, episodes=config.DEFAULT_EPISODES,
         losses.append(mean_loss)
 
         # ✅ periodically update target net
-        if (ep + 1) % config.TARGET_UPDATE == 0:
+        target_update = agent.hyperparams.get("target_update", config.TARGET_UPDATE)
+        if (ep + 1) % target_update == 0:
             agent.update_target()
 
-        # ✅ callback for Qt / pygame menus
+        # ✅ callback for Qt menu
         if progress_cb:
             progress_cb(ep, episodes, episode_total_reward, rewards, losses, agent.current_epsilon)
 

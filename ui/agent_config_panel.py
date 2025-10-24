@@ -46,7 +46,8 @@ class AgentConfigPanel(QWidget):
                 widget = QLabel(str(value))
                 widget.setEnabled(False)
 
-            self.form.addRow(f"{key}:", widget)
+            display_name = "Target Network Update Interval" if key == "target_update" else key
+            self.form.addRow(f"{display_name}:", widget)
             self.widgets[key] = widget
 
         # === Epsilon Schedule Section ===

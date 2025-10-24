@@ -19,8 +19,9 @@ class NStepDeepQLearningAgent(BaseAgent):
         "eps_start": config.EPSILON_START,
         "eps_end": config.EPSILON_END,
         "eps_decay": config.EPSILON_DECAY,
+        "eps_fixed": config.EPSILON_FIXED,
         "epsilon_schedule": "linear",
-        "eps_fixed": 0.1,
+        "target_update": config.TARGET_UPDATE,
     }
         
     def __init__(self, state_dim, action_dim, **kwargs):
