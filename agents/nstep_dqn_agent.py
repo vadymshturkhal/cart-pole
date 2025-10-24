@@ -2,7 +2,6 @@ from copy import deepcopy
 import torch
 import torch.nn as nn
 import numpy as np
-import random
 from agents.base_agent import BaseAgent
 from .q_network import QNetwork
 from memory.replay_buffer import NStepReplayBuffer
@@ -31,6 +30,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         """
         
         self.name = "nstep_dqn"
+        self.rng = np.random.default_rng(config.SEED)
         hyperparams = self.DEFAULT_PARAMS.copy()
         hyperparams.update(kwargs)
         self.hyperparams = hyperparams
@@ -97,8 +97,8 @@ class NStepDeepQLearningAgent(BaseAgent):
         self.current_epsilon = eps
         self.steps_done += 1
 
-        if random.random() < eps:
-            return random.randrange(self.action_dim)
+        if self.rng.random() < eps:
+            return self.rng.integers(0, self.action_dim)
         else:
             with torch.no_grad():
                 state = torch.FloatTensor(state).unsqueeze(0).to(config.DEVICE)
