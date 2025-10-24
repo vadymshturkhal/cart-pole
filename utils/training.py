@@ -1,4 +1,5 @@
 import config
+import numpy as np
 
 
 def train(env, agent, episodes=config.DEFAULT_EPISODES,
@@ -12,8 +13,8 @@ def train(env, agent, episodes=config.DEFAULT_EPISODES,
     for ep in range(episodes):
         state, _ = env.reset(seed=config.SEED)
         done = False
-        total_reward = 0
-        total_loss = 0
+        episode_total_reward = 0
+        episode_losses = []
 
         if stop_flag():
             break
@@ -25,14 +26,20 @@ def train(env, agent, episodes=config.DEFAULT_EPISODES,
 
             agent.update_step(state, action, reward, next_state, done)
             state = next_state
-            total_reward += reward
-            total_loss += agent.loss
+            episode_total_reward += reward
+            episode_losses.append(agent.loss)
 
             if render:
                 env.render()
 
-        rewards.append(total_reward)
-        losses.append(total_loss)
+        rewards.append(episode_total_reward)
+
+        # Mean Loss
+        if episode_losses:
+            mean_loss = np.mean(episode_losses)
+        else:
+            mean_loss = 0
+        losses.append(mean_loss)
 
         # ✅ periodically update target net
         if (ep + 1) % config.TARGET_UPDATE == 0:
@@ -40,9 +47,10 @@ def train(env, agent, episodes=config.DEFAULT_EPISODES,
 
         # ✅ callback for Qt / pygame menus
         if progress_cb:
-            progress_cb(ep, episodes, total_reward, rewards, losses, agent.current_epsilon)
+            progress_cb(ep, episodes, episode_total_reward, rewards, losses, agent.current_epsilon)
 
         agent.add_episode()
+        # losses.clear()
 
     return rewards
 
@@ -51,7 +59,7 @@ def train_episode(env, agent, stop_flag=lambda: False, render=False):
     """Run one training episode and return the total reward."""
     state, _ = env.reset(seed=config.SEED)
     done = False
-    total_reward = 0
+    episode_total_reward = 0
 
     while not done:
         if stop_flag():
@@ -64,9 +72,9 @@ def train_episode(env, agent, stop_flag=lambda: False, render=False):
         agent.memory.push(state, action, reward, next_state, done)
         agent.update()
         state = next_state
-        total_reward += reward
+        episode_total_reward += reward
 
     if render and not stop_flag():
         env.render()
 
-    return total_reward
+    return episode_total_reward
