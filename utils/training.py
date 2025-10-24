@@ -13,7 +13,8 @@ def train(env, agent, episodes=config.DEFAULT_EPISODES,
         state, _ = env.reset(seed=config.SEED)
         done = False
         episode_total_reward = 0
-        episode_losses = []
+        mean_loss = 0
+        i = 1  # Mean loss counter
 
         if stop_flag():
             break
@@ -26,18 +27,14 @@ def train(env, agent, episodes=config.DEFAULT_EPISODES,
             agent.update_step(state, action, reward, next_state, done)
             state = next_state
             episode_total_reward += reward
-            episode_losses.append(agent.loss)
+
+            mean_loss = mean_loss + (1/i) * (agent.loss - mean_loss)
 
             if render:
                 env.render()
+            i += 1
 
         rewards.append(episode_total_reward)
-
-        # Mean Loss
-        if episode_losses:
-            mean_loss = np.mean(episode_losses)
-        else:
-            mean_loss = 0
         losses.append(mean_loss)
 
         # ✅ periodically update target net
