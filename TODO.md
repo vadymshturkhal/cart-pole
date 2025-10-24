@@ -65,6 +65,7 @@
 - [ ] Move Apply/Cancel to the top of configs window;
 - [ ] Add saving model during training;
 - [ ] Add 'Stop episode' to Testing section during an episode:
+- [ ] Add episode based ReplayBuffer;
 
 
 ## Done
