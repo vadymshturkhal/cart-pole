@@ -100,7 +100,7 @@ class RewardPlot(FigureCanvas):
         self.draw_idle()
 
     def add_point(self, rewards: list[float]):
-        """Backward compatible batch update used by existing code."""
+        """Redraw the whole plot."""
         if not rewards:
             return
 
@@ -127,6 +127,35 @@ class RewardPlot(FigureCanvas):
         self.ax.set_xlim(0, max(self._max_episodes, len(self._rewards) + 1))
         self.draw_idle()
 
+    def append_point(self, reward: float):
+        """Fast incremental update: append only the latest reward."""
+        self._rewards.append(float(reward))
+
+        # Update moving average incrementally
+        self._window.append(reward)
+        self._window_sum += reward
+        ma_val = self._window_sum / len(self._window)
+        self._ma.append(ma_val)
+
+        ep = len(self._rewards)
+        raw_x, raw_y = self.raw_line.get_data()
+        ma_x,  ma_y  = self.ma_line.get_data()
+
+        # Extend x/y arrays
+        raw_x = np.append(raw_x, ep)
+        raw_y = np.append(raw_y, reward)
+        ma_x  = np.append(ma_x, ep)
+        ma_y  = np.append(ma_y, ma_val)
+
+        self.raw_line.set_data(raw_x, raw_y)
+        self.ma_line.set_data(ma_x, ma_y)
+
+        # Autoscale occasionally
+        if ep % getattr(config, "PLOT_UPDATE_INTERVAL", 5) == 0 or ep == self._max_episodes:
+            self._autoscale_y(np.array(self._rewards[-self._ma_window:]))
+            self.ax.set_xlim(0, max(self._max_episodes, ep + 1))
+            self.draw_idle()
+            
     def export_png(self, path: str):
         self.fig.savefig(path, dpi=160)
 

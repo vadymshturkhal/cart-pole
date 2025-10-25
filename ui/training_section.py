@@ -73,6 +73,10 @@ class TrainingSection(QWidget):
             self.ui.reward_plot.add_point(rewards)
             self.ui.loss_plot.add_point(losses)
 
+            # Append only latest values
+            self.ui.reward_plot.append_point(ep_reward)
+            self.ui.loss_plot.append_point(losses[-1])
+
             # Write to Logger
             self._log(
                 f"Ep {ep+1}/{episodes} — R {ep_reward:.1f}, RewardsAvg20 {rewards_avg20:.1f}, RewardsAvgGlobal {global_rewards_avg:.1f}, LossesAvg20 {losses_avg20:.1f}, LossAvgGlobal {global_loss_avg:.2f}, Epsilon {epsilon:.4f}"

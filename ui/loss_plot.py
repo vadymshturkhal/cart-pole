@@ -28,3 +28,7 @@ class LossPlot(RewardPlot):
     def add_point(self, losses: list[float]):
         """Identical to RewardPlot.add_point but with Loss semantics."""
         super().add_point(losses)
+
+    def append_point(self, loss: float):
+        super().append_point(loss)
+        
