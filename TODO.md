@@ -70,6 +70,7 @@
 - [ ] Add eps_current to dqn_agent for showing current epsilon after stopping training;
 - [ ] Add 'Save as Default' to all panels;
 - [ ] Plotting in its own Thread;
+- [ ] Fix incorrect steps after environments changing in env panel;
 
 
 ## Done
