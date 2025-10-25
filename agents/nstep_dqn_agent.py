@@ -36,6 +36,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         hyperparams.update(kwargs)
         self.hyperparams = hyperparams
         self.checkpoint = {}
+        self.n_step = hyperparams["n_step"]
 
         # Hyperparameters
         self.gamma = hyperparams["gamma"]
@@ -202,7 +203,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         # === Restore NN configuration (if present) ===
         nn_cfg = checkpoint.get("nn_config", {})
         hidden_layers = nn_cfg.get("hidden_layers", config.HIDDEN_LAYERS)
-        activation = nn_cfg.get("activation", config.ACTIVATION)
+        activation = nn_cfg.get("activation", config.HIDDEN_ACTIVATION)
         dropout = nn_cfg.get("dropout", config.DROPOUT)
         lr = nn_cfg.get("lr", config.LR)
         optimizer_name = nn_cfg.get("optimizer", config.OPTIMIZER)
@@ -211,7 +212,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         if apply_nn_config:
             # Update global config (runtime consistency)
             config.HIDDEN_LAYERS = hidden_layers
-            config.ACTIVATION = activation
+            config.HIDDEN_ACTIVATION = activation
             config.DROPOUT = dropout
             config.LR = lr
             config.OPTIMIZER = optimizer_name
