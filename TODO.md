@@ -71,6 +71,7 @@
 - [ ] Add 'Save as Default' to all panels;
 - [ ] Plotting in its own Thread;
 - [ ] Fix incorrect steps after environments changing in env panel;
+- [ ] Add Discrete Observation Space support;
 
 
 ## Done
