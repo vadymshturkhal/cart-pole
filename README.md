@@ -95,4 +95,5 @@ All hyperparameters are centralized in config.py, including:
 ---
 
 ## 📚 References
-- Sutton & Barto — *Reinforcement Learning: An Introduction*
+"As in all of artificial intelligence, there is a tension between breadth of
+applicability and mathematical tractability." - Sutton & Barto — *Reinforcement Learning: An Introduction*
