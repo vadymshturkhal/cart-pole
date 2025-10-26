@@ -47,7 +47,7 @@ class NNConfigPanel(QWidget):
         # Dropout
         self.dropout_spin = QDoubleSpinBox()
         self.dropout_spin.setRange(0.0, 0.9)
-        self.dropout_spin.setSingleStep(0.05)
+        self.dropout_spin.setSingleStep(0.01)
         self.dropout_spin.setDecimals(2)
         self.dropout_spin.setValue(config.DROPOUT)
         form.addRow("Dropout Rate:", self.dropout_spin)
