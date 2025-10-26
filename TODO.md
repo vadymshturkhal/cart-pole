@@ -74,6 +74,7 @@
 - [ ] Add Discrete Observation Space support;
 - [ ] Add epsilon slider for real-time setting;
 - [ ] Rename gamma to Discount Rate in AgentConfig Panel;
+- [ ] Add a description to Discount Rate 'The discount rate determines the present value of future rewards';
 
 
 ## Done
