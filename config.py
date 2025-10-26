@@ -42,10 +42,10 @@ DEFAULTS = {
     "TARGET_UPDATE": 100,
 
     # Neural network architecture
-    "HIDDEN_LAYERS": [256, 128],
+    "HIDDEN_LAYERS": [128, 128],
     "HIDDEN_ACTIVATIONS": ["relu", "leaky_relu", "sigmoid", "softmax", "tanh", "gelu"],
     "HIDDEN_ACTIVATION": "relu",
-    "DROPOUT": 0.1,
+    "DROPOUT": 0.01,
 
     # Neural network optimization
     "LR": 1e-3,
