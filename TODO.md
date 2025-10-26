@@ -73,6 +73,7 @@
 - [ ] Fix incorrect steps after environments changing in env panel;
 - [ ] Add Discrete Observation Space support;
 - [ ] Add epsilon slider for real-time setting;
+- [ ] Rename gamma to Discount Rate in AgentConfig Panel;
 
 
 ## Done
