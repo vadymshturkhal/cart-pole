@@ -87,7 +87,7 @@ class TestingSection(QWidget):
         self.viewer = None
 
     def _choose_model(self):
-        dlg = TestModelDialog("trained_models")
+        dlg = TestModelDialog()
         if dlg.exec():
             model_file = dlg.get_selected()
             if model_file:
