@@ -129,9 +129,8 @@ class TrainingActions:
             nn_cfg = checkpoint.get("nn_config", {})
             config.HIDDEN_LAYERS = nn_cfg.get("hidden_layers", config.HIDDEN_LAYERS)
             config.LR = nn_cfg.get("lr", config.LR)
-            config.ACTIVATION = nn_cfg.get("activation", config.ACTIVATION)
             config.DROPOUT = nn_cfg.get("dropout", config.DROPOUT)
-            config.HIDDEN_ACTIVATION = nn_cfg.get("activation", config.ACTIVATION)
+            config.HIDDEN_ACTIVATION = nn_cfg.get("activation", config.HIDDEN_ACTIVATION)
             config.OPTIMIZER = nn_cfg.get("optimizer", getattr(config, "OPTIMIZER", "adam"))
 
             # Device setup
