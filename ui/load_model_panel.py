@@ -39,12 +39,22 @@ class LoadModelPanel(QWidget):
         folder = config.TRAINED_MODELS_FOLDER
         if not os.path.exists(folder):
             os.makedirs(folder)
-        for file in sorted(os.listdir(folder)):
-            if file.endswith(".pth"):
-                path = os.path.join(folder, file)
-                t = os.path.getmtime(path)
-                time_str = datetime.datetime.fromtimestamp(t).strftime("%Y-%m-%d %H:%M:%S")
-                self.model_list.addItem(f"{file}  ({time_str})")
+
+        # Recursive search
+        model_paths = []
+        for root, _, files in os.walk(folder):
+            for file in files:
+                if file.endswith(".pth"):
+                    full_path = os.path.join(root, file)
+                    model_paths.append(full_path)
+
+        model_paths.sort()
+        
+        for path in model_paths:
+            file = os.path.relpath(path, config.TRAINED_MODELS_FOLDER)
+            t = os.path.getmtime(path)
+            time_str = datetime.datetime.fromtimestamp(t).strftime("%Y-%m-%d %H:%M:%S")
+            self.model_list.addItem(f"{file}  ({time_str})")
 
     def _on_load(self):
         item = self.model_list.currentItem()
