@@ -104,7 +104,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         else:
             with torch.no_grad():
                 state = torch.FloatTensor(state).unsqueeze(0).to(config.DEVICE)
-                q_values = self.q_net(state)
+                q_values = self.target_net(state)
                 return q_values.argmax().item()
 
     def update_step(self, state, action, reward, next_state, done):
@@ -130,8 +130,8 @@ class NStepDeepQLearningAgent(BaseAgent):
         next_q_values = self.target_net(next_states).max(1)[0]
 
         # Compute target with n-step returns already handled by replay buffer
-        expected_q = rewards + (1 - dones) * self.gamma * next_q_values
-
+        expected_q = rewards + (1 - dones) * (self.gamma ** self.n_step) * next_q_values
+        
         # Loss
         self.optimizer.zero_grad()
         loss = nn.MSELoss()(q_values, expected_q.detach())
@@ -163,7 +163,7 @@ class NStepDeepQLearningAgent(BaseAgent):
 
         self.checkpoint = {
             "agent_name": "nstep_dqn",
-            "model_state": self.q_net.state_dict(),
+            "model_state": self.target_net.state_dict(),
             "hyperparams": self.hyperparams,
             "nn_config": {  # Save full NN architecture & optimizer info
                 "hidden_layers": config.HIDDEN_LAYERS,
