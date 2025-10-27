@@ -39,7 +39,7 @@ DEFAULTS = {
     "EPSILON_END": 0.05,
     "EPSILON_DECAY": 10000,
     "EPSILON_FIXED": 0.1,
-    "TARGET_UPDATE": 100,
+    "TARGET_UPDATE": 20,
 
     # Neural network architecture
     "HIDDEN_LAYERS": [128, 128],
