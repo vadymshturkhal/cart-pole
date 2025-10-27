@@ -30,13 +30,13 @@ class NStepDoubleDeepQLearningAgent(NStepDeepQLearningAgent):
 
         # --- Double DQN target ---
         # 1. Select next action using online net
-        next_actions = self.q_net(next_states).argmax(1, keepdim=True)
+        next_actions = self.target_net(next_states).argmax(1, keepdim=True)
 
         # 2. Evaluate action using target net
         next_q_values = self.target_net(next_states).gather(1, next_actions).squeeze(1)
 
         # 3. Compute target with n-step returns already handled by replay buffer
-        expected_q = rewards + (1 - dones) * self.gamma * next_q_values
+        expected_q = rewards + (1 - dones) * (self.gamma ** self.n_step) * next_q_values
 
         # Loss
         self.optimizer.zero_grad()
