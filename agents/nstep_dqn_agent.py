@@ -162,7 +162,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         self.hyperparams["eps_latest"] = self.current_epsilon
 
         self.checkpoint = {
-            "agent_name": "nstep_dqn",
+            "agent_name": self.name,
             "model_state": self.target_net.state_dict(),
             "hyperparams": self.hyperparams,
             "nn_config": {  # Save full NN architecture & optimizer info
