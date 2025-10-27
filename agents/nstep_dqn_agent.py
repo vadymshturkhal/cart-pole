@@ -50,8 +50,8 @@ class NStepDeepQLearningAgent(BaseAgent):
         self.eps_end = hyperparams["eps_end"]
         self.eps_decay = hyperparams["eps_decay"]
         self.eps_fixed = hyperparams["eps_fixed"]
-
         self.current_epsilon = self.eps_start
+        self._prune_epsilon_params()
 
         # Replay buffer (use n-step > 1)
         self.memory = NStepReplayBuffer(hyperparams["buffer_size"], hyperparams["n_step"], self.gamma)
@@ -250,3 +250,22 @@ class NStepDeepQLearningAgent(BaseAgent):
 
     def set_total_episodes(self, episodes):
         self.total_episodes = episodes
+
+    def _clear_losses(self):
+        self._losses.clear()
+        self._losses.append(0)
+
+    def _prune_epsilon_params(self):
+        """Remove unused epsilon parameters based on selected schedule."""
+        schedule = self.hyperparams.get("epsilon_schedule", "linear")
+
+        if schedule == "fixed":
+            for key in ("eps_start", "eps_end", "eps_decay"):
+                self.hyperparams.pop(key, None)
+        elif schedule in ("linear", "exponential"):
+            self.hyperparams.pop("eps_fixed", None)
+            self.hyperparams.pop("eps_decay", None)
+        elif schedule == ("manual"):
+            self.hyperparams.pop("eps_fixed", None)
+        else:
+            raise ValueError(f"Unknown epsilon uses in {self.agent_name}")
