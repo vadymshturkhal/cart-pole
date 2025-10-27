@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QListWidget, QPushBu
 
 
 class TestModelDialog(QDialog):
-    def __init__(self, folder="trained_models"):
+    def __init__(self):
         super().__init__()
         self.setWindowTitle("Choose Model to Test")
         self.resize(400, 300)
