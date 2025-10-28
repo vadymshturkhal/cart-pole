@@ -65,7 +65,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         #Loss
         self._losses = [0]
 
-    def select_action(self, state, greedy: bool = False):
+    def select_action(self, state, greedy: bool = True):
         """
         Select an action from the state.
 
@@ -79,7 +79,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         if greedy:
             with torch.no_grad():
                 state = torch.FloatTensor(state).unsqueeze(0).to(config.DEVICE)
-                q_values = self.q_net(state)
+                q_values = self.target_net(state)
                 return q_values.argmax().item()
 
         schedule = self.hyperparams.get("epsilon_schedule", "linear")
