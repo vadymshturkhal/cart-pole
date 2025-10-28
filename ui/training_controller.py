@@ -2,6 +2,9 @@ from PySide6.QtCore import QObject, QThread, Signal
 from utils.agent_factory import build_agent
 from utils.run_logger import RunLogger
 import traceback
+from ui.training_worker import TrainingWorker
+import gymnasium as gym
+from environments.factory import create_environment
 
 
 class TrainingController(QObject):
@@ -41,9 +44,6 @@ class TrainingController(QObject):
         """
         Start background training in a separate thread.
         """
-        from ui.training_worker import TrainingWorker
-        import gymnasium as gym
-        from environments.factory import create_environment
 
         self.env_name = env_name
         self.agent_name = agent_name
