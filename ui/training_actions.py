@@ -1,7 +1,7 @@
 import os
 import torch
 import config
-from PySide6.QtWidgets import QFileDialog, QMessageBox
+from PySide6.QtWidgets import QFileDialog
 from utils.agent_factory import AGENTS
 from ui.load_model_panel import LoadModelPanel
 from ui.nn_config_panel import NNConfigPanel
