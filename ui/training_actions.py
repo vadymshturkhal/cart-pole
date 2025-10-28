@@ -66,7 +66,9 @@ class TrainingActions:
     def save_agent(self):
         section = self.section
 
-        default_dir = os.path.join(config.TRAINED_MODELS_FOLDER)
+        model_foler = f"{config.ENV_NAME}_{self.section.agent_name}_{config.EPISODES}ep"
+        default_dir = os.path.join(config.TRAINED_MODELS_FOLDER, model_foler)
+        
         user_dir, _ = QFileDialog.getSaveFileName(section, "Save Agent As", default_dir)
         if not user_dir:
             section._log("💡 Save canceled by user.")
