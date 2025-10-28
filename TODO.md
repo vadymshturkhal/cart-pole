@@ -76,10 +76,10 @@
 - [ ] Rename gamma to Discount Rate in AgentConfig Panel;
 - [ ] Add a description to Discount Rate 'The discount rate determines the present value of future rewards';
 - [ ] Fix Delete model;
-- [ ] Add episode_steps to model data;
 
 
 ## Done
+- [x] Add episode_steps to model data;
 - [x] Add 'Update plots every:' to Plots Panel;
 - [x] Fix loss plot episodes after applying in Environment settings;
 - [x] Add fixed epsilon to Epsilon Schedule;
