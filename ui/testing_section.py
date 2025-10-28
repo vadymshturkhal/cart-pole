@@ -102,6 +102,7 @@ class TestingSection(QWidget):
                 episodes_total = checkpoint.get("episodes_total", "N/A")
                 hps = checkpoint.get("hyperparams", {})
                 timestamp = checkpoint.get("timestamp", "Unknown")
+                episode_steps = checkpoint.get("max_episode_steps", "Unknown")
 
                 # --- Hyperparameters (existing) ---
                 hps_html = "<ul>" + "".join(
@@ -136,6 +137,7 @@ class TestingSection(QWidget):
                 info_html = (
                     f"<b>Environment:</b> {env_name}<br>"
                     f"<b>Agent:</b> {agent_name}<br>"
+                    f"<b>Max Episode Steps:</b> {episode_steps}<br>"
                     f"<b>Episodes:</b> {episodes_trained}/{episodes_total}<br><br>"
                     f"<b>Hyperparameters:</b>{hps_html}"
                     f"<b>Neural Network:</b> {nn_html if isinstance(nn_cfg, dict) else nn_html}<br>"

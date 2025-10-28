@@ -231,6 +231,17 @@ class NStepDeepQLearningAgent(BaseAgent):
         self.optimizer = build_optimizer(optimizer_name, self.q_net.parameters(), lr=lr)
         self.q_net.eval()
 
+    def add_episode(self):
+        """Increment episode count for scheduling (epsilon decay, etc.)."""
+        self.episodes += 1
+        self._clear_losses()
+
+    def set_total_episodes(self, episodes):
+        self.total_episodes = episodes
+
+    def add_max_episode_steps_to_checkpoint(self, max_steps):
+        self.checkpoint["max_episode_steps"] = max_steps
+
     @property
     def losses(self):
         return self._losses.copy()
@@ -242,14 +253,6 @@ class NStepDeepQLearningAgent(BaseAgent):
     def _clear_losses(self):
         self._losses.clear()
         self._losses.append(0)
-
-    def add_episode(self):
-        """Increment episode count for scheduling (epsilon decay, etc.)."""
-        self.episodes += 1
-        self._clear_losses()
-
-    def set_total_episodes(self, episodes):
-        self.total_episodes = episodes
 
     def _clear_losses(self):
         self._losses.clear()
