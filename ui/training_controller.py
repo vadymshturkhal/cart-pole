@@ -26,7 +26,8 @@ class TrainingController(QObject):
         self.agent_name: str | None = None
         self.hyperparams: dict | None = None
         self.render_mode: str = "off"
-        self.episodes: int = 0
+        self.total_episodes: int = 0
+        self.episodes_done: int = 0
 
     # ------------------------------------------------------------------
     # Core Lifecycle
@@ -36,7 +37,7 @@ class TrainingController(QObject):
         env_name: str,
         agent_name: str,
         hyperparams: dict,
-        episodes: int,
+        total_episodes: int,
         render_mode: str,
         max_steps: int | None = None,
         model_file = None,
@@ -48,7 +49,7 @@ class TrainingController(QObject):
         self.env_name = env_name
         self.agent_name = agent_name
         self.hyperparams = hyperparams
-        self.episodes = episodes
+        self.total_episodes = total_episodes
         self.render_mode = render_mode
         self.selected_model_file = model_file
 
@@ -59,7 +60,7 @@ class TrainingController(QObject):
                 env = gym.wrappers.TimeLimit(env.unwrapped, max_episode_steps=max_steps)
 
             self.agent = build_agent(agent_name, state_dim, action_dim, self.hyperparams)
-            self.agent.set_total_episodes(episodes)
+            self.agent.set_total_episodes(total_episodes)
 
             if self.selected_model_file is not None:
                 self.agent.load(self.selected_model_file, self.hyperparams, apply_nn_config=False)
@@ -71,7 +72,7 @@ class TrainingController(QObject):
                 env,
                 agent_name,
                 self.agent,
-                episodes,
+                total_episodes,
                 hyperparams=hyperparams,
                 render=(render_mode == "human"),
             )
@@ -101,12 +102,14 @@ class TrainingController(QObject):
             self.status.emit("⚠ No training running")
 
         self._autosave_model()
+        self.episodes_done = self.training_worker.episodes_done
 
     def _on_finished(self) -> None:
         """Handle training completion."""
         self.status.emit("✅ Training finished!")
         self.finished.emit()
         self._autosave_model()
+        self.episodes_done = self.training_worker.episodes_done
 
     # ------------------------------------------------------------------
     # Persistence

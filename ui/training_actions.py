@@ -64,12 +64,13 @@ class TrainingActions:
         self.section._set_training_buttons(True)
 
     def save_agent(self):
+        """Saved model data with next pattern: (env_name)_(agent_name)_(episodes_done)total_episodes."""
         section = self.section
+        default_dir = os.path.join(config.TRAINED_MODELS_FOLDER)
+        model_folder = f"{config.ENV_NAME}_{section.agent_name}_({section.controller.episodes_done}){config.EPISODES}"
+        default_path = os.path.join(default_dir, model_folder)
 
-        model_foler = f"{config.ENV_NAME}_{self.section.agent_name}_{config.EPISODES}ep"
-        default_dir = os.path.join(config.TRAINED_MODELS_FOLDER, model_foler)
-        
-        user_dir, _ = QFileDialog.getSaveFileName(section, "Save Agent As", default_dir)
+        user_dir, _ = QFileDialog.getSaveFileName(section, "Save Agent As", default_path,options=QFileDialog.DontUseNativeDialog )
         if not user_dir:
             section._log("💡 Save canceled by user.")
             return

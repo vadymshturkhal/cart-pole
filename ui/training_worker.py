@@ -16,6 +16,7 @@ class TrainingWorker(QObject):
         self._stop_flag = False
         self.hyperparams = hyperparams
         self.render = render
+        self.episodes_done = 0
 
     @Slot()
     def run(self):
@@ -27,15 +28,16 @@ class TrainingWorker(QObject):
             render=self.render
         )
 
+        self.episodes_done = len(rewards)
         # Save model and close environment
-        self._update_model_checkpoint(self.episodes, rewards)
+        self._update_model_checkpoint(self.episodes, self.episodes_done)
         self.finished.emit()
         self.env.close()
 
-    def _update_model_checkpoint(self, episodes, rewards):
+    def _update_model_checkpoint(self, episodes, episodes_done):
         self.extra = {
             "environment": self.env_name,
-            "episodes_trained": len(rewards),
+            "episodes_trained": episodes_done,
             "episodes_total": episodes,
         }
 
