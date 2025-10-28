@@ -1,7 +1,7 @@
 import os
 import torch
 import config
-from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QFileDialog, QMessageBox
 from utils.agent_factory import AGENTS
 from ui.load_model_panel import LoadModelPanel
 from ui.nn_config_panel import NNConfigPanel
@@ -70,7 +70,7 @@ class TrainingActions:
         model_folder = f"{config.ENV_NAME}_{section.agent_name}_({section.controller.episodes_done}){config.EPISODES}"
         default_path = os.path.join(default_dir, model_folder)
 
-        user_dir, _ = QFileDialog.getSaveFileName(section, "Save Agent As", default_path,options=QFileDialog.DontUseNativeDialog )
+        user_dir, _ = QFileDialog.getSaveFileName(section, "Save Agent As", default_path, options=QFileDialog.DontUseNativeDialog)
         if not user_dir:
             section._log("💡 Save canceled by user.")
             return
