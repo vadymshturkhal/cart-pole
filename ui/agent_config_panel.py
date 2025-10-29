@@ -72,7 +72,7 @@ class AgentConfigPanel(QWidget):
         self.eps_start_spin = QDoubleSpinBox()
         self.eps_start_spin.setDecimals(4)
         self.eps_start_spin.setRange(0.0, 1.0)
-        self.eps_start_spin.setValue(self.updated_params.get("eps_start", 1.0))
+        self.eps_start_spin.setValue(self.updated_params.get("eps_start", 0.8))
 
         self.eps_end_spin = QDoubleSpinBox()
         self.eps_end_spin.setDecimals(4)
@@ -123,7 +123,7 @@ class AgentConfigPanel(QWidget):
         self.eps_manual.toggled.connect(self._update_epsilon_fields)
 
         # Restore saved epsilon schedule
-        schedule_type = self.updated_params.get("epsilon_schedule", "linear")
+        schedule_type = self.updated_params.get("epsilon_schedule", "fixed")
         if schedule_type == "fixed":
             self.eps_fixed .setChecked(True)
         elif schedule_type == "linear":
@@ -148,7 +148,6 @@ class AgentConfigPanel(QWidget):
     def _update_epsilon_fields(self):
         """Toggle epsilon controls depending on schedule type."""
         if self.eps_fixed.isChecked():
-            # show only fixed epsilon
             self.eps_fixed_spin.setVisible(True)
             self.eps_start_spin.setVisible(False)
             self.eps_end_spin.setVisible(False)
