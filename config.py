@@ -33,13 +33,13 @@ DEFAULTS = {
     "DEFAULT_AGENT": "nstep_dqn",
     "GAMMA": 0.99,
     "BUFFER_SIZE": 10000,
-    "BATCH_SIZE": 64,
+    "BATCH_SIZE": 128,
     "N_STEP": 2,
-    "EPSILON_START": 1.0,
+    "EPSILON_START": 0.8,
     "EPSILON_END": 0.05,
     "EPSILON_DECAY": 10000,
-    "EPSILON_FIXED": 0.1,
-    "TARGET_UPDATE": 20,
+    "EPSILON_FIXED": 0.05,
+    "TARGET_UPDATE": 1,
 
     # Neural network architecture
     "HIDDEN_LAYERS": [128, 128],
@@ -56,7 +56,7 @@ DEFAULTS = {
 
     # Logs
     "LOG_AFTER_EPISODES": 20,
-    "LOG_DIR": "runs/cartpole_nstep",
+    "LOG_DIR": "runs",
 }
 
 # ===== User config handling =====
