@@ -65,7 +65,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         #Loss
         self._losses = [0]
 
-    def select_action(self, state, greedy: bool = True):
+    def select_action(self, state, greedy: bool = False):
         """
         Select an action from the state.
 
@@ -250,10 +250,6 @@ class NStepDeepQLearningAgent(BaseAgent):
     def loss(self):
         return self._losses.copy()[-1]
     
-    def _clear_losses(self):
-        self._losses.clear()
-        self._losses.append(0)
-
     def _clear_losses(self):
         self._losses.clear()
         self._losses.append(0)
