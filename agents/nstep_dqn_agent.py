@@ -20,7 +20,7 @@ class NStepDeepQLearningAgent(BaseAgent):
         "eps_end": config.EPSILON_END,
         "eps_decay": config.EPSILON_DECAY,
         "eps_fixed": config.EPSILON_FIXED,
-        "epsilon_schedule": "linear",
+        "epsilon_schedule": "fixed",
         "target_update": config.TARGET_UPDATE,
     }
         
