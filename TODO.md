@@ -76,6 +76,7 @@
 - [ ] Rename gamma to Discount Rate in AgentConfig Panel;
 - [ ] Add a description to Discount Rate 'The discount rate determines the present value of future rewards';
 - [ ] Fix Delete model;
+- [ ] Add per step target update;
 
 
 ## Done
