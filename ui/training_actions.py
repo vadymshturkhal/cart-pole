@@ -1,13 +1,14 @@
 import os
 import torch
 import config
-from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QFileDialog, QMessageBox
 from utils.agent_factory import AGENTS
 from ui.load_model_panel import LoadModelPanel
 from ui.nn_config_panel import NNConfigPanel
 from ui.environment_config_panel import EnvironmentConfigPanel
 from ui.agent_config_panel import AgentConfigPanel
 from ui.agent_select_panel import AgentSelectPanel
+from PySide6.QtWidgets import QFileDialog, QLineEdit
 
 
 class TrainingActions:
@@ -64,17 +65,42 @@ class TrainingActions:
         self.section._set_training_buttons(True)
 
     def save_agent(self):
-        """Saved model data with next pattern: (env_name)_(agent_name)_(episodes_done)total_episodes."""
+        """Always suggest default name; treat existing folder as save target."""
         section = self.section
         default_dir = os.path.join(config.TRAINED_MODELS_FOLDER)
-        model_folder = f"{config.ENV_NAME}_{section.agent_name}_({section.controller.episodes_done}){config.EPISODES}"
-        default_path = os.path.join(default_dir, model_folder)
+        default_name = f"{config.ENV_NAME}_{section.agent_name}_({section.controller.episodes_done}){config.EPISODES}"
 
-        user_dir, _ = QFileDialog.getSaveFileName(section, "Save Agent As", default_path)
-        if not user_dir:
-            section._log("💡 Save canceled by user.")
-            return
-        self.controller.save_model(user_dir, section.ui.reward_plot, section.ui.loss_plot)
+        dialog = QFileDialog(section, "Save Agent As", default_dir)
+        dialog.setAcceptMode(QFileDialog.AcceptSave)
+        dialog.setFileMode(QFileDialog.AnyFile)
+        dialog.setOption(QFileDialog.DontUseNativeDialog, True)
+        dialog.selectFile(default_name)
+
+        # Intercept accept to force save path behavior
+        def force_accept():
+            entered = dialog.selectedFiles()[0]
+            base_name = os.path.basename(entered)
+            target_path = os.path.join(default_dir, base_name)
+
+            if os.path.isdir(target_path):
+                reply = QMessageBox.question(
+                    section,
+                    "Overwrite?",
+                    f"Folder '{base_name}' already exists. Overwrite contents?",
+                    QMessageBox.Yes | QMessageBox.No,
+                )
+                if reply != QMessageBox.Yes:
+                    section._log("💡 Save canceled by user.")
+                    return
+
+            os.makedirs(target_path, exist_ok=True)
+            dialog.close()
+            self.controller.save_model(target_path, section.ui.reward_plot, section.ui.loss_plot)
+            section._log(f"✅ Model saved to {target_path}")
+
+        # Replaced default accept behavior
+        dialog.accept = force_accept
+        dialog.exec_()
 
     def load_model(self):
         """Show model selection panel and handle model loading."""
