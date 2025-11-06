@@ -32,15 +32,17 @@ class RewardPlot(FigureCanvas):
 
         self.fig = Figure(figsize=(5, 2.6), tight_layout=True)
         super().__init__(self.fig)
+        
+        self.ylabel = "Reward"
 
         self.ax = self.fig.add_subplot(111)
         self.ax.set_title("Training Curve", fontsize=10)
         self.ax.set_xlabel("Episode", fontsize=9)
-        self.ax.set_ylabel("Reward", fontsize=9)
+        self.ax.set_ylabel(self.ylabel, fontsize=9)
         self.ax.margins(x=0.02, y=0.1)
 
         # Lines
-        (self.raw_line,) = self.ax.plot([], [], lw=1.0, label="Reward")
+        (self.raw_line,) = self.ax.plot([], [], lw=1.0, label=self.ylabel)
         (self.ma_line,)  = self.ax.plot([], [], lw=2.0, alpha=0.85, label=f"MA({ma_window})")
 
         self.ax.legend(loc="upper left", frameon=False, fontsize=8)
@@ -114,12 +116,12 @@ class RewardPlot(FigureCanvas):
             denom = max(1e-9, (rmax - rmin))
             raw_y = (np.array(self._rewards) - rmin) / denom
             ma_y  = (np.array(self._ma)      - rmin) / denom
-            self.ax.set_ylabel("Reward (normalized)")
+            self.ax.set_ylabel(f"{self.ylabel} (normalized)")
             self.ax.set_ylim(0.0, 1.0)
         else:
             raw_y = np.array(self._rewards)
             ma_y  = np.array(self._ma)
-            self.ax.set_ylabel("Reward")
+            self.ax.set_ylabel(self.ylabel)
             self._autoscale_y(raw_y, ma_y)
 
         self.raw_line.set_data(xs, raw_y)
