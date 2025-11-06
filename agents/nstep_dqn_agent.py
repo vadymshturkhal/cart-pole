@@ -159,7 +159,7 @@ class NStepDeepQLearningAgent(BaseAgent):
 
     def save(self, path: str, extra: dict = None):
         # Add latest epsilon
-        self.hyperparams["eps_latest"] = self.current_epsilon
+        self.hyperparams["eps_latest"] = round(self.current_epsilon, 4)
 
         self.checkpoint = {
             "agent_name": self.name,
