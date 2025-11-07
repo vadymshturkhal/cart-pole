@@ -7,6 +7,20 @@ class ConfigManager:
     _instance = None
     _lock = Lock()
 
+    # ------------------- Static Defaults -------------------
+    DEFAULTS = {
+        "AVAILABLE_ENVIRONMENTS": [
+            "CartPole-v1",
+            "MountainCar-v0",
+            "Acrobot-v1",
+            "LunarLander-v2",
+        ],
+        "EPISODE_RANGE": (100, 20000),
+        "DEFAULT_EPISODES": 1000,
+        "DEFAULT_RENDER_MODE": "off",
+        "DEFAULT_ENVIRONMENT": "CartPole-v1",
+    }
+
     @classmethod
     def instance(cls):
         with cls._lock:
@@ -19,6 +33,22 @@ class ConfigManager:
         self.path = os.path.join(main_dir, "user_config.json")
         self.data = self._load()
 
+    # ------------------- Accessors for constants -------------------
+    def available_environments(self):
+        return self.DEFAULTS["AVAILABLE_ENVIRONMENTS"]
+
+    def episode_range(self):
+        return self.DEFAULTS["EPISODE_RANGE"]
+
+    def default_episodes(self):
+        return self.DEFAULTS["DEFAULT_EPISODES"]
+
+    def default_render_mode(self):
+        return self.DEFAULTS["DEFAULT_RENDER_MODE"]
+
+    def default_environment(self):
+        return self.DEFAULTS["DEFAULT_ENVIRONMENT"]
+        
     # ------------------- IO -------------------
     def _load(self):
         if not os.path.exists(self.path):

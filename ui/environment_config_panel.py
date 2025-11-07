@@ -2,9 +2,7 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QComboBox, QSpinBox,
     QPushButton, QHBoxLayout
 )
-import config
 import gymnasium as gym
-import json, os
 from config_manager import ConfigManager
 
 
@@ -40,7 +38,7 @@ class EnvironmentConfigPanel(QWidget):
         # Environment selection
         layout.addWidget(QLabel("Environment:"))
         self.env_box = QComboBox()
-        self.env_box.addItems(config.AVAILABLE_ENVIRONMENTS)
+        self.env_box.addItems(self.config_mgr.available_environments())
         self.env_box.setCurrentText(self.updated_env_config["ENV_NAME"])
         self.env_box.currentTextChanged.connect(self._update_default_steps)
         layout.addWidget(self.env_box)
@@ -59,7 +57,7 @@ class EnvironmentConfigPanel(QWidget):
         # Episodes
         layout.addWidget(QLabel("Training Episodes:"))
         self.episodes_box = QSpinBox()
-        self.episodes_box.setRange(*config.EPISODE_RANGE)
+        self.episodes_box.setRange(*self.config_mgr.episode_range())
         self.episodes_box.setValue(self.updated_env_config["EPISODES"])
         layout.addWidget(self.episodes_box)
 
@@ -105,7 +103,7 @@ class EnvironmentConfigPanel(QWidget):
 
         # Only auto-set if environment changed intentionally
         self.steps_box.setValue(default_steps)
-        self.episodes_box.setValue(getattr(config, "DEFAULT_EPISODES", 1000))
+        self.episodes_box.setValue(self.config_mgr.default_episodes())
 
         self.updated_env_config["ENV_NAME"] = env_name
         self.updated_env_config["MAX_STEPS"] = default_steps
