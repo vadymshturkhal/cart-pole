@@ -8,7 +8,7 @@ from ui.nn_config_panel import NNConfigPanel
 from ui.environment_config_panel import EnvironmentConfigPanel
 from ui.agent_config_panel import AgentConfigPanel
 from ui.agent_select_panel import AgentSelectPanel
-from PySide6.QtWidgets import QFileDialog, QLineEdit
+from PySide6.QtWidgets import QFileDialog
 
 
 class TrainingActions:
