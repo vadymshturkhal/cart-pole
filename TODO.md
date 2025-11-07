@@ -78,6 +78,15 @@
 - [ ] Fix Delete model;
 - [ ] Add per step target update;
 
+## Config Panel:
+- [ ] Avoid Direct config Access;
+- [ ] Dynamic Gym Handling;
+- [ ] Input Validation;
+- [ ] Unit-test both ConfigManager and panel serialization;
+- [ ] Create BaseConfigPanel;
+- [ ] Unify logging/notification service;
+- [ ] Create a lightweight AppState class that centralizes current runtime config in memory for all sections;
+
 
 ## Done
 - [x] Add episode_steps to model data;
