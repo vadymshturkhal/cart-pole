@@ -87,6 +87,7 @@
 - [ ] Create BaseConfigPanel;
 - [ ] Unify logging/notification service;
 - [ ] Create a lightweight AppState class that centralizes current runtime config in memory for all sections;
+- [ ] Integrate config to Config Manager;
 
 
 ## Done:
