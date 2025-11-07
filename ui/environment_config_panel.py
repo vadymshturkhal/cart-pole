@@ -108,26 +108,33 @@ class EnvironmentConfigPanel(QWidget):
         self.updated_env_config["ENV_NAME"] = env_name
         self.updated_env_config["MAX_STEPS"] = default_steps
 
-    def _on_apply(self):
+
+    def _apply_config(self, persist_as_default=False):
+        """Apply current environment configuration to runtime and optionally save as default."""
         self.updated_env_config = {
             "ENV_NAME": self.env_box.currentText(),
             "MAX_STEPS": self.steps_box.value(),
             "EPISODES": self.episodes_box.value(),
             "RENDER_MODE": self.render_box.currentText(),
         }
+
+        # Always update runtime section
         self.config_mgr.set_section_runtime(self.PANEL_NAME, self.updated_env_config)
         self.section._log("✅ Environment runtime configuration applied.")
+
+        # Optionally persist as new defaults
+        if persist_as_default:
+            self.config_mgr.set_section_defaults(self.PANEL_NAME, self.updated_env_config)
+            self.section._log("💾 Environment defaults updated.")
+
+        # Close panel and propagate updates
         self.on_close_callback(True, self.updated_env_config)
+        
+    def _on_apply(self):
+        self._apply_config(persist_as_default=False)
 
     def _on_set_default(self):
-        defaults = {
-            "ENV_NAME": self.env_box.currentText(),
-            "MAX_STEPS": self.steps_box.value(),
-            "EPISODES": self.episodes_box.value(),
-            "RENDER_MODE": self.render_box.currentText(),
-        }
-        self.config_mgr.set_section_defaults(self.PANEL_NAME, defaults)
-        self.section._log("✅ Environment defaults saved.")
+        self._apply_config(persist_as_default=True)
 
     def _on_cancel(self):
         """Close without applying."""
