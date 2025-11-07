@@ -15,7 +15,7 @@ class ConfigManager:
             return cls._instance
 
     def __init__(self):
-        main_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        main_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "."))
         self.path = os.path.join(main_dir, "user_config.json")
         self.data = self._load()
 
