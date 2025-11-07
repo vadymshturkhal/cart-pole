@@ -91,8 +91,17 @@ class EnvironmentConfigPanel(QWidget):
             default_steps = 500
 
         self.default_label.setText(f"📏 Default Steps per Episode: {default_steps}")
-        if not self.steps_box.value() or self.steps_box.value() == config.MAX_STEPS:
-            self.steps_box.setValue(default_steps)
+
+        # Always update spin boxes to reflect defaults
+        self.steps_box.setValue(default_steps)
+
+        # Reset episodes to environment defaults if available
+        default_episodes = getattr(config, "DEFAULT_EPISODES", 1000)
+        self.episodes_box.setValue(default_episodes)
+
+        # Also keep ENV_NAME synced
+        self.updated_env_config["ENV_NAME"] = env_name
+        self.updated_env_config["MAX_STEPS"] = default_steps
 
     def _on_apply(self):
         """Apply configuration and close panel."""
