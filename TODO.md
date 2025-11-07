@@ -1,5 +1,6 @@
 # 📝 TODOs for CartPole N-step Q-learning Repo
 
+## All:
 - [ ] Compare NStepDQN with NStepDDQN;
 - [ ] Test menu choosing models for correctness;
 - [ ] Draggable indicator;
@@ -88,7 +89,7 @@
 - [ ] Create a lightweight AppState class that centralizes current runtime config in memory for all sections;
 
 
-## Done
+## Done:
 - [x] Add episode_steps to model data;
 - [x] Add 'Update plots every:' to Plots Panel;
 - [x] Fix loss plot episodes after applying in Environment settings;
