@@ -80,7 +80,6 @@ class EnvironmentConfigPanel(QWidget):
 
         self._update_default_steps(self.updated_env_config["ENV_NAME"])
 
-    # --------------------------------------------------------------
     def _update_default_steps(self, env_name: str):
         """Display default step length for selected environment."""
         try:
