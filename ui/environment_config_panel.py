@@ -4,21 +4,31 @@ from PySide6.QtWidgets import (
 )
 import config
 import gymnasium as gym
+import json, os
+from config_manager import ConfigManager
+
 
 
 class EnvironmentConfigPanel(QWidget):
     """Inline panel for configuring environment-related training settings."""
 
-    def __init__(self, on_close_callback, read_only=False):
+    PANEL_NAME = "environment"
+
+    def __init__(self, section, on_close_callback, read_only=False):
         super().__init__()
+        self.section = section
         self.on_close_callback = on_close_callback
         self.read_only = read_only
-        self.updated_env_config = {
-            "ENV_NAME": getattr(config, "ENV_NAME", "CartPole-v1"),
-            "MAX_STEPS": config.MAX_STEPS,
-            "EPISODES": getattr(config, "DEFAULT_EPISODES", 1000),
-            "RENDER_MODE": getattr(config, "RENDER_MODE", "off"),
+        self.config_mgr = ConfigManager.instance()
+
+        fallback = {
+            "ENV_NAME": "CartPole-v1",
+            "MAX_STEPS": 500,
+            "EPISODES": 1000,
+            "RENDER_MODE": "off",
         }
+
+        self.updated_env_config = self.config_mgr.get_section(self.PANEL_NAME, fallback)
 
         layout = QVBoxLayout(self)
         layout.setSpacing(10)
@@ -63,12 +73,15 @@ class EnvironmentConfigPanel(QWidget):
         # Buttons
         btn_row = QHBoxLayout()
         self.apply_btn = QPushButton("Apply")
+        self.set_default_btn = QPushButton("Set as Default")
         self.cancel_btn = QPushButton("Close" if read_only else "Cancel")
         btn_row.addWidget(self.apply_btn)
+        btn_row.addWidget(self.set_default_btn)
         btn_row.addWidget(self.cancel_btn)
         layout.addLayout(btn_row)
 
         self.apply_btn.clicked.connect(self._on_apply)
+        self.set_default_btn.clicked.connect(self._on_set_default)
         self.cancel_btn.clicked.connect(self._on_cancel)
 
         # Disable editing if read-only
@@ -76,6 +89,7 @@ class EnvironmentConfigPanel(QWidget):
             for w in [self.env_box, self.steps_box, self.episodes_box, self.render_box]:
                 w.setEnabled(False)
             self.apply_btn.setEnabled(False)
+            self.set_default_btn.setEnabled(False)
             layout.addWidget(QLabel("<span style='color:#bbb;'>🔒 Read-only mode (Training in progress)</span>"))
 
         self._update_default_steps(self.updated_env_config["ENV_NAME"])
@@ -103,16 +117,25 @@ class EnvironmentConfigPanel(QWidget):
         self.updated_env_config["MAX_STEPS"] = default_steps
 
     def _on_apply(self):
-        """Apply configuration and close panel."""
         self.updated_env_config = {
             "ENV_NAME": self.env_box.currentText(),
             "MAX_STEPS": self.steps_box.value(),
             "EPISODES": self.episodes_box.value(),
             "RENDER_MODE": self.render_box.currentText(),
         }
-        for k, v in self.updated_env_config.items():
-            setattr(config, k, v)
+        self.config_mgr.set_section_runtime(self.PANEL_NAME, self.updated_env_config)
+        self.section._log("✅ Environment runtime configuration applied.")
         self.on_close_callback(True, self.updated_env_config)
+
+    def _on_set_default(self):
+        defaults = {
+            "ENV_NAME": self.env_box.currentText(),
+            "MAX_STEPS": self.steps_box.value(),
+            "EPISODES": self.episodes_box.value(),
+            "RENDER_MODE": self.render_box.currentText(),
+        }
+        self.config_mgr.set_section_defaults(self.PANEL_NAME, defaults)
+        self.section._log("✅ Environment defaults saved.")
 
     def _on_cancel(self):
         """Close without applying."""

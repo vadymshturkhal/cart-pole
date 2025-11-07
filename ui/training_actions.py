@@ -255,6 +255,7 @@ class TrainingActions:
         section._log(f"🌍 Opening Environment configuration ({mode})...")
 
         panel = EnvironmentConfigPanel(
+            section=section,
             on_close_callback=self._on_env_config_closed,
             read_only=read_only,
         )

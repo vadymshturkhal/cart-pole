@@ -3,6 +3,7 @@ from ui.settings_dialog import SettingsDialog
 from ui.training_section import TrainingSection
 from ui.testing_section import TestingSection
 import config
+from config_manager import ConfigManager
 
 
 class RLLauncher(QWidget):
@@ -69,3 +70,11 @@ class RLLauncher(QWidget):
                 self.resize(*values["RESOLUTION"])
             if "EPISODES" in values:
                 self.episodes_box.setValue(values["EPISODES"])
+
+    def closeEvent(self, event):
+        """Cleanup temporary runtime configurations on app close."""
+        try:
+            ConfigManager.instance().clear_runtime_sections()
+        except Exception as e:
+            print(f"⚠️ Failed to clear runtime config: {e}")
+        event.accept()
