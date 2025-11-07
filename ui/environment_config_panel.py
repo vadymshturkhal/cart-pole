@@ -92,27 +92,21 @@ class EnvironmentConfigPanel(QWidget):
             self.set_default_btn.setEnabled(False)
             layout.addWidget(QLabel("<span style='color:#bbb;'>🔒 Read-only mode (Training in progress)</span>"))
 
-        self._update_default_steps(self.updated_env_config["ENV_NAME"])
-
     def _update_default_steps(self, env_name: str):
-        """Display default step length for selected environment."""
+        """Display default step length for selected environment without resetting user inputs."""
         try:
             env = gym.make(env_name)
-            default_steps = getattr(env.spec, "max_episode_steps", config.MAX_STEPS)
+            default_steps = getattr(env.spec, "max_episode_steps", 500)
             env.close()
         except Exception:
             default_steps = 500
 
         self.default_label.setText(f"📏 Default Steps per Episode: {default_steps}")
 
-        # Always update spin boxes to reflect defaults
+        # Only auto-set if environment changed intentionally
         self.steps_box.setValue(default_steps)
+        self.episodes_box.setValue(getattr(config, "DEFAULT_EPISODES", 1000))
 
-        # Reset episodes to environment defaults if available
-        default_episodes = getattr(config, "DEFAULT_EPISODES", 1000)
-        self.episodes_box.setValue(default_episodes)
-
-        # Also keep ENV_NAME synced
         self.updated_env_config["ENV_NAME"] = env_name
         self.updated_env_config["MAX_STEPS"] = default_steps
 
